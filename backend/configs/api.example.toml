@@ -1,0 +1,5 @@
+[web-server]
+APP_PORT = ":8080"
+
+[storage]
+DATABASE_URL = "host=localhost port=5432 user=postgres password=MY_PASSWORD dbname=MY_DB_NAME sslmode=disable"

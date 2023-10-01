@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/EvgeniyBudaev/golang-next-family-mart/storage"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/internal/app/storage"
 	"github.com/gorilla/mux"
 	"net/http"
 )
@@ -20,8 +20,8 @@ func New(config *Config) *API {
 }
 
 func (api *API) Start() error {
-	api.configureRouterField()
-	if err := api.configureStorageField(); err != nil {
+	api.configureRouter()
+	if err := api.configureStorage(); err != nil {
 		return err
 	}
 	return http.ListenAndServe(api.config.Port, api.router)

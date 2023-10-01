@@ -1,6 +1,8 @@
 package api
 
-import "github.com/EvgeniyBudaev/golang-next-family-mart/storage"
+import (
+	"github.com/EvgeniyBudaev/golang-next-family-mart/internal/app/storage"
+)
 
 type Config struct {
 	Port    string `toml:"APP_PORT"`

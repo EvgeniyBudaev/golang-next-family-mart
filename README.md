@@ -1,3 +1,13 @@
+Инициализация зависимостей
+```
+go mod init github.com/EvgeniyBudaev/golang-next-family-mart/backend
+```
+
+Сборка
+```
+go build -v ./cmd/
+```
+
 Удаление неиспользуемых зависимостей
 ```
 go mod tidy -v
@@ -16,6 +26,14 @@ go get -u github.com/caarlos0/env/v9
 Библиотека для работы с переменными окружения TOML
 ```
 go get -u github.com/BurntSushi/toml
+```
+
+Логирование
+```
+go get -u github.com/sirupsen/logrus
+```
+```
+go get -u go.uber.org/zap 
 ```
 
 Подключение к БД

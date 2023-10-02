@@ -3,10 +3,12 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/internal/app/middleware"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/internal/app/models"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/app/logger"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/app/middleware"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/app/models"
 	"github.com/form3tech-oss/jwt-go"
 	"github.com/gorilla/mux"
+	"go.uber.org/zap"
 	"net/http"
 	"strconv"
 	"time"
@@ -24,8 +26,10 @@ func initHeaders(writer http.ResponseWriter) {
 
 func (api *API) GetUserList(writer http.ResponseWriter, req *http.Request) {
 	initHeaders(writer)
+	logger.Log.Info("get user list GET /api/v1/users")
 	userList, err := api.storage.User().SelectAll()
 	if err != nil {
+		logger.Log.Info("Error while User.GetUserList:", zap.Error(err))
 		msg := Message{
 			StatusCode: http.StatusNotImplemented,
 			Message:    "We have some troubles to accessing database. Try again later",
@@ -41,8 +45,10 @@ func (api *API) GetUserList(writer http.ResponseWriter, req *http.Request) {
 
 func (api *API) GetUserById(writer http.ResponseWriter, req *http.Request) {
 	initHeaders(writer)
+	logger.Log.Info("get user by id GET /api/v1/users/{id}")
 	id, err := strconv.Atoi(mux.Vars(req)["id"])
 	if err != nil {
+		logger.Log.Info("Error while User.GetUserById. Troubles while parsing {id} param:", zap.Error(err))
 		msg := Message{
 			StatusCode: http.StatusBadRequest,
 			Message:    "Unappropriated id value. Don't use ID as uncasting to int value",
@@ -54,6 +60,9 @@ func (api *API) GetUserById(writer http.ResponseWriter, req *http.Request) {
 	}
 	user, ok, err := api.storage.User().FindById(id)
 	if err != nil {
+		logger.Log.Info(
+			"Error while User.GetUserById. Troubles while accessing database table (users) with id. err:",
+			zap.Error(err))
 		msg := Message{
 			StatusCode: http.StatusInternalServerError,
 			Message:    "We have some troubles to accessing database. Try again",
@@ -64,16 +73,15 @@ func (api *API) GetUserById(writer http.ResponseWriter, req *http.Request) {
 		return
 	}
 	if !ok {
-		if err != nil {
-			msg := Message{
-				StatusCode: http.StatusNotFound,
-				Message:    "User with that ID does not exists in database",
-				IsError:    true,
-			}
-			writer.WriteHeader(http.StatusNotFound)
-			json.NewEncoder(writer).Encode(msg)
-			return
+		logger.Log.Info("Error while User.GetUserById. Can't find article with that ID in database")
+		msg := Message{
+			StatusCode: http.StatusNotFound,
+			Message:    "User with that ID does not exists in database",
+			IsError:    true,
 		}
+		writer.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(writer).Encode(msg)
+		return
 	}
 	writer.WriteHeader(http.StatusOK)
 	json.NewEncoder(writer).Encode(user)
@@ -81,9 +89,11 @@ func (api *API) GetUserById(writer http.ResponseWriter, req *http.Request) {
 
 func (api *API) PostRegisterUser(writer http.ResponseWriter, req *http.Request) {
 	initHeaders(writer)
+	logger.Log.Info("register user POST /api/v1/user/register")
 	var user models.User
 	err := json.NewDecoder(req.Body).Decode(&user)
 	if err != nil {
+		logger.Log.Info("Error while User.PostRegisterUser. Invalid json received from client")
 		msg := Message{
 			StatusCode: http.StatusBadRequest,
 			Message:    "Provided json is invalid",
@@ -95,6 +105,9 @@ func (api *API) PostRegisterUser(writer http.ResponseWriter, req *http.Request) 
 	}
 	_, ok, err := api.storage.User().FindByEmail(user.Email)
 	if err != nil {
+		logger.Log.Info(
+			"Error while User.PostRegisterUser. Troubles while accessing database table (users) with id. err:",
+			zap.Error(err))
 		msg := Message{
 			StatusCode: http.StatusInternalServerError,
 			Message:    "We have some troubles to accessing database. Try again",
@@ -105,6 +118,7 @@ func (api *API) PostRegisterUser(writer http.ResponseWriter, req *http.Request) 
 		return
 	}
 	if ok {
+		logger.Log.Info("Error while User.PostRegisterUser. User with that ID already exists")
 		msg := Message{
 			StatusCode: http.StatusBadRequest,
 			Message:    "User with that email already exists in database",
@@ -116,6 +130,9 @@ func (api *API) PostRegisterUser(writer http.ResponseWriter, req *http.Request) 
 	}
 	userAdd, err := api.storage.User().Create(&user)
 	if err != nil {
+		logger.Log.Info(
+			"Error while User.PostRegisterUser. Troubles while accessing database table (users) with id. err:",
+			zap.Error(err))
 		msg := Message{
 			StatusCode: http.StatusInternalServerError,
 			Message:    "We have some troubles to accessing database. Try again",
@@ -136,9 +153,13 @@ func (api *API) PostRegisterUser(writer http.ResponseWriter, req *http.Request) 
 
 func (api *API) PostAuth(writer http.ResponseWriter, req *http.Request) {
 	initHeaders(writer)
+	logger.Log.Info("post to auth POST /api/v1/user/auth")
 	var userFromJson models.User
 	err := json.NewDecoder(req.Body).Decode(&userFromJson)
 	if err != nil {
+		logger.Log.Info(
+			"Error while User.PostAuth. Invalid json received from client:",
+			zap.Error(err))
 		msg := Message{
 			StatusCode: http.StatusBadRequest,
 			Message:    "Provided json is invalid",
@@ -150,6 +171,9 @@ func (api *API) PostAuth(writer http.ResponseWriter, req *http.Request) {
 	}
 	userInDB, ok, err := api.storage.User().FindByEmail(userFromJson.Email)
 	if err != nil {
+		logger.Log.Info(
+			"Error while User.PostAuth. Can't make user search in database",
+			zap.Error(err))
 		msg := Message{
 			StatusCode: http.StatusInternalServerError,
 			Message:    "We have some troubles while accessing database",
@@ -160,6 +184,7 @@ func (api *API) PostAuth(writer http.ResponseWriter, req *http.Request) {
 		return
 	}
 	if !ok {
+		logger.Log.Info("Error while User.PostAuth. User with that login does not exists")
 		msg := Message{
 			StatusCode: http.StatusBadRequest,
 			Message:    "User with that email doesn't exists in database. Try register first",
@@ -170,6 +195,7 @@ func (api *API) PostAuth(writer http.ResponseWriter, req *http.Request) {
 		return
 	}
 	if userInDB.Password != userFromJson.Password {
+		logger.Log.Info("Error while User.PostAuth. Invalid credentials to auth")
 		msg := Message{
 			StatusCode: http.StatusNotFound,
 			Message:    "Your password is invalid",
@@ -186,6 +212,7 @@ func (api *API) PostAuth(writer http.ResponseWriter, req *http.Request) {
 	claims["name"] = userInDB.Email
 	tokenString, err := token.SignedString(middleware.SecretKey)
 	if err != nil {
+		logger.Log.Info("Error while User.PostAuth. Can't claim jwt-token", zap.Error(err))
 		msg := Message{
 			StatusCode: http.StatusInternalServerError,
 			Message:    "We have some troubles. Try again",

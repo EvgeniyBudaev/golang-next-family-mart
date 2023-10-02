@@ -2,8 +2,8 @@ package storage
 
 import (
 	"database/sql"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/app/logger"
 	_ "github.com/lib/pq"
-	"log"
 )
 
 type Storage struct {
@@ -27,7 +27,7 @@ func (storage *Storage) Open() error {
 		return err
 	}
 	storage.db = db
-	log.Println("Database connection is successfully!")
+	logger.Log.Info("Database connection is successfully!")
 	return nil
 }
 

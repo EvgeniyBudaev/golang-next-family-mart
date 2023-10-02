@@ -1,14 +1,24 @@
 package api
 
 import (
-	"github.com/EvgeniyBudaev/golang-next-family-mart/internal/app/middleware"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/internal/app/storage"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/app/middleware"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/app/storage"
+	"github.com/sirupsen/logrus"
 	"net/http"
 )
 
 var (
 	prefix string = "/api/v1"
 )
+
+func (a *API) configureLogger() error {
+	logLevel, err := logrus.ParseLevel(a.config.LoggerLevel)
+	if err != nil {
+		return err
+	}
+	a.logger.SetLevel(logLevel)
+	return nil
+}
 
 func (api *API) configureRouter() {
 	// admin user handlers

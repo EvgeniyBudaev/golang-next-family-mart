@@ -3,7 +3,9 @@ package main
 import (
 	"flag"
 	"github.com/BurntSushi/toml"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/internal/app/api"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/app/api"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/app/logger"
+	"go.uber.org/zap"
 	"log"
 )
 
@@ -21,16 +23,14 @@ func main() {
 
 func run() error {
 	flag.Parse()
-	log.Println("Start app")
 	config := api.NewConfig()
-	log.Println("Before config", *config)
+	log.Println("Before config: ", *config)
 	_, err := toml.DecodeFile(configPath, config) //err := env.Parse(config) через ENV окружение
 	if err != nil {
-		log.Println("Can't find configs file. Using default values", err)
+		logger.Log.Info("main.go run(). Can't find configs file. Using default values", zap.Error(err))
 	}
-
+	log.Println("After config: ", *config)
 	server := api.New(config)
-	log.Println("After config", *config)
 
 	return server.Start()
 }

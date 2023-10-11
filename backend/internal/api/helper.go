@@ -1,8 +1,8 @@
 package api
 
 import (
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/app/middleware"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/app/storage"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/middleware"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/storage"
 	"github.com/sirupsen/logrus"
 	"net/http"
 )

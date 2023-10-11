@@ -2,7 +2,7 @@ package storage
 
 import (
 	"database/sql"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/app/logger"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	_ "github.com/lib/pq"
 )
 

@@ -1,8 +1,9 @@
 package api
 
 import (
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/app/logger"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/app/storage"
+	config2 "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/config"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/storage"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/zap"
@@ -10,13 +11,13 @@ import (
 )
 
 type API struct {
-	config  *Config
+	config  *config2.Config
 	logger  *logrus.Logger
 	router  *mux.Router
 	storage *storage.Storage
 }
 
-func New(config *Config) *API {
+func New(config *config2.Config) *API {
 	return &API{
 		config: config,
 		logger: logrus.New(),

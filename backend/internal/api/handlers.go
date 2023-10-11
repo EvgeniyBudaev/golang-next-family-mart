@@ -3,9 +3,9 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/app/logger"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/app/middleware"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/app/models"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/middleware"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/models"
 	"github.com/form3tech-oss/jwt-go"
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"

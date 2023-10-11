@@ -2,7 +2,7 @@ package storage
 
 import (
 	"fmt"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/app/models"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/models"
 	"log"
 )
 

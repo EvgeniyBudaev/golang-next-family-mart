@@ -1,7 +1,7 @@
-package api
+package config
 
 import (
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/app/storage"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/storage"
 )
 
 type Config struct {

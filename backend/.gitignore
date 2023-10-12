@@ -23,5 +23,5 @@ vendor/
 .vscode
 */**/.DS_Store
 
-configs/.env
-configs/api.toml
+.env
+*.toml

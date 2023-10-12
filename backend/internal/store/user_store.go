@@ -1,4 +1,4 @@
-package storage
+package store
 
 import (
 	"fmt"
@@ -6,24 +6,22 @@ import (
 	"log"
 )
 
-type UserRepository struct {
-	storage *Storage
+const tableUser string = "users"
+
+type UserStore struct {
+	store *Store
 }
 
-var (
-	tableUser string = "users"
-)
-
-func (ur *UserRepository) Create(user *models.User) (*models.User, error) {
+func (us *UserStore) Create(user *models.User) (*models.User, error) {
 	query := fmt.Sprintf("INSERT INTO %s (email, password) VALUES ($1, $2) RETURNING id", tableUser)
-	if err := ur.storage.db.QueryRow(query, user.Email, user.Password).Scan(&user.ID); err != nil {
+	if err := us.store.db.QueryRow(query, user.Email, user.Password).Scan(&user.ID); err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (ur *UserRepository) FindById(id int) (*models.User, bool, error) {
-	userList, err := ur.SelectAll()
+func (us *UserStore) FindById(id int) (*models.User, bool, error) {
+	userList, err := us.SelectAll()
 	var founded bool
 	if err != nil {
 		return nil, founded, err
@@ -39,8 +37,8 @@ func (ur *UserRepository) FindById(id int) (*models.User, bool, error) {
 	return userFound, founded, nil
 }
 
-func (ur *UserRepository) FindByEmail(email string) (*models.User, bool, error) {
-	userList, err := ur.SelectAll()
+func (us *UserStore) FindByEmail(email string) (*models.User, bool, error) {
+	userList, err := us.SelectAll()
 	var founded bool
 	if err != nil {
 		return nil, founded, err
@@ -56,9 +54,9 @@ func (ur *UserRepository) FindByEmail(email string) (*models.User, bool, error) 
 	return userFound, founded, nil
 }
 
-func (ur *UserRepository) SelectAll() ([]*models.User, error) {
+func (us *UserStore) SelectAll() ([]*models.User, error) {
 	query := fmt.Sprintf("SELECT * FROM %s", tableUser)
-	rows, err := ur.storage.db.Query(query)
+	rows, err := us.store.db.Query(query)
 	if err != nil {
 		return nil, err
 	}

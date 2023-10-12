@@ -1,19 +1,12 @@
 package config
 
-import (
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/storage"
-)
-
 type Config struct {
-	Port        string `toml:"APP_PORT"`
-	LoggerLevel string `toml:"LOGGER_LEVEL"`
-	Storage     *storage.Config
-}
-
-func NewConfig() *Config {
-	return &Config{
-		Port:        ":8080",
-		LoggerLevel: "DEBUG",
-		Storage:     storage.NewConfig(),
-	}
+	Port        string `envconfig:"PORT"`
+	LoggerLevel string `envconfig:"LOGGER_LEVEL"`
+	Host        string `envconfig:"HOST"`
+	DBPort      string `envconfig:"DB_PORT"`
+	DBUser      string `envconfig:"DB_USER"`
+	DBPassword  string `envconfig:"DB_PASSWORD"`
+	DBName      string `envconfig:"DB_NAME"`
+	DBSSlMode   string `envconfig:"DB_SSLMODE"`
 }

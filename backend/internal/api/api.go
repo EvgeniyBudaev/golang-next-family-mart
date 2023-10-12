@@ -44,7 +44,7 @@ func (api *API) Start() error {
 		return err
 	}
 	api.logger.SetLevel(logLevel)
-	api.logger.Info("starting api server at port: ", api.config.Port)
+	// api.logger.Info("starting api server at port: ", api.config.Port)
 	// Zap
 	if err := logger.Initialize(api.config.LoggerLevel); err != nil {
 		return err
@@ -54,11 +54,10 @@ func (api *API) Start() error {
 	// Store
 	storeNew := store.NewStore(api.config)
 	if err := storeNew.Open(); err != nil {
-		logger.Log.Error("store don't open", zap.Error(err))
 		return err
 	}
 	api.store = storeNew
-	userStore := storeNew.UserStore()
+	userStore := store.NewDBUserStore(storeNew)
 
 	// handlers
 	userHandler := NewUserHandler(userStore)

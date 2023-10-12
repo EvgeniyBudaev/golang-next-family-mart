@@ -44,12 +44,12 @@ func (store *Store) Close() error {
 	return nil
 }
 
-func (store *Store) UserStore() *UserStore {
-	if store.userStore != nil {
-		return store.userStore
-	}
-	store.userStore = &UserStore{
-		store: store,
-	}
-	return store.userStore
-}
+//func (store *Store) UserStore() *UserStore {
+//	if store.userStore != nil {
+//		return store.userStore
+//	}
+//	store.userStore = &UserStore{
+//		store: store,
+//	}
+//	return store.userStore
+//}

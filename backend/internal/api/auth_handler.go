@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/middleware"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/models"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/model"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/store"
 	"github.com/form3tech-oss/jwt-go"
 	"go.uber.org/zap"
@@ -14,10 +14,10 @@ import (
 )
 
 type AuthHandler struct {
-	userStore *store.UserStore
+	userStore store.UserStore
 }
 
-func NewAuthHandler(userStore *store.UserStore) *AuthHandler {
+func NewAuthHandler(userStore store.UserStore) *AuthHandler {
 	return &AuthHandler{
 		userStore: userStore,
 	}
@@ -27,10 +27,10 @@ func initAuthHeaders(writer http.ResponseWriter) {
 	writer.Header().Set("Content-Type", "application/json")
 }
 
-func (ah *AuthHandler) PostRegisterUser(writer http.ResponseWriter, req *http.Request) {
+func (a *AuthHandler) PostRegisterUser(writer http.ResponseWriter, req *http.Request) {
 	initAuthHeaders(writer)
 	logger.Log.Info("register user POST /api/v1/user/register")
-	var user models.User
+	var user model.User
 	err := json.NewDecoder(req.Body).Decode(&user)
 	if err != nil {
 		logger.Log.Info("Error while User.PostRegisterUser. Invalid json received from client")
@@ -43,7 +43,7 @@ func (ah *AuthHandler) PostRegisterUser(writer http.ResponseWriter, req *http.Re
 		json.NewEncoder(writer).Encode(msg)
 		return
 	}
-	_, ok, err := ah.userStore.FindByEmail(user.Email)
+	_, ok, err := a.userStore.FindByEmail(user.Email)
 	if err != nil {
 		logger.Log.Info(
 			"Error while User.PostRegisterUser. Troubles while accessing database table (users) with id. err:",
@@ -68,7 +68,7 @@ func (ah *AuthHandler) PostRegisterUser(writer http.ResponseWriter, req *http.Re
 		json.NewEncoder(writer).Encode(msg)
 		return
 	}
-	userAdd, err := ah.userStore.Create(&user)
+	userAdd, err := a.userStore.Create(&user)
 	if err != nil {
 		logger.Log.Info(
 			"Error while User.PostRegisterUser. Troubles while accessing database table (users) with id. err:",
@@ -91,10 +91,10 @@ func (ah *AuthHandler) PostRegisterUser(writer http.ResponseWriter, req *http.Re
 	json.NewEncoder(writer).Encode(msg)
 }
 
-func (ah *AuthHandler) PostAuth(writer http.ResponseWriter, req *http.Request) {
+func (a *AuthHandler) PostAuth(writer http.ResponseWriter, req *http.Request) {
 	initAuthHeaders(writer)
 	logger.Log.Info("post to auth POST /api/v1/user/auth")
-	var userFromJson models.User
+	var userFromJson model.User
 	err := json.NewDecoder(req.Body).Decode(&userFromJson)
 	if err != nil {
 		logger.Log.Info(
@@ -109,7 +109,7 @@ func (ah *AuthHandler) PostAuth(writer http.ResponseWriter, req *http.Request) {
 		json.NewEncoder(writer).Encode(msg)
 		return
 	}
-	userInDB, ok, err := ah.userStore.FindByEmail(userFromJson.Email)
+	userInDB, ok, err := a.userStore.FindByEmail(userFromJson.Email)
 	if err != nil {
 		logger.Log.Info(
 			"Error while User.PostAuth. Can't make user search in database",

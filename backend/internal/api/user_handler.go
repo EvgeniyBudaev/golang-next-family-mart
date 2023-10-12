@@ -11,10 +11,10 @@ import (
 )
 
 type UserHandler struct {
-	userStore *store.UserStore
+	userStore store.UserStore
 }
 
-func NewUserHandler(userStore *store.UserStore) *UserHandler {
+func NewUserHandler(userStore store.UserStore) *UserHandler {
 	return &UserHandler{
 		userStore: userStore,
 	}
@@ -24,10 +24,10 @@ func initUserHeaders(writer http.ResponseWriter) {
 	writer.Header().Set("Content-Type", "application/json")
 }
 
-func (uh *UserHandler) GetUserList(writer http.ResponseWriter, req *http.Request) {
+func (u *UserHandler) GetUserList(writer http.ResponseWriter, req *http.Request) {
 	initUserHeaders(writer)
 	logger.Log.Info("get user list GET /api/v1/users")
-	userList, err := uh.userStore.SelectAll()
+	userList, err := u.userStore.SelectAll()
 	if err != nil {
 		logger.Log.Info("Error while User.GetUserList:", zap.Error(err))
 		msg := Message{
@@ -43,7 +43,7 @@ func (uh *UserHandler) GetUserList(writer http.ResponseWriter, req *http.Request
 	json.NewEncoder(writer).Encode(userList)
 }
 
-func (uh *UserHandler) GetUserById(writer http.ResponseWriter, req *http.Request) {
+func (u *UserHandler) GetUserById(writer http.ResponseWriter, req *http.Request) {
 	initUserHeaders(writer)
 	logger.Log.Info("get user by id GET /api/v1/users/{id}")
 	id, err := strconv.Atoi(mux.Vars(req)["id"])
@@ -58,7 +58,7 @@ func (uh *UserHandler) GetUserById(writer http.ResponseWriter, req *http.Request
 		json.NewEncoder(writer).Encode(msg)
 		return
 	}
-	user, ok, err := uh.userStore.FindById(id)
+	user, ok, err := u.userStore.FindById(id)
 	if err != nil {
 		logger.Log.Info(
 			"Error while User.GetUserById. Troubles while accessing database table (users) with id. err:",

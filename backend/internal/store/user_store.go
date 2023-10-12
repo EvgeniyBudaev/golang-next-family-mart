@@ -2,31 +2,44 @@ package store
 
 import (
 	"fmt"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/models"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/model"
 	"log"
 )
 
 const tableUser string = "users"
 
-type UserStore struct {
+type UserStore interface {
+	Create(user *model.User) (*model.User, error)
+	FindById(id int) (*model.User, bool, error)
+	FindByEmail(email string) (*model.User, bool, error)
+	SelectAll() ([]*model.User, error)
+}
+
+type PGUserStore struct {
 	store *Store
 }
 
-func (us *UserStore) Create(user *models.User) (*models.User, error) {
+func NewDBUserStore(store *Store) *PGUserStore {
+	return &PGUserStore{
+		store: store,
+	}
+}
+
+func (u *PGUserStore) Create(user *model.User) (*model.User, error) {
 	query := fmt.Sprintf("INSERT INTO %s (email, password) VALUES ($1, $2) RETURNING id", tableUser)
-	if err := us.store.db.QueryRow(query, user.Email, user.Password).Scan(&user.ID); err != nil {
+	if err := u.store.db.QueryRow(query, user.Email, user.Password).Scan(&user.ID); err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (us *UserStore) FindById(id int) (*models.User, bool, error) {
-	userList, err := us.SelectAll()
+func (u *PGUserStore) FindById(id int) (*model.User, bool, error) {
+	userList, err := u.SelectAll()
 	var founded bool
 	if err != nil {
 		return nil, founded, err
 	}
-	var userFound *models.User
+	var userFound *model.User
 	for _, user := range userList {
 		if user.ID == id {
 			userFound = user
@@ -37,13 +50,13 @@ func (us *UserStore) FindById(id int) (*models.User, bool, error) {
 	return userFound, founded, nil
 }
 
-func (us *UserStore) FindByEmail(email string) (*models.User, bool, error) {
-	userList, err := us.SelectAll()
+func (u *PGUserStore) FindByEmail(email string) (*model.User, bool, error) {
+	userList, err := u.SelectAll()
 	var founded bool
 	if err != nil {
 		return nil, founded, err
 	}
-	var userFound *models.User
+	var userFound *model.User
 	for _, user := range userList {
 		if user.Email == email {
 			userFound = user
@@ -54,16 +67,16 @@ func (us *UserStore) FindByEmail(email string) (*models.User, bool, error) {
 	return userFound, founded, nil
 }
 
-func (us *UserStore) SelectAll() ([]*models.User, error) {
+func (u *PGUserStore) SelectAll() ([]*model.User, error) {
 	query := fmt.Sprintf("SELECT * FROM %s", tableUser)
-	rows, err := us.store.db.Query(query)
+	rows, err := u.store.db.Query(query)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	userList := make([]*models.User, 0)
+	userList := make([]*model.User, 0)
 	for rows.Next() {
-		user := models.User{}
+		user := model.User{}
 		err := rows.Scan(&user.ID, &user.Email, &user.Password)
 		if err != nil {
 			log.Println(err)

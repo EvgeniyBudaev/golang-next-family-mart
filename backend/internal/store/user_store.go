@@ -25,16 +25,16 @@ func NewDBUserStore(store *Store) *PGUserStore {
 	}
 }
 
-func (u *PGUserStore) Create(user *model.User) (*model.User, error) {
+func (p *PGUserStore) Create(user *model.User) (*model.User, error) {
 	query := fmt.Sprintf("INSERT INTO %s (email, password) VALUES ($1, $2) RETURNING id", tableUser)
-	if err := u.store.db.QueryRow(query, user.Email, user.Password).Scan(&user.ID); err != nil {
+	if err := p.store.db.QueryRow(query, user.Email, user.Password).Scan(&user.ID); err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (u *PGUserStore) FindById(id int) (*model.User, bool, error) {
-	userList, err := u.SelectAll()
+func (p *PGUserStore) FindById(id int) (*model.User, bool, error) {
+	userList, err := p.SelectAll()
 	var founded bool
 	if err != nil {
 		return nil, founded, err
@@ -50,8 +50,8 @@ func (u *PGUserStore) FindById(id int) (*model.User, bool, error) {
 	return userFound, founded, nil
 }
 
-func (u *PGUserStore) FindByEmail(email string) (*model.User, bool, error) {
-	userList, err := u.SelectAll()
+func (p *PGUserStore) FindByEmail(email string) (*model.User, bool, error) {
+	userList, err := p.SelectAll()
 	var founded bool
 	if err != nil {
 		return nil, founded, err
@@ -67,9 +67,9 @@ func (u *PGUserStore) FindByEmail(email string) (*model.User, bool, error) {
 	return userFound, founded, nil
 }
 
-func (u *PGUserStore) SelectAll() ([]*model.User, error) {
+func (p *PGUserStore) SelectAll() ([]*model.User, error) {
 	query := fmt.Sprintf("SELECT * FROM %s", tableUser)
-	rows, err := u.store.db.Query(query)
+	rows, err := p.store.db.Query(query)
 	if err != nil {
 		return nil, err
 	}

@@ -94,8 +94,8 @@ func (a *AuthHandler) PostRegisterUser(writer http.ResponseWriter, req *http.Req
 func (a *AuthHandler) PostAuth(writer http.ResponseWriter, req *http.Request) {
 	initAuthHeaders(writer)
 	logger.Log.Info("post to auth POST /api/v1/user/auth")
-	var userFromJson model.User
-	err := json.NewDecoder(req.Body).Decode(&userFromJson)
+	var params model.AuthParams
+	err := json.NewDecoder(req.Body).Decode(&params)
 	if err != nil {
 		logger.Log.Info(
 			"Error while User.PostAuth. Invalid json received from client:",
@@ -109,7 +109,7 @@ func (a *AuthHandler) PostAuth(writer http.ResponseWriter, req *http.Request) {
 		json.NewEncoder(writer).Encode(msg)
 		return
 	}
-	userInDB, ok, err := a.userStore.FindByEmail(userFromJson.Email)
+	userInDB, ok, err := a.userStore.FindByEmail(params.Email)
 	if err != nil {
 		logger.Log.Info(
 			"Error while User.PostAuth. Can't make user search in database",
@@ -134,7 +134,7 @@ func (a *AuthHandler) PostAuth(writer http.ResponseWriter, req *http.Request) {
 		json.NewEncoder(writer).Encode(msg)
 		return
 	}
-	if userInDB.Password != userFromJson.Password {
+	if userInDB.Password != params.Password {
 		logger.Log.Info("Error while User.PostAuth. Invalid credentials to auth")
 		msg := Message{
 			StatusCode: http.StatusNotFound,

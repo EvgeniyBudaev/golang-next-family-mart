@@ -1,0 +1,26 @@
+.Layout {
+  height: 100%;
+
+  &-Inner {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+
+  &-Content {
+    flex: 1 0 auto;
+  }
+
+  &-Main {
+    padding-top: 0;
+    height: 100%;
+  }
+
+  &-Container {
+    /*ширина контейнера чистая 1200px*/
+    margin: 0 auto;
+    padding: 0 15px;
+    max-width: 1470px;
+    width: 100%;
+  }
+}

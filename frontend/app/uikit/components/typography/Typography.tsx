@@ -1,7 +1,6 @@
 "use client";
 import { createElement } from "react";
 import type { FC } from "react";
-import { useTranslation } from "react-i18next";
 import { EColorText } from "@/app/uikit/components/colors";
 import { TYPOGRAPHY_THEMES } from "@/app/uikit/components/typography/constants";
 import { ETypographyVariant } from "@/app/uikit/components/typography/enum";
@@ -22,7 +21,6 @@ export const Typography: FC<TProps> = ({
   value,
   variant = ETypographyVariant.TextB3Regular,
 }) => {
-  const { t } = useTranslation();
   const currentTheme = TYPOGRAPHY_THEMES({ color })[variant];
 
   return createElement(
@@ -31,6 +29,6 @@ export const Typography: FC<TProps> = ({
       className: currentTheme,
       "data-testid": dataTestId,
     },
-    t(value),
+    value,
   );
 };

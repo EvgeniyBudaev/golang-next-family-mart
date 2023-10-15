@@ -1,5 +1,6 @@
 // import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { login } from "@/app/shared/api/auth";
 
 export async function loginAction(prevState: any, formData: FormData) {
   const schema = z.object({
@@ -12,8 +13,13 @@ export async function loginAction(prevState: any, formData: FormData) {
   });
   try {
     console.log("post login data: ", data);
+    const loginResponse = await login(data);
+    if (!loginResponse.success) {
+      return { message: "Not ok" };
+    }
     // revalidatePath("/login");
-    return { message: "Login successfully" };
+    console.log("loginResponse.data: ", loginResponse.data);
+    return { message: "Login successfully data: ", data: loginResponse.data };
   } catch (e) {
     return { message: "login failed" };
   }

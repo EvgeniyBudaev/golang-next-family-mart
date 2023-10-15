@@ -5,6 +5,7 @@ import { EColorText } from "@/app/uikit/components/colors";
 import { TYPOGRAPHY_THEMES } from "@/app/uikit/components/typography/constants";
 import { ETypographyVariant } from "@/app/uikit/components/typography/enum";
 import { TTypographyColor } from "@/app/uikit/components/typography/types";
+import "./Typography.scss";
 
 type TProps = {
   as?: string;

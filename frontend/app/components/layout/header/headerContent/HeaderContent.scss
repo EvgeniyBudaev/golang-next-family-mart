@@ -1,0 +1,32 @@
+@import "@/app/styles";
+
+.HeaderContent {
+  $this: &;
+  display: flex;
+  position: relative;
+
+  &-Desktop {
+    display: block;
+    width: 100%;
+  }
+
+  &-Info {
+    width: 100%;
+  }
+
+  &-InfoInner {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  &-InfoLeft {
+    display: flex;
+  }
+
+  &-Title {
+    display: flex;
+    align-items: center;
+    color: $color-white;
+  }
+}

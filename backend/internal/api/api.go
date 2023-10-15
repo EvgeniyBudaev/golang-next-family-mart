@@ -5,6 +5,7 @@ import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/middleware"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/store"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/zap"
@@ -63,6 +64,12 @@ func (api *API) Start() error {
 	userHandler := NewUserHandler(userStore)
 	authHandler := NewAuthHandler(userStore)
 
+	// CORS
+	//api.router.Use(api.corsMiddleware)
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
+	originsOk := handlers.AllowedOrigins([]string{"*"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+
 	// admin user handlers
 	api.router.Handle(prefix+"/admin/users", middleware.JwtMiddleware.Handler(
 		http.HandlerFunc(userHandler.GetUserList),
@@ -78,5 +85,20 @@ func (api *API) Start() error {
 	api.router.HandleFunc(prefix+"/user/register", authHandler.PostRegisterUser).Methods(http.MethodPost)
 	api.router.HandleFunc(prefix+"/user/auth", authHandler.PostAuth).Methods(http.MethodPost)
 
-	return http.ListenAndServe(api.config.Port, api.router)
+	return http.ListenAndServe(api.config.Port, handlers.CORS(originsOk, headersOk, methodsOk)(api.router))
+}
+
+func (api *API) corsMiddleware(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+
+		if r.Method == "OPTIONS" {
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
+			w.Header().Set("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, X-CSRF-TOKEN, Authorization")
+			return
+		} else {
+			h.ServeHTTP(w, r)
+		}
+	})
 }

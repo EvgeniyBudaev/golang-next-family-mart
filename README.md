@@ -66,3 +66,8 @@ JWT
 go get -u github.com/auth0/go-jwt-middleware
 go get -u github.com/form3tech-oss/jwt-go
 ```
+
+CORS
+```
+go get -u github.com/gorilla/handlers
+```

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import type { FC, DOMAttributes } from "react";
+import type { FC } from "react";
 import { EColorText, EColorType } from "@/app/uikit/components/colors";
 import { TColor } from "@/app/uikit/components/colors/types";
 import { IconType, iconTypes } from "@/app/uikit/components/icon/iconType";
@@ -7,7 +7,7 @@ import "./Icon.scss";
 
 const getIcon = (type: string) => iconTypes.get(type);
 
-interface IProps extends DOMAttributes<HTMLSpanElement> {
+type TProps = {
   className?: string;
   color?: TColor;
   dataTestId?: string;
@@ -15,9 +15,9 @@ interface IProps extends DOMAttributes<HTMLSpanElement> {
   size?: number;
   type: IconType;
   width?: number;
-}
+};
 
-export const Icon: FC<IProps> = ({
+export const Icon: FC<TProps> = ({
   className,
   color = EColorText.Dark,
   dataTestId = "uikit__icon",

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { EFormFields } from "@/app/pages/login/enums";
+import { EFormFields } from "@/app/pages/loginPage/enums";
 import {
   EMAIL_ERROR_MESSAGE,
   EMAIL_NOT_CYRILLIC_ERROR_MESSAGE,

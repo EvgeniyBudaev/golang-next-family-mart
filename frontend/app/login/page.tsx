@@ -1,5 +1,5 @@
-import { Login } from "@/app/pages/login";
+import { LoginPage } from "@/app/pages/loginPage";
 
-export default function LoginRoute() {
-  return <Login />;
+export default async function LoginRoute() {
+  return <LoginPage />;
 }

@@ -1,0 +1,17 @@
+@import "@/app/styles";
+
+.LoginForm {
+  &-FormFieldGroup {
+    position: relative;
+    margin-bottom: 50px;
+  }
+
+  &-Control {
+    display: flex;
+    justify-content: center;
+  }
+
+  &-Button {
+    margin-bottom: 20px;
+  }
+}

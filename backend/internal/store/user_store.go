@@ -1,6 +1,7 @@
 package store
 
 import (
+	"context"
 	"fmt"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/model"
 	"log"
@@ -27,7 +28,7 @@ func NewDBUserStore(store *Store) *PGUserStore {
 
 func (p *PGUserStore) Create(user *model.User) (*model.User, error) {
 	query := fmt.Sprintf("INSERT INTO %s (email, password) VALUES ($1, $2) RETURNING id", tableUser)
-	if err := p.store.db.QueryRow(query, user.Email, user.Password).Scan(&user.ID); err != nil {
+	if err := p.store.db.QueryRowContext(context.TODO(), query, user.Email, user.Password).Scan(&user.ID); err != nil {
 		return nil, err
 	}
 	return user, nil
@@ -68,8 +69,7 @@ func (p *PGUserStore) FindByEmail(email string) (*model.User, bool, error) {
 }
 
 func (p *PGUserStore) SelectAll() ([]*model.User, error) {
-	query := fmt.Sprintf("SELECT * FROM %s", tableUser)
-	rows, err := p.store.db.Query(query)
+	rows, err := p.store.db.QueryContext(context.TODO(), "SELECT * FROM users")
 	if err != nil {
 		return nil, err
 	}

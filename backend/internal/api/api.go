@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/config"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/middleware"
@@ -65,7 +66,7 @@ func (api *API) Start() error {
 	authHandler := NewAuthHandler(userStore)
 
 	// CORS
-	//api.router.Use(api.corsMiddleware)
+	api.router.Use(api.corsMiddleware)
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
 	originsOk := handlers.AllowedOrigins([]string{"*"})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
@@ -90,6 +91,7 @@ func (api *API) Start() error {
 
 func (api *API) corsMiddleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		logger.Log.Info("corsMiddleware")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 
 		if r.Method == "OPTIONS" {
@@ -100,5 +102,11 @@ func (api *API) corsMiddleware(h http.Handler) http.Handler {
 		} else {
 			h.ServeHTTP(w, r)
 		}
+	})
+}
+
+func (api *API) contextMiddleware(ctx context.Context, h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		h.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

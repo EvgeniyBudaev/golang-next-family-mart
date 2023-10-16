@@ -40,6 +40,7 @@ go get -u go.uber.org/zap
 Драйвер для Postgres
 ```
 go get -u github.com/lib/pq
+go get -u github.com/jackc/pgx/v5
 ```
 
 Миграции

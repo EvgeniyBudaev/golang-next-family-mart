@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/config"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
-	_ "github.com/lib/pq"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 type Store struct {
@@ -24,7 +24,7 @@ func (store *Store) Open() error {
 	databaseURL := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		store.config.Host, store.config.DBPort, store.config.DBUser, store.config.DBPassword, store.config.DBName,
 		store.config.DBSSlMode)
-	db, err := sql.Open("postgres", databaseURL)
+	db, err := sql.Open("pgx", databaseURL)
 	if err != nil {
 		return err
 	}
@@ -43,13 +43,3 @@ func (store *Store) Close() error {
 	}
 	return nil
 }
-
-//func (store *Store) UserStore() *UserStore {
-//	if store.userStore != nil {
-//		return store.userStore
-//	}
-//	store.userStore = &UserStore{
-//		store: store,
-//	}
-//	return store.userStore
-//}

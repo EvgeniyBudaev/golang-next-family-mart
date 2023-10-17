@@ -2,12 +2,9 @@ package store
 
 import (
 	"context"
-	"fmt"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/model"
 	"log"
 )
-
-const tableUser string = "users"
 
 type UserStore interface {
 	Create(user *model.User) (*model.User, error)
@@ -27,10 +24,22 @@ func NewDBUserStore(store *Store) *PGUserStore {
 }
 
 func (p *PGUserStore) Create(user *model.User) (*model.User, error) {
-	query := fmt.Sprintf("INSERT INTO %s (email, password) VALUES ($1, $2) RETURNING id", tableUser)
-	if err := p.store.db.QueryRowContext(context.TODO(), query, user.Email, user.Password).Scan(&user.ID); err != nil {
+	tx, err := p.store.db.Begin()
+	if err != nil {
 		return nil, err
 	}
+	defer tx.Rollback()
+	sqlSelect := "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id"
+	stmt, err := tx.PrepareContext(context.TODO(),
+		sqlSelect)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+	if err := stmt.QueryRowContext(context.TODO(), user.Email, user.Password).Scan(&user.ID); err != nil {
+		return nil, err
+	}
+	tx.Commit()
 	return user, nil
 }
 
@@ -69,7 +78,13 @@ func (p *PGUserStore) FindByEmail(email string) (*model.User, bool, error) {
 }
 
 func (p *PGUserStore) SelectAll() ([]*model.User, error) {
-	rows, err := p.store.db.QueryContext(context.TODO(), "SELECT * FROM users")
+	sqlSelect := "SELECT * FROM users"
+	stmt, err := p.store.db.PrepareContext(context.TODO(), sqlSelect)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+	rows, err := stmt.QueryContext(context.TODO())
 	if err != nil {
 		return nil, err
 	}

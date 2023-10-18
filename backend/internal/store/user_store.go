@@ -8,9 +8,9 @@ import (
 
 type UserStore interface {
 	Create(user *model.User) (*model.User, error)
-	FindById(id int) (*model.User, bool, error)
-	FindByEmail(email string) (*model.User, bool, error)
-	SelectAll() ([]*model.User, error)
+	FindById(ctx context.Context, id int) (*model.User, bool, error)
+	FindByEmail(ctx context.Context, email string) (*model.User, bool, error)
+	SelectAll(ctx context.Context) ([]*model.User, error)
 }
 
 type PGUserStore struct {
@@ -43,13 +43,13 @@ func (p *PGUserStore) Create(user *model.User) (*model.User, error) {
 	return user, nil
 }
 
-func (p *PGUserStore) FindById(id int) (*model.User, bool, error) {
-	userList, err := p.SelectAll()
+func (p *PGUserStore) FindById(ctx context.Context, id int) (*model.User, bool, error) {
 	var founded bool
+	var userFound *model.User
+	userList, err := p.SelectAll(ctx)
 	if err != nil {
 		return nil, founded, err
 	}
-	var userFound *model.User
 	for _, user := range userList {
 		if user.ID == id {
 			userFound = user
@@ -60,8 +60,8 @@ func (p *PGUserStore) FindById(id int) (*model.User, bool, error) {
 	return userFound, founded, nil
 }
 
-func (p *PGUserStore) FindByEmail(email string) (*model.User, bool, error) {
-	userList, err := p.SelectAll()
+func (p *PGUserStore) FindByEmail(ctx context.Context, email string) (*model.User, bool, error) {
+	userList, err := p.SelectAll(ctx)
 	var founded bool
 	if err != nil {
 		return nil, founded, err
@@ -77,14 +77,14 @@ func (p *PGUserStore) FindByEmail(email string) (*model.User, bool, error) {
 	return userFound, founded, nil
 }
 
-func (p *PGUserStore) SelectAll() ([]*model.User, error) {
+func (p *PGUserStore) SelectAll(ctx context.Context) ([]*model.User, error) {
 	sqlSelect := "SELECT * FROM users"
-	stmt, err := p.store.db.PrepareContext(context.TODO(), sqlSelect)
+	stmt, err := p.store.db.PrepareContext(ctx, sqlSelect)
 	if err != nil {
 		return nil, err
 	}
 	defer stmt.Close()
-	rows, err := stmt.QueryContext(context.TODO())
+	rows, err := stmt.QueryContext(ctx)
 	if err != nil {
 		return nil, err
 	}

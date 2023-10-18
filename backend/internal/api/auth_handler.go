@@ -43,7 +43,7 @@ func (a *AuthHandler) PostRegisterUser(writer http.ResponseWriter, req *http.Req
 		json.NewEncoder(writer).Encode(msg)
 		return
 	}
-	_, ok, err := a.userStore.FindByEmail(user.Email)
+	_, ok, err := a.userStore.FindByEmail(req.Context(), user.Email)
 	if err != nil {
 		logger.Log.Info(
 			"Error while User.PostRegisterUser. Troubles while accessing database table (users) with id. err:",
@@ -109,7 +109,7 @@ func (a *AuthHandler) PostAuth(writer http.ResponseWriter, req *http.Request) {
 		json.NewEncoder(writer).Encode(msg)
 		return
 	}
-	userInDB, ok, err := a.userStore.FindByEmail(params.Email)
+	userInDB, ok, err := a.userStore.FindByEmail(req.Context(), params.Email)
 	if err != nil {
 		logger.Log.Info(
 			"Error while User.PostAuth. Can't make user search in database",

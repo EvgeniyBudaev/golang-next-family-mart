@@ -12,7 +12,6 @@ export async function loginAction(prevState: any, formData: FormData) {
     password: formData.get("password"),
   });
   try {
-    console.log("post login data: ", data);
     const loginResponse = await login(data);
     if (!loginResponse.success) {
       return { message: "Not ok" };

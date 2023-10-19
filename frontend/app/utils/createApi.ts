@@ -44,7 +44,6 @@ export function createApi(config: TApiConfig): {
         //Authorization: `Bearer ${accessToken}`,
         "Accept-Language": language,
         // traceparent: request.headers.get("traceparent") ?? "",
-        traceparent: "",
         ...options?.headers,
       },
       body,

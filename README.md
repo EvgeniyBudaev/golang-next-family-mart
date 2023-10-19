@@ -40,6 +40,7 @@ go get -u go.uber.org/zap
 https://github.com/jackc/pgx
 ```
 go get -u github.com/jackc/pgx/v5
+go get -u github.com/jackc/pgx/v5/pgxpool
 ```
 
 Миграции

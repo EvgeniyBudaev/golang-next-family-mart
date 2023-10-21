@@ -7,8 +7,9 @@ import { Spacer, Typography } from "@/app/uikit/components";
 import { ETypographyVariant } from "@/app/uikit/components/typography/enum";
 import { createPath } from "@/app/utils";
 import "./HeaderContent.scss";
+import { I18nProps } from "@/app/i18n/props";
 
-export const HeaderContent: FC = () => {
+export const HeaderContent: FC<I18nProps> = ({ i18n }) => {    
   return (
     <div className="HeaderContent">
       <Container>
@@ -20,13 +21,13 @@ export const HeaderContent: FC = () => {
                   className="HeaderContent-Title"
                   href={createPath({
                     route: ERoutes.Root,
-                  })}
+                  }, i18n.lng)}
                 >
                   <Typography value="FamilyMart" variant={ETypographyVariant.TextH1Medium} />
                 </Link>
               </div>
               <Spacer />
-              <HeaderListIcon />
+              <HeaderListIcon i18n={i18n} />
             </div>
           </div>
         </div>

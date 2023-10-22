@@ -145,12 +145,7 @@ func (a *AuthHandler) PostAuth(writer http.ResponseWriter, req *http.Request) {
 		json.NewEncoder(writer).Encode(msg)
 		return
 	}
-	token := jwt.New(jwt.SigningMethodHS256)
-	claims := token.Claims.(jwt.MapClaims)
-	claims["exp"] = time.Now().Add(time.Hour * 2).Unix()
-	claims["admin"] = true
-	claims["name"] = userInDB.Email
-	tokenString, err := token.SignedString(middleware.SecretKey)
+	tokenPair, err := generateTokenPair()
 	if err != nil {
 		logger.Log.Info("Error while User.PostAuth. Can't claim jwt-token", zap.Error(err))
 		msg := Message{
@@ -162,11 +157,41 @@ func (a *AuthHandler) PostAuth(writer http.ResponseWriter, req *http.Request) {
 		json.NewEncoder(writer).Encode(msg)
 		return
 	}
-	msg := Message{
-		StatusCode: http.StatusCreated,
-		Message:    tokenString,
-		IsError:    false,
+	msg := model.AuthResponse{
+		AccessToken:      tokenPair["accessToken"],
+		ExpiresIn:        tokenPair["expiresIn"],
+		RefreshExpiresIn: tokenPair["refreshExpiresIn"],
+		RefreshToken:     tokenPair["refreshToken"],
+		StatusCode:       http.StatusCreated,
+		Success:          true,
+		TokenType:        "Bearer",
+		UserID:           userInDB.ID,
 	}
 	writer.WriteHeader(http.StatusCreated)
 	json.NewEncoder(writer).Encode(msg)
+}
+
+func generateTokenPair() (map[string]string, error) {
+	accessToken := jwt.New(jwt.SigningMethodHS256)
+	expiresIn := time.Now().Add(time.Minute * 5).Format(time.RFC3339)
+	claims := accessToken.Claims.(jwt.MapClaims)
+	claims["exp"] = expiresIn
+	t, err := accessToken.SignedString(middleware.SecretKey)
+	if err != nil {
+		return nil, err
+	}
+	refreshToken := jwt.New(jwt.SigningMethodHS256)
+	rtClaims := refreshToken.Claims.(jwt.MapClaims)
+	refreshExpiresIn := time.Now().Add(time.Minute * 10).Format(time.RFC3339)
+	rtClaims["exp"] = refreshExpiresIn
+	rt, err := refreshToken.SignedString(middleware.SecretKey)
+	if err != nil {
+		return nil, err
+	}
+	return map[string]string{
+		"accessToken":      t,
+		"expiresIn":        expiresIn,
+		"refreshExpiresIn": refreshExpiresIn,
+		"refreshToken":     rt,
+	}, nil
 }

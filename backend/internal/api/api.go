@@ -80,10 +80,10 @@ func (api *API) Start() error {
 
 	// user handlers
 	api.router.HandleFunc(prefix+"/users/{id}", userHandler.GetUserById).Methods(http.MethodGet)
+	api.router.HandleFunc(prefix+"/user/register", userHandler.CreateUser).Methods(http.MethodPost)
 
 	// auth handlers
-	api.router.HandleFunc(prefix+"/user/register", authHandler.PostRegisterUser).Methods(http.MethodPost)
-	api.router.HandleFunc(prefix+"/user/auth", authHandler.PostAuth).Methods(http.MethodPost)
+	api.router.HandleFunc(prefix+"/user/auth", authHandler.PostAuthenticate).Methods(http.MethodPost)
 	return http.ListenAndServe(api.config.Port, handlers.CORS(originsOk, headersOk, methodsOk)(api.router))
 }
 

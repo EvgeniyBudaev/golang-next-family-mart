@@ -36,7 +36,7 @@ func (p *PGUserStore) Create(user *model.User) (*model.User, error) {
 		return nil, err
 	}
 	defer stmt.Close()
-	if err := stmt.QueryRowContext(context.TODO(), user.Email, user.Password).Scan(&user.ID); err != nil {
+	if err := stmt.QueryRowContext(context.TODO(), user.Email, user.EncryptedPassword).Scan(&user.ID); err != nil {
 		return nil, err
 	}
 	tx.Commit()
@@ -92,7 +92,7 @@ func (p *PGUserStore) SelectAll(ctx context.Context) ([]*model.User, error) {
 	userList := make([]*model.User, 0)
 	for rows.Next() {
 		user := model.User{}
-		err := rows.Scan(&user.ID, &user.Email, &user.Password)
+		err := rows.Scan(&user.ID, &user.Email, &user.EncryptedPassword)
 		if err != nil {
 			log.Println(err)
 			continue

@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/middleware"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/model"
@@ -27,71 +26,7 @@ func initAuthHeaders(writer http.ResponseWriter) {
 	writer.Header().Set("Content-Type", "application/json")
 }
 
-func (a *AuthHandler) PostRegisterUser(writer http.ResponseWriter, req *http.Request) {
-	initAuthHeaders(writer)
-	logger.Log.Info("register user POST /api/v1/user/register")
-	var user model.User
-	err := json.NewDecoder(req.Body).Decode(&user)
-	if err != nil {
-		logger.Log.Info("Error while User.PostRegisterUser. Invalid json received from client")
-		msg := Message{
-			StatusCode: http.StatusBadRequest,
-			Message:    "Provided json is invalid",
-			IsError:    true,
-		}
-		writer.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(writer).Encode(msg)
-		return
-	}
-	_, ok, err := a.userStore.FindByEmail(req.Context(), user.Email)
-	if err != nil {
-		logger.Log.Info(
-			"Error while User.PostRegisterUser. Troubles while accessing database table (users) with id. err:",
-			zap.Error(err))
-		msg := Message{
-			StatusCode: http.StatusInternalServerError,
-			Message:    "We have some troubles to accessing database. Try again",
-			IsError:    true,
-		}
-		writer.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(writer).Encode(msg)
-		return
-	}
-	if ok {
-		logger.Log.Info("Error while User.PostRegisterUser. User with that ID already exists")
-		msg := Message{
-			StatusCode: http.StatusBadRequest,
-			Message:    "User with that email already exists in database",
-			IsError:    true,
-		}
-		writer.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(writer).Encode(msg)
-		return
-	}
-	userAdd, err := a.userStore.Create(&user)
-	if err != nil {
-		logger.Log.Info(
-			"Error while User.PostRegisterUser. Troubles while accessing database table (users) with id. err:",
-			zap.Error(err))
-		msg := Message{
-			StatusCode: http.StatusInternalServerError,
-			Message:    "We have some troubles to accessing database. Try again",
-			IsError:    true,
-		}
-		writer.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(writer).Encode(msg)
-		return
-	}
-	msg := Message{
-		StatusCode: http.StatusCreated,
-		Message:    fmt.Sprintf("User {email:%s} successfully registered!", userAdd.Email),
-		IsError:    true,
-	}
-	writer.WriteHeader(http.StatusCreated)
-	json.NewEncoder(writer).Encode(msg)
-}
-
-func (a *AuthHandler) PostAuth(writer http.ResponseWriter, req *http.Request) {
+func (a *AuthHandler) PostAuthenticate(writer http.ResponseWriter, req *http.Request) {
 	initAuthHeaders(writer)
 	logger.Log.Info("post to auth POST /api/v1/user/auth")
 	var params model.AuthParams
@@ -134,7 +69,7 @@ func (a *AuthHandler) PostAuth(writer http.ResponseWriter, req *http.Request) {
 		json.NewEncoder(writer).Encode(msg)
 		return
 	}
-	if userInDB.Password != params.Password {
+	if !isValidPassword(userInDB.EncryptedPassword, params.Password) {
 		logger.Log.Info("Error while User.PostAuth. Invalid credentials to auth")
 		msg := Message{
 			StatusCode: http.StatusNotFound,

@@ -29,8 +29,8 @@ func NewUserHandler(userStore store.UserStore) *UserHandler {
 	}
 }
 
-func initUserHeaders(writer http.ResponseWriter) {
-	writer.Header().Set("Content-Type", "application/json")
+func initUserHeaders(w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json")
 }
 
 func (u *UserHandler) CreateUser(writer http.ResponseWriter, req *http.Request) {
@@ -153,15 +153,14 @@ func (u *UserHandler) GetUserList(writer http.ResponseWriter, req *http.Request)
 	json.NewEncoder(writer).Encode(userList)
 }
 
-func (u *UserHandler) GetUserById(writer http.ResponseWriter, req *http.Request) {
-	initUserHeaders(writer)
+func (u *UserHandler) GetUserById(w http.ResponseWriter, req *http.Request) {
+	initUserHeaders(w)
 	logger.Log.Info("get user by id GET /api/v1/users/{id}")
 	id, err := strconv.Atoi(mux.Vars(req)["id"])
 	if err != nil {
 		logger.Log.Debug("Error while User.GetUserById. Troubles while parsing {id} param:", zap.Error(err))
 		msg := fmt.Errorf("unappropriated id value. Don't use ID as uncasting to int value")
-		writer.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(writer).Encode(msg)
+		WrapError(w, msg, http.StatusBadRequest)
 		return
 	}
 	user, ok, err := u.userStore.FindById(req.Context(), id)
@@ -171,20 +170,16 @@ func (u *UserHandler) GetUserById(writer http.ResponseWriter, req *http.Request)
 			zap.Error(err))
 		msg := fmt.Errorf("error while User.GetUserById."+
 			" Troubles while accessing database table (users) with id: %d", id)
-		writer.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(writer).Encode(msg)
+		WrapError(w, msg, http.StatusInternalServerError)
 		return
 	}
 	if !ok {
 		logger.Log.Debug("Error while User.GetUserById. Can't find article with that ID in database")
 		msg := fmt.Errorf("user with that ID: %d does not exists in database", id)
-		fmt.Println(msg)
-		writer.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(writer).Encode(msg)
+		WrapError(w, msg, http.StatusNotFound)
 		return
 	}
-	writer.WriteHeader(http.StatusOK)
-	json.NewEncoder(writer).Encode(user)
+	WrapOk(w, user)
 }
 
 func NewUserFromParams(params model.CreateUserParams) (*model.User, error) {

@@ -24,12 +24,6 @@ type API struct {
 	store  *store.Store
 }
 
-type Message struct {
-	StatusCode int    `json:"status_code"`
-	Message    string `json:"message"`
-	IsError    bool   `json:"is_error"`
-}
-
 func NewAPI(config *config.Config) *API {
 	return &API{
 		config: config,

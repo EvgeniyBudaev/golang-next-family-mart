@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/middleware"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/model"
@@ -22,74 +23,49 @@ func NewAuthHandler(userStore store.UserStore) *AuthHandler {
 	}
 }
 
-func initAuthHeaders(writer http.ResponseWriter) {
-	writer.Header().Set("Content-Type", "application/json")
+func initAuthHeaders(w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json")
 }
 
-func (a *AuthHandler) PostAuthenticate(writer http.ResponseWriter, req *http.Request) {
-	initAuthHeaders(writer)
+func (a *AuthHandler) PostAuthenticate(w http.ResponseWriter, req *http.Request) {
+	initAuthHeaders(w)
 	logger.Log.Info("post to auth POST /api/v1/user/auth")
 	var params model.AuthParams
 	err := json.NewDecoder(req.Body).Decode(&params)
 	if err != nil {
-		logger.Log.Info(
-			"Error while User.PostAuth. Invalid json received from client:",
+		logger.Log.Debug(
+			"error while User.PostAuth. Invalid json received from client:",
 			zap.Error(err))
-		msg := Message{
-			StatusCode: http.StatusBadRequest,
-			Message:    "Provided json is invalid",
-			IsError:    true,
-		}
-		writer.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(writer).Encode(msg)
+		msg := fmt.Errorf("provided json is invalid")
+		WrapError(w, msg, http.StatusBadRequest)
 		return
 	}
 	userInDB, ok, err := a.userStore.FindByEmail(req.Context(), params.Email)
 	if err != nil {
-		logger.Log.Info(
-			"Error while User.PostAuth. Can't make user search in database",
+		logger.Log.Debug(
+			"error while User.PostAuth. Can't make user search in database",
 			zap.Error(err))
-		msg := Message{
-			StatusCode: http.StatusInternalServerError,
-			Message:    "We have some troubles while accessing database",
-			IsError:    true,
-		}
-		writer.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(writer).Encode(msg)
+		msg := fmt.Errorf("we have some troubles while accessing database")
+		WrapError(w, msg, http.StatusInternalServerError)
 		return
 	}
 	if !ok {
-		logger.Log.Info("Error while User.PostAuth. User with that login does not exists")
-		msg := Message{
-			StatusCode: http.StatusBadRequest,
-			Message:    "User with that email doesn't exists in database. Try register first",
-			IsError:    true,
-		}
-		writer.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(writer).Encode(msg)
+		logger.Log.Debug("error while User.PostAuth. User with that login does not exists")
+		msg := fmt.Errorf("user with that email doesn't exists in database. Try register first")
+		WrapError(w, msg, http.StatusBadRequest)
 		return
 	}
 	if !isValidPassword(userInDB.EncryptedPassword, params.Password) {
-		logger.Log.Info("Error while User.PostAuth. Invalid credentials to auth")
-		msg := Message{
-			StatusCode: http.StatusNotFound,
-			Message:    "Your password is invalid",
-			IsError:    true,
-		}
-		writer.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(writer).Encode(msg)
+		logger.Log.Debug("error while User.PostAuth. Invalid credentials to auth")
+		msg := fmt.Errorf("your password is invalid")
+		WrapError(w, msg, http.StatusNotFound)
 		return
 	}
 	tokenPair, err := generateTokenPair()
 	if err != nil {
-		logger.Log.Info("Error while User.PostAuth. Can't claim jwt-token", zap.Error(err))
-		msg := Message{
-			StatusCode: http.StatusInternalServerError,
-			Message:    "We have some troubles. Try again",
-			IsError:    true,
-		}
-		writer.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(writer).Encode(msg)
+		logger.Log.Debug("error while User.PostAuth. Can't claim jwt-token", zap.Error(err))
+		msg := fmt.Errorf("we have some troubles. Try again")
+		WrapError(w, msg, http.StatusInternalServerError)
 		return
 	}
 	msg := model.AuthResponse{
@@ -98,12 +74,10 @@ func (a *AuthHandler) PostAuthenticate(writer http.ResponseWriter, req *http.Req
 		RefreshExpiresIn: tokenPair["refreshExpiresIn"],
 		RefreshToken:     tokenPair["refreshToken"],
 		StatusCode:       http.StatusCreated,
-		Success:          true,
 		TokenType:        "Bearer",
 		UserID:           userInDB.ID,
 	}
-	writer.WriteHeader(http.StatusCreated)
-	json.NewEncoder(writer).Encode(msg)
+	WrapCreated(w, msg)
 }
 
 func generateTokenPair() (map[string]string, error) {

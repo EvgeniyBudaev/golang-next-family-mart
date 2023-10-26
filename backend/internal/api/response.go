@@ -6,16 +6,16 @@ import (
 )
 
 type ErrorResponse struct {
-	Message    error `json:"message"`
-	Success    bool  `json:"success"`
-	StatusCode int   `json:"status_code"`
+	Message    string `json:"message"`
+	Success    bool   `json:"success"`
+	StatusCode int    `json:"status_code"`
 }
 
 func WrapError(w http.ResponseWriter, err error, httpStatusCode int) {
 	msg := ErrorResponse{
 		StatusCode: httpStatusCode,
 		Success:    false,
-		Message:    err,
+		Message:    err.Error(),
 	}
 	w.WriteHeader(httpStatusCode)
 	json.NewEncoder(w).Encode(msg)
@@ -23,5 +23,10 @@ func WrapError(w http.ResponseWriter, err error, httpStatusCode int) {
 
 func WrapOk(w http.ResponseWriter, data interface{}) {
 	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(data)
+}
+
+func WrapCreated(w http.ResponseWriter, data interface{}) {
+	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(data)
 }

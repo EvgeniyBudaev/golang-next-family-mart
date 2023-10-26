@@ -12,6 +12,5 @@ type AuthResponse struct {
 	RefreshExpiresIn string `json:"refreshExpiresIn"`
 	RefreshToken     string `json:"refreshToken"`
 	StatusCode       int    `json:"statusCode"`
-	Success          bool   `json:"success"`
 	TokenType        string `json:"tokenType"`
 }

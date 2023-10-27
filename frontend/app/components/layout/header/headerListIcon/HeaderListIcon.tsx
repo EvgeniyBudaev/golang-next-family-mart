@@ -1,11 +1,12 @@
 import Link from "next/link";
 import type { FC } from "react";
 import { ERoutes } from "@/app/enums";
-import { Icon, Typography } from "@/app/uikit/components";
+import { I18nProps } from "@/app/i18n/props";
+import { Icon } from "@/app/uikit/components/icon";
+import { Typography } from "@/app/uikit/components/typography";
 import { ETypographyVariant } from "@/app/uikit/components/typography/enum";
 import { createPath } from "@/app/utils";
 import "./HeaderListIcon.scss";
-import { I18nProps } from "@/app/i18n/props";
 
 export const HeaderListIcon: FC<I18nProps> = ({ i18n }) => {
   return (
@@ -13,9 +14,12 @@ export const HeaderListIcon: FC<I18nProps> = ({ i18n }) => {
       <div className="HeaderListIcon-Item">
         <Link
           className="HeaderListIcon-IconLink"
-          href={createPath({
-            route: ERoutes.Login,
-          }, i18n.lng)}
+          href={createPath(
+            {
+              route: ERoutes.Login,
+            },
+            i18n.lng,
+          )}
         >
           <Icon className="HeaderListIcon-Icon" type="User" />
           <div className="HeaderListIcon-IconDescription">

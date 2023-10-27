@@ -6,7 +6,8 @@ import { experimental_useFormStatus as useFormStatus } from "react-dom";
 import { loginAction } from "@/app/actions/loginAction";
 import { useTranslation } from "@/app/i18n/client";
 import { EFormFields } from "@/app/pages/loginPage/enums";
-import { Button, Input } from "@/app/uikit/components";
+import { Button } from "@/app/uikit/components/button";
+import { Input } from "@/app/uikit/components/input";
 import "./LoginForm.scss";
 
 declare module "react-dom" {

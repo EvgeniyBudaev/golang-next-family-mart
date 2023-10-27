@@ -1,7 +1,7 @@
 import type { FC } from "react";
 
 import { NavLink } from "@/app/components/navLink";
-import { Typography } from "@/app/uikit/components";
+import { Typography } from "@/app/uikit/components/typography";
 import { ETypographyVariant } from "@/app/uikit/components/typography/enum";
 import { ERoutes } from "@/app/enums";
 import "./Footer.scss";

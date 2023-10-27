@@ -3,7 +3,8 @@
 import clsx from "clsx";
 import { forwardRef, memo, useState } from "react";
 import type { DetailedHTMLProps, ForwardedRef, HTMLAttributes, FocusEvent } from "react";
-import { ETypographyVariant, FadeIn, Typography } from "@/app/uikit/components";
+import { FadeIn } from "@/app/uikit/components/fadeIn";
+import { ETypographyVariant, Typography } from "@/app/uikit/components/typography";
 import "./Input.scss";
 
 export interface IInputProps

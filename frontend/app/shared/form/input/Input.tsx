@@ -3,7 +3,7 @@
 import { memo, useCallback } from "react";
 import type { ChangeEventHandler, FC } from "react";
 import { useController, useFormContext } from "react-hook-form";
-import { Input as InputUi } from "@/app/uikit/components";
+import { Input as InputUi } from "@/app/uikit/components/input";
 import { IInputProps as TInputPropsUi } from "@/app/uikit/components/input/Input";
 
 type TInputProps = TInputPropsUi & {

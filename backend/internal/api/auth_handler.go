@@ -28,6 +28,7 @@ func initAuthHeaders(w http.ResponseWriter) {
 }
 
 func (a *AuthHandler) PostAuthenticate(w http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
 	initAuthHeaders(w)
 	logger.Log.Info("post to auth POST /api/v1/user/auth")
 	var params model.AuthParams
@@ -40,7 +41,7 @@ func (a *AuthHandler) PostAuthenticate(w http.ResponseWriter, req *http.Request)
 		WrapError(w, msg, http.StatusBadRequest)
 		return
 	}
-	userInDB, ok, err := a.userStore.FindByEmail(req.Context(), params.Email)
+	userInDB, ok, err := a.userStore.FindByEmail(ctx, params.Email)
 	if err != nil {
 		logger.Log.Debug(
 			"error while User.PostAuth. Can't make user search in database",

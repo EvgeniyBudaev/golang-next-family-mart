@@ -34,6 +34,7 @@ func initUserHeaders(w http.ResponseWriter) {
 }
 
 func (u *UserHandler) CreateUser(w http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
 	initUserHeaders(w)
 	logger.Log.Info("register user POST /api/v1/user/register")
 	var params model.CreateUserParams
@@ -51,7 +52,7 @@ func (u *UserHandler) CreateUser(w http.ResponseWriter, req *http.Request) {
 		json.NewEncoder(w).Encode(errors)
 		return
 	}
-	_, ok, err := u.userStore.FindByEmail(req.Context(), params.Email)
+	_, ok, err := u.userStore.FindByEmail(ctx, params.Email)
 	if err != nil {
 		logger.Log.Debug(
 			"error while User.PostRegisterUser. Troubles while accessing database table (users) with id. err:",
@@ -73,7 +74,7 @@ func (u *UserHandler) CreateUser(w http.ResponseWriter, req *http.Request) {
 		WrapError(w, msg, http.StatusBadRequest)
 		return
 	}
-	userCreated, err := u.userStore.Create(user)
+	userCreated, err := u.userStore.Create(ctx, user)
 	if err != nil {
 		logger.Log.Info(
 			"error while User.PostRegisterUser. Troubles while accessing database table (users) with id. err:",
@@ -102,9 +103,10 @@ func (u *UserHandler) CreateUser(w http.ResponseWriter, req *http.Request) {
 }
 
 func (u *UserHandler) GetUserList(w http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
 	initUserHeaders(w)
 	logger.Log.Info("get user list GET /api/v1/users")
-	userList, err := u.userStore.SelectAll(req.Context())
+	userList, err := u.userStore.SelectAll(ctx)
 	if err != nil {
 		logger.Log.Debug("error while User.GetUserList:", zap.Error(err))
 		msg := fmt.Errorf("we have some troubles to accessing database. Try again later")
@@ -115,6 +117,7 @@ func (u *UserHandler) GetUserList(w http.ResponseWriter, req *http.Request) {
 }
 
 func (u *UserHandler) GetUserById(w http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
 	initUserHeaders(w)
 	logger.Log.Info("get user by id GET /api/v1/users/{id}")
 	id, err := strconv.Atoi(mux.Vars(req)["id"])
@@ -124,7 +127,7 @@ func (u *UserHandler) GetUserById(w http.ResponseWriter, req *http.Request) {
 		WrapError(w, msg, http.StatusBadRequest)
 		return
 	}
-	user, ok, err := u.userStore.FindById(req.Context(), id)
+	user, ok, err := u.userStore.FindById(ctx, id)
 	if err != nil {
 		logger.Log.Debug(
 			"error while User.GetUserById. Troubles while accessing database table (users) with id. err:",

@@ -7,7 +7,7 @@ import (
 )
 
 type UserStore interface {
-	Create(user *model.User) (*model.User, error)
+	Create(ctx context.Context, user *model.User) (*model.User, error)
 	FindById(ctx context.Context, id int) (*model.User, bool, error)
 	FindByEmail(ctx context.Context, email string) (*model.User, bool, error)
 	SelectAll(ctx context.Context) ([]*model.User, error)
@@ -23,7 +23,7 @@ func NewDBUserStore(store *Store) *PGUserStore {
 	}
 }
 
-func (p *PGUserStore) Create(user *model.User) (*model.User, error) {
+func (p *PGUserStore) Create(ctx context.Context, user *model.User) (*model.User, error) {
 	tx, err := p.store.db.Begin()
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func (p *PGUserStore) Create(user *model.User) (*model.User, error) {
 		return nil, err
 	}
 	defer stmt.Close()
-	if err := stmt.QueryRowContext(context.TODO(), user.Email, user.EncryptedPassword).Scan(&user.ID); err != nil {
+	if err := stmt.QueryRowContext(ctx, user.Email, user.EncryptedPassword).Scan(&user.ID); err != nil {
 		return nil, err
 	}
 	tx.Commit()

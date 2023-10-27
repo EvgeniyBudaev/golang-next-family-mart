@@ -1,3 +1,4 @@
+import { ETypographyVariant } from "./enum";
 import { Typography } from "./Typography";
 
-export { Typography };
+export { ETypographyVariant, Typography };

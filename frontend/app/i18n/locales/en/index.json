@@ -1,25 +1,34 @@
 {
   "header": {
-    "enter": "Добавь сюда перевод!!!"
+    "enter": "Enter"
   },
   "pages": {
     "login": {
-      "title": "Добавь сюда перевод!!!"
+      "enter": "Login",
+      "title": "Entry"
     }
   },
   "common": {
     "validation": {
-      "email": "Добавь сюда перевод!!!",
-      "cyrillicEmail": "Добавь сюда перевод!!!",
-      "empty": "Добавь сюда перевод!!!",
-      "onlyLetters": "Добавь сюда перевод!!!",
-      "passwordNotMatch": "Добавь сюда перевод!!!",
-      "wrongCharacter": "Добавь сюда перевод!!!",
+      "email": "Invalid email",
+      "cyrillicEmail": "Only Latin characters",
+      "empty": "Field cannot be empty",
+      "onlyLetters": "Allowed characters: letters only",
+      "passwordNotMatch": "Password mismatch",
+      "wrongCharacter": "Allowed characters: 0-9, \"-\", \" \", \"+\", \"(\", \")\"",
       "file": {
-        "expectedFile": "Добавь сюда перевод!!!",
-        "maxSize": "Добавь сюда перевод!!!",
-        "maxAmount": "Добавь сюда перевод!!!"
+        "expectedFile": "You can only attach a file",
+        "maxSize": "Maximum size 200mb",
+        "maxAmount": "Maximum number of files 50"
       }
+    }
+  },
+  "form": {
+    "email": {
+      "title": "Email"
+    },
+    "password": {
+      "title": "Password"
     }
   }
 }

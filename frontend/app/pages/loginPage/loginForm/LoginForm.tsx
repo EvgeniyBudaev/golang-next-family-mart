@@ -4,8 +4,10 @@ import type { FC } from "react";
 import { experimental_useFormState as useFormState } from "react-dom";
 import { experimental_useFormStatus as useFormStatus } from "react-dom";
 import { loginAction } from "@/app/actions/loginAction";
-import "./LoginForm.scss";
 import { useTranslation } from "@/app/i18n/client";
+import { EFormFields } from "@/app/pages/loginPage/enums";
+import { Button, Input } from "@/app/uikit/components";
+import "./LoginForm.scss";
 
 declare module "react-dom" {
   function experimental_useFormState<State>(
@@ -26,11 +28,12 @@ const initialState = {
 
 const SubmitButton = () => {
   const { pending } = useFormStatus();
+  const { t } = useTranslation("index");
 
   return (
-    <button className="LoginForm-Button" type="submit" aria-disabled={pending}>
-      Submit
-    </button>
+    <Button className="LoginForm-Button" type="submit" aria-disabled={pending}>
+      {t("pages.login.enter")}
+    </Button>
   );
 };
 
@@ -45,10 +48,18 @@ export const LoginForm: FC = () => {
   return (
     <form action={formAction}>
       <div className="LoginForm-FormFieldGroup">
-        <label htmlFor="email">Email</label>
-        <input type="text" id="email" name="email" required={true} />
-        <label htmlFor="password">Password</label>
-        <input type="text" id="password" name="password" required={true} />
+        <Input
+          isRequired={true}
+          label={t("form.email.title") ?? "Email"}
+          name={EFormFields.Email}
+          type="text"
+        />
+        <Input
+          isRequired={true}
+          label={t("form.password.title") ?? "Password"}
+          name={EFormFields.Password}
+          type="text"
+        />
       </div>
       <div className="LoginForm-Control">
         <SubmitButton />

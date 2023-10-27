@@ -1,6 +1,7 @@
 "use client";
-import { createElement } from "react";
-import type { FC } from "react";
+
+import { createElement, memo } from "react";
+import type { FC, PropsWithChildren } from "react";
 import { EColorText } from "@/app/uikit/components/colors";
 import { TYPOGRAPHY_THEMES } from "@/app/uikit/components/typography/constants";
 import { ETypographyVariant } from "@/app/uikit/components/typography/enum";
@@ -13,9 +14,9 @@ type TProps = {
   dataTestId?: string;
   value: string;
   variant?: `${ETypographyVariant}`;
-};
+} & PropsWithChildren;
 
-export const Typography: FC<TProps> = ({
+const TypographyComponent: FC<TProps> = ({
   as = "span",
   color = EColorText.Dark,
   dataTestId = "uikit__typography",
@@ -33,3 +34,5 @@ export const Typography: FC<TProps> = ({
     value,
   );
 };
+
+export const Typography = memo(TypographyComponent);

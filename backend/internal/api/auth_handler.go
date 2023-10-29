@@ -75,6 +75,7 @@ func (a *AuthHandler) PostAuthenticate(w http.ResponseWriter, req *http.Request)
 		RefreshExpiresIn: tokenPair["refreshExpiresIn"],
 		RefreshToken:     tokenPair["refreshToken"],
 		StatusCode:       http.StatusCreated,
+		Success:          true,
 		TokenType:        "Bearer",
 		UserID:           userInDB.ID,
 	}

@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import { forwardRef, memo, useState } from "react";
 import type { DetailedHTMLProps, ForwardedRef, HTMLAttributes, FocusEvent } from "react";
-import { FadeIn } from "@/app/uikit/components/fadeIn";
+import { Error } from "@/app/uikit/components/error";
 import { ETypographyVariant, Typography } from "@/app/uikit/components/typography";
 import "./Input.scss";
 
@@ -12,7 +12,7 @@ export interface IInputProps
   autoComplete?: string;
   className?: string;
   dataTestId?: string;
-  error?: string;
+  errors?: string[];
   hidden?: boolean;
   isFocused?: boolean;
   isRequired?: boolean;
@@ -28,7 +28,7 @@ const InputComponent = forwardRef<HTMLInputElement, IInputProps>(
       autoComplete,
       className,
       dataTestId = "uikit__input",
-      error,
+      errors,
       hidden,
       isFocused: isInputFocused,
       isRequired,
@@ -76,14 +76,14 @@ const InputComponent = forwardRef<HTMLInputElement, IInputProps>(
         <div
           className={clsx("InputField-Inner", {
             "InputField-Inner__active": isFocused,
-            "InputField-Inner__error": error,
+            "InputField-Inner__error": errors,
           })}
         >
           <input
             {...rest}
             className={clsx(className, "Input", {
               Input__active: isFocused,
-              Input__error: error,
+              Input__error: errors,
             })}
             autoComplete={autoComplete}
             hidden={hidden}
@@ -96,15 +96,13 @@ const InputComponent = forwardRef<HTMLInputElement, IInputProps>(
           />
         </div>
 
-        {error && (
+        {errors && (
           <div className="InputField-ErrorField">
-            <FadeIn>
-              <Typography value={error} variant={ETypographyVariant.TextB3Regular} />
-            </FadeIn>
+            <Error errors={errors} />
           </div>
         )}
 
-        {label && isRequired && (
+        {label && (
           <label className="InputField-Label" htmlFor={name}>
             <Typography
               value={label}

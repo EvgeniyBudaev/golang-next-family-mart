@@ -5,6 +5,7 @@ import { memo } from "react";
 import type { FC, DOMAttributes } from "react";
 import type { TButton } from "./types";
 import "./types";
+import "./Button.scss";
 
 export interface IButtonProps extends DOMAttributes<HTMLButtonElement> {
   className?: string;

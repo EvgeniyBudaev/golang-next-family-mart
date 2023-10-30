@@ -1,6 +1,16 @@
 import { z } from "zod";
 
-const tokenSchema = z.any();
+const tokenSchema = z.object({
+  accessToken: z.string(),
+  expiresIn: z.string(),
+  refreshExpiresIn: z.string(),
+  refreshToken: z.string(),
+  statusCode: z.number(),
+  success: z.boolean(),
+  tokenType: z.string(),
+  userID: z.number(),
+});
+
 
 export const loginSchema = tokenSchema;
 

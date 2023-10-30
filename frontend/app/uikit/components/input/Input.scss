@@ -1,5 +1,7 @@
 @import "@/app/styles";
 
+$transition: 150ms;
+
 .InputField {
   $this: &;
   position: relative;

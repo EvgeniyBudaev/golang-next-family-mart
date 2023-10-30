@@ -15,8 +15,8 @@ export const LoginPage: FC<I18nProps> = ({ i18n }) => {
               value={i18n.t("pages.login.title")}
               variant={ETypographyVariant.TextH1Bold}
             />
-            <LoginForm />
           </div>
+            <LoginForm />
         </div>
       </div>
     </div>

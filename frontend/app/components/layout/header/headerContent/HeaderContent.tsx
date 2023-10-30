@@ -24,7 +24,7 @@ export const HeaderContent: FC<I18nProps> = ({ i18n }) => {
                     {
                       route: ERoutes.Root,
                     },
-                    i18n.lng,
+                    // i18n.lng,
                   )}
                 >
                   <Typography value="FamilyMart" variant={ETypographyVariant.TextH1Medium} />

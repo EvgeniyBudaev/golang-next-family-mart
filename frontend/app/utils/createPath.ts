@@ -36,7 +36,7 @@ type TCreatePathPropsWithParams = Extract<TCreatePathProps, { route: any; params
 
 export function createPath(
   props: TCreatePathProps,
-  lng: string,
+  // lng: string,
   query?: Record<string, string> | URLSearchParams,
 ): string {
   let path: string = props.route;
@@ -52,9 +52,9 @@ export function createPath(
     path = `${path}${path.includes("?") ? "&" : "?"}${new URLSearchParams(query)}`;
   }
 
-  if(lng) {
-    path = `${lng}/${path}`;
-  }
+  // if(lng) {
+  //   path = `${lng}/${path}`;
+  // }
 
   return path;
 }

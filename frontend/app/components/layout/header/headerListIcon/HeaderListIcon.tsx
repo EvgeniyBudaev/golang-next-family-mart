@@ -18,7 +18,7 @@ export const HeaderListIcon: FC<I18nProps> = ({ i18n }) => {
             {
               route: ERoutes.Login,
             },
-            i18n.lng,
+            // i18n.lng,
           )}
         >
           <Icon className="HeaderListIcon-Icon" type="User" />

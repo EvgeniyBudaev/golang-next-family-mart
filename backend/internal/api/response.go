@@ -2,17 +2,12 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/model"
 	"net/http"
 )
 
-type ErrorResponse struct {
-	Message    string `json:"message"`
-	Success    bool   `json:"success"`
-	StatusCode int    `json:"status_code"`
-}
-
 func WrapError(w http.ResponseWriter, err error, httpStatusCode int) {
-	msg := ErrorResponse{
+	msg := model.ErrorResponse{
 		StatusCode: httpStatusCode,
 		Success:    false,
 		Message:    err.Error(),

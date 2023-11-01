@@ -5,12 +5,14 @@ import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/config"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/middleware"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/model"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/store"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/zap"
 	"net/http"
+	"time"
 )
 
 var (
@@ -18,6 +20,7 @@ var (
 )
 
 type API struct {
+	auth   *model.Auth
 	config *config.Config
 	logger *logrus.Logger
 	router *mux.Router
@@ -47,6 +50,19 @@ func (api *API) Start() error {
 	}
 	logger.Log.Info("Running server", zap.String("port", api.config.Port))
 
+	// JWT Default
+	api.auth = &model.Auth{
+		Issuer:        api.config.JWTIssuer,
+		Audience:      api.config.JWTAudience,
+		Secret:        api.config.JWTSecret,
+		TokenExpiry:   time.Minute * 15,
+		RefreshExpiry: time.Hour * 24,
+		CookieDomain:  api.config.CookieDomain,
+		CookiePath:    "/",
+		CookieName:    "Host-refresh-token",
+		UserID:        0,
+	}
+
 	// Store
 	storeNew := store.NewStore(api.config)
 	if err := storeNew.Open(); err != nil {
@@ -57,7 +73,7 @@ func (api *API) Start() error {
 
 	// handlers
 	userHandler := NewUserHandler(userStore)
-	authHandler := NewAuthHandler(userStore)
+	authHandler := NewAuthHandler(userStore, api.auth)
 
 	// CORS
 	headersOk := handlers.AllowedHeaders([]string{"Content-Type", "X-Requested-With", "Authorization"})
@@ -74,10 +90,12 @@ func (api *API) Start() error {
 
 	// user handlers
 	api.router.HandleFunc(prefix+"/users/{id}", userHandler.GetUserById).Methods(http.MethodGet)
-	api.router.HandleFunc(prefix+"/user/register", userHandler.CreateUser).Methods(http.MethodPost)
 
 	// auth handlers
-	api.router.HandleFunc(prefix+"/user/auth", authHandler.PostAuthenticate).Methods(http.MethodPost)
+	api.router.HandleFunc(prefix+"/auth/register", authHandler.PostRegister).Methods(http.MethodPost)
+	api.router.HandleFunc(prefix+"/auth/login", authHandler.PostAuthenticate).Methods(http.MethodPost)
+	api.router.HandleFunc(prefix+"/auth/refresh", authHandler.RefreshToken).Methods(http.MethodPost)
+
 	return http.ListenAndServe(api.config.Port, handlers.CORS(originsOk, headersOk, methodsOk)(api.router))
 }
 

@@ -7,18 +7,32 @@ import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/middleware"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/model"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/store"
-	"github.com/form3tech-oss/jwt-go"
+	"github.com/golang-jwt/jwt/v5"
 	"go.uber.org/zap"
 	"net/http"
+	"strconv"
 	"time"
 )
 
+type TokenPairs struct {
+	AccessToken      string
+	ExpiresIn        string
+	RefreshExpiresIn string
+	RefreshToken     string
+}
+
+type Claims struct {
+	jwt.RegisteredClaims
+}
+
 type AuthHandler struct {
+	auth      *model.Auth
 	userStore store.UserStore
 }
 
-func NewAuthHandler(userStore store.UserStore) *AuthHandler {
+func NewAuthHandler(userStore store.UserStore, auth *model.Auth) *AuthHandler {
 	return &AuthHandler{
+		auth:      auth,
 		userStore: userStore,
 	}
 }
@@ -27,15 +41,85 @@ func initAuthHeaders(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 }
 
-func (a *AuthHandler) PostAuthenticate(w http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
-	initAuthHeaders(w)
-	logger.Log.Info("post to auth POST /api/v1/user/auth")
-	var params model.AuthParams
-	err := json.NewDecoder(req.Body).Decode(&params)
+func (a *AuthHandler) PostRegister(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	initUserHeaders(w)
+	logger.Log.Info("register user POST /api/v1/auth/register")
+	var params model.CreateUserParams
+	err := json.NewDecoder(r.Body).Decode(&params)
 	if err != nil {
 		logger.Log.Debug(
-			"error while User.PostAuth. Invalid json received from client:",
+			"error while auth_handler.PostRegister. Invalid json received from client",
+			zap.Error(err))
+		msg := fmt.Errorf("provided json is invalid")
+		WrapError(w, msg, http.StatusBadRequest)
+		return
+	}
+	if errors := validate(params); len(errors) > 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errors)
+		return
+	}
+	_, ok, err := a.userStore.FindByEmail(ctx, params.Email)
+	if err != nil {
+		logger.Log.Debug(
+			"error while auth_handler.PostRegister. Troubles while accessing database table (users) with id. err:",
+			zap.Error(err))
+		msg := fmt.Errorf("we have some troubles to accessing database. Try again")
+		WrapError(w, msg, http.StatusInternalServerError)
+		return
+	}
+	if ok {
+		logger.Log.Debug("error while auth_handler.PostRegister. User with that ID already exists")
+		msg := fmt.Errorf("user with that email already exists in database")
+		WrapError(w, msg, http.StatusBadRequest)
+		return
+	}
+	user, err := NewUserFromParams(params)
+	if err != nil {
+		logger.Log.Debug("error while auth_handler.PostRegister. Invalid json received from client")
+		msg := fmt.Errorf("provided json is invalid")
+		WrapError(w, msg, http.StatusBadRequest)
+		return
+	}
+	userCreated, err := a.userStore.Create(ctx, user)
+	if err != nil {
+		logger.Log.Info(
+			"error while auth_handler.PostRegister. Troubles while accessing database table (users) with id. err:",
+			zap.Error(err))
+		msg := fmt.Errorf("we have some troubles to accessing database. Try again")
+		WrapError(w, msg, http.StatusInternalServerError)
+		return
+	}
+	tokenPair, err := a.generateTokenPair(userCreated)
+	if err != nil {
+		logger.Log.Debug("error while auth_handler.PostRegister. Can't claim jwt-token", zap.Error(err))
+		msg := fmt.Errorf("we have some troubles. Try again")
+		WrapError(w, msg, http.StatusInternalServerError)
+		return
+	}
+	msg := model.AuthResponse{
+		AccessToken:      tokenPair.AccessToken,
+		ExpiresIn:        tokenPair.ExpiresIn,
+		RefreshExpiresIn: tokenPair.RefreshExpiresIn,
+		RefreshToken:     tokenPair.RefreshToken,
+		StatusCode:       http.StatusCreated,
+		Success:          true,
+		TokenType:        "Bearer",
+		UserID:           userCreated.ID,
+	}
+	WrapCreated(w, msg)
+}
+
+func (a *AuthHandler) PostAuthenticate(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	initAuthHeaders(w)
+	logger.Log.Info("post to auth POST /api/v1/auth/login")
+	var params model.AuthParams
+	err := json.NewDecoder(r.Body).Decode(&params)
+	if err != nil {
+		logger.Log.Debug(
+			"error while auth_handler.PostAuthenticate. Invalid json received from client:",
 			zap.Error(err))
 		msg := fmt.Errorf("provided json is invalid")
 		WrapError(w, msg, http.StatusBadRequest)
@@ -44,36 +128,38 @@ func (a *AuthHandler) PostAuthenticate(w http.ResponseWriter, req *http.Request)
 	userInDB, ok, err := a.userStore.FindByEmail(ctx, params.Email)
 	if err != nil {
 		logger.Log.Debug(
-			"error while User.PostAuth. Can't make user search in database",
+			"error while auth_handler.PostAuthenticate. Can't make user search in database",
 			zap.Error(err))
 		msg := fmt.Errorf("we have some troubles while accessing database")
 		WrapError(w, msg, http.StatusInternalServerError)
 		return
 	}
 	if !ok {
-		logger.Log.Debug("error while User.PostAuth. User with that login does not exists")
+		logger.Log.Debug("error while auth_handler.PostAuthenticate. User with that login does not exists")
 		msg := fmt.Errorf("user with that email doesn't exists in database. Try register first")
 		WrapError(w, msg, http.StatusBadRequest)
 		return
 	}
 	if !isValidPassword(userInDB.EncryptedPassword, params.Password) {
-		logger.Log.Debug("error while User.PostAuth. Invalid credentials to auth")
+		logger.Log.Debug("error while auth_handler.PostAuthenticate. Invalid credentials to auth")
 		msg := fmt.Errorf("your password is invalid")
 		WrapError(w, msg, http.StatusNotFound)
 		return
 	}
-	tokenPair, err := generateTokenPair()
+	tokenPair, err := a.generateTokenPair(userInDB)
+	refreshCookie := a.getRefreshCookie(tokenPair.RefreshToken)
+	http.SetCookie(w, refreshCookie)
 	if err != nil {
-		logger.Log.Debug("error while User.PostAuth. Can't claim jwt-token", zap.Error(err))
+		logger.Log.Debug("error while auth_handler.PostAuthenticate. Can't claim jwt-token", zap.Error(err))
 		msg := fmt.Errorf("we have some troubles. Try again")
 		WrapError(w, msg, http.StatusInternalServerError)
 		return
 	}
 	msg := model.AuthResponse{
-		AccessToken:      tokenPair["accessToken"],
-		ExpiresIn:        tokenPair["expiresIn"],
-		RefreshExpiresIn: tokenPair["refreshExpiresIn"],
-		RefreshToken:     tokenPair["refreshToken"],
+		AccessToken:      tokenPair.AccessToken,
+		ExpiresIn:        tokenPair.ExpiresIn,
+		RefreshExpiresIn: tokenPair.RefreshExpiresIn,
+		RefreshToken:     tokenPair.RefreshToken,
 		StatusCode:       http.StatusCreated,
 		Success:          true,
 		TokenType:        "Bearer",
@@ -82,27 +168,121 @@ func (a *AuthHandler) PostAuthenticate(w http.ResponseWriter, req *http.Request)
 	WrapCreated(w, msg)
 }
 
-func generateTokenPair() (map[string]string, error) {
+func (a *AuthHandler) generateTokenPair(u *model.User) (TokenPairs, error) {
 	accessToken := jwt.New(jwt.SigningMethodHS256)
-	expiresIn := time.Now().Add(time.Minute * 5).Format(time.RFC3339)
+	expiresIn := time.Now().Add(a.auth.TokenExpiry).Format(time.RFC3339)
 	claims := accessToken.Claims.(jwt.MapClaims)
+	claims["sub"] = u.ID
+	claims["aud"] = a.auth.Audience
+	claims["iss"] = a.auth.Issuer
+	claims["iat"] = time.Now().UTC().Unix()
+	claims["typ"] = "JWT"
 	claims["exp"] = expiresIn
-	t, err := accessToken.SignedString(middleware.SecretKey)
+	signedAccessToken, err := accessToken.SignedString(middleware.SecretKey)
 	if err != nil {
-		return nil, err
+		return TokenPairs{}, err
 	}
 	refreshToken := jwt.New(jwt.SigningMethodHS256)
-	rtClaims := refreshToken.Claims.(jwt.MapClaims)
-	refreshExpiresIn := time.Now().Add(time.Minute * 10).Format(time.RFC3339)
-	rtClaims["exp"] = refreshExpiresIn
-	rt, err := refreshToken.SignedString(middleware.SecretKey)
+	refreshExpiresIn := time.Now().Add(a.auth.RefreshExpiry).Format(time.RFC3339)
+	refreshTokenClaims := refreshToken.Claims.(jwt.MapClaims)
+	refreshTokenClaims["sub"] = u.ID
+	refreshTokenClaims["iat"] = time.Now().UTC().Unix()
+	refreshTokenClaims["exp"] = refreshExpiresIn
+	signedRefreshToken, err := refreshToken.SignedString(middleware.SecretKey)
 	if err != nil {
-		return nil, err
+		return TokenPairs{}, err
 	}
-	return map[string]string{
-		"accessToken":      t,
-		"expiresIn":        expiresIn,
-		"refreshExpiresIn": refreshExpiresIn,
-		"refreshToken":     rt,
-	}, nil
+	var tokenPairs = TokenPairs{
+		AccessToken:      signedAccessToken,
+		ExpiresIn:        expiresIn,
+		RefreshExpiresIn: refreshExpiresIn,
+		RefreshToken:     signedRefreshToken,
+	}
+	return tokenPairs, nil
+}
+
+func (a *AuthHandler) getRefreshCookie(refreshToken string) *http.Cookie {
+	return &http.Cookie{
+		Name:     a.auth.CookieName,
+		Path:     a.auth.CookiePath,
+		Value:    refreshToken,
+		Expires:  time.Now().Add(a.auth.RefreshExpiry),
+		MaxAge:   int(a.auth.RefreshExpiry.Seconds()),
+		SameSite: http.SameSiteStrictMode,
+		Domain:   a.auth.CookieDomain,
+		HttpOnly: true,
+		Secure:   true,
+	}
+}
+
+func (a *AuthHandler) getExpiredRefreshCookie() *http.Cookie {
+	return &http.Cookie{
+		Name:     a.auth.CookieName,
+		Path:     a.auth.CookiePath,
+		Value:    "",
+		Expires:  time.Unix(0, 0),
+		MaxAge:   -1,
+		SameSite: http.SameSiteStrictMode,
+		Domain:   a.auth.CookieDomain,
+		HttpOnly: true,
+		Secure:   true,
+	}
+}
+
+func (a *AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	for _, cookie := range r.Cookies() {
+		if cookie.Name == a.auth.CookieName {
+			claims := &Claims{}
+			refreshToken := cookie.Value
+			_, err := jwt.ParseWithClaims(refreshToken, claims, func(token *jwt.Token) (interface{}, error) {
+				return middleware.SecretKey, nil
+			})
+			if err != nil {
+				msg := fmt.Errorf("unathorized")
+				WrapError(w, msg, http.StatusUnauthorized)
+				return
+			}
+			userID, err := strconv.Atoi(claims.Subject)
+			if err != nil {
+				msg := fmt.Errorf("unathorized")
+				WrapError(w, msg, http.StatusUnauthorized)
+				return
+			}
+			userInDB, ok, err := a.userStore.FindById(ctx, userID)
+			if err != nil {
+				logger.Log.Debug(
+					"error while auth_handler.RefreshToken. Can't make user search in database",
+					zap.Error(err))
+				msg := fmt.Errorf("we have some troubles while accessing database")
+				WrapError(w, msg, http.StatusInternalServerError)
+				return
+			}
+			if !ok {
+				logger.Log.Debug("error while auth_handler.RefreshToken. User with that login does not exists")
+				msg := fmt.Errorf("user with that email doesn't exists in database. Try register first")
+				WrapError(w, msg, http.StatusBadRequest)
+				return
+			}
+			tokenPair, err := a.generateTokenPair(userInDB)
+			if err != nil {
+				logger.Log.Debug("error while auth_handler.RefreshToken. Can't claim jwt-token", zap.Error(err))
+				msg := fmt.Errorf("we have some troubles. Try again")
+				WrapError(w, msg, http.StatusInternalServerError)
+				return
+			}
+			http.SetCookie(w, a.getRefreshCookie(tokenPair.RefreshToken))
+			msg := model.AuthResponse{
+				AccessToken:      tokenPair.AccessToken,
+				ExpiresIn:        tokenPair.ExpiresIn,
+				RefreshExpiresIn: tokenPair.RefreshExpiresIn,
+				RefreshToken:     tokenPair.RefreshToken,
+				StatusCode:       http.StatusCreated,
+				Success:          true,
+				TokenType:        "Bearer",
+				UserID:           userInDB.ID,
+			}
+			WrapOk(w, msg)
+		}
+	}
 }

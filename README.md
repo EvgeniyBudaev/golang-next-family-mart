@@ -71,9 +71,11 @@ go get -u github.com/jmoiron/sqlx
 JWT
 https://github.com/auth0/go-jwt-middleware
 https://github.com/form3tech-oss/jwt-go
+https://github.com/golang-jwt/jwt
 ```
 go get -u github.com/auth0/go-jwt-middleware
 go get -u github.com/form3tech-oss/jwt-go
+go get -u github.com/golang-jwt/jwt/v5
 ```
 
 CORS

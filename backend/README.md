@@ -83,3 +83,9 @@ https://github.com/gorilla/handlers
 ```
 go get -u github.com/gorilla/handlers
 ```
+
+Golang Keycloak API Package
+https://github.com/Nerzal/gocloak
+```
+go get -u github.com/Nerzal/gocloak/v13
+```

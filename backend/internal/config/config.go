@@ -14,4 +14,8 @@ type Config struct {
 	JWTAudience  string `envconfig:"JWT_AUDIENCE"`
 	CookieDomain string `envconfig:"COOKIE_DOMAIN"`
 	Domain       string `envconfig:"DOMAIN"`
+	BaseUrl      string `envconfig:"KEYCLOAK_BASE_URL"`
+	Realm        string `envconfig:"KEYCLOAK_REALM"`
+	ClientId     string `envconfig:"KEYCLOAK_CLIENT_ID"`
+	ClientSecret string `envconfig:"KEYCLOAK_CLIENT_SECRET"`
 }

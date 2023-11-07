@@ -7,6 +7,7 @@ import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/middleware"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/model"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/store"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/use_cases/user"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
@@ -71,9 +72,12 @@ func (api *API) Start() error {
 	api.store = storeNew
 	userStore := store.NewDBUserStore(storeNew)
 
+	identityManager := model.NewIdentityManager(api.config)
+	registerUseCase := user.NewRegisterUseCase(identityManager)
+
 	// handlers
 	userHandler := NewUserHandler(userStore)
-	authHandler := NewAuthHandler(userStore, api.auth)
+	authHandler := NewAuthHandler(userStore, api.auth, registerUseCase)
 
 	// CORS
 	headersOk := handlers.AllowedHeaders([]string{"Content-Type", "X-Requested-With", "Authorization"})
@@ -92,6 +96,7 @@ func (api *API) Start() error {
 	api.router.HandleFunc(prefix+"/users/{id}", userHandler.GetUserById).Methods(http.MethodGet)
 
 	// auth handlers
+	api.router.HandleFunc(prefix+"/user/register", authHandler.RegisterHandler).Methods(http.MethodPost)
 	api.router.HandleFunc(prefix+"/auth/register", authHandler.PostRegister).Methods(http.MethodPost)
 	api.router.HandleFunc(prefix+"/auth/login", authHandler.PostAuthenticate).Methods(http.MethodPost)
 	api.router.HandleFunc(prefix+"/auth/refresh", authHandler.RefreshToken).Methods(http.MethodPost)

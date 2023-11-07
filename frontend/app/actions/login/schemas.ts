@@ -2,10 +2,11 @@ import { z } from "zod";
 import {
   EMAIL_ERROR_MESSAGE,
   EMAIL_NOT_CYRILLIC_ERROR_MESSAGE,
-  EMAIL_NOT_CYRILLIC_REGEXP, EMAIL_REGEXP,
-  EMPTY_FIELD_ERROR_MESSAGE
+  EMAIL_NOT_CYRILLIC_REGEXP,
+  EMAIL_REGEXP,
+  EMPTY_FIELD_ERROR_MESSAGE,
 } from "@/app/shared/validation";
-import {EFormFields} from "@/app/pages/loginPage/enums";
+import { EFormFields } from "@/app/pages/loginPage/enums";
 
 export const loginFormSchema = z.object({
   [EFormFields.Email]: z

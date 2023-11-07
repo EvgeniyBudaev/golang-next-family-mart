@@ -1,3 +1,3 @@
-import {ToastContainer} from "./ToastContainer";
+import { ToastContainer } from "./ToastContainer";
 
-export {ToastContainer}
+export { ToastContainer };

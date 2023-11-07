@@ -66,8 +66,7 @@ export const LoginForm: FC = () => {
           type="text"
         />
       </div>
-      <div className="LoginForm-FormFieldGroup">
-      </div>
+      <div className="LoginForm-FormFieldGroup"></div>
       <div className="LoginForm-Control">
         <SubmitButton />
       </div>

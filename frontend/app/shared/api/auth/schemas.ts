@@ -11,7 +11,6 @@ const tokenSchema = z.object({
   userID: z.number(),
 });
 
-
 export const loginSchema = tokenSchema;
 
 export const loginParamsSchema = z.object({

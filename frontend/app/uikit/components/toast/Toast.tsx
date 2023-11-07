@@ -12,11 +12,11 @@ type TProps = {
 };
 
 export const Toast: FC<TProps> = ({
-                                    className,
-                                    dataTestId = "uikit__toast",
-                                    description,
-                                    title,
-                                  }) => {
+  className,
+  dataTestId = "uikit__toast",
+  description,
+  title,
+}) => {
   return (
     <div className={clsx("Toast", className)} data-testid={dataTestId}>
       <div className="Toast-Title">{title}</div>

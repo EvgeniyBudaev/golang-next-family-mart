@@ -2,7 +2,12 @@
 
 import { useContext, useEffect, useState } from "react";
 import i18next from "i18next";
-import { UseTranslationOptions, UseTranslationResponse, initReactI18next, useTranslation as useTranslationOrg } from "react-i18next";
+import {
+  UseTranslationOptions,
+  UseTranslationResponse,
+  initReactI18next,
+  useTranslation as useTranslationOrg,
+} from "react-i18next";
 import { useCookies } from "react-cookie";
 import resourcesToBackend from "i18next-resources-to-backend";
 import LanguageDetector from "i18next-browser-languagedetector";
@@ -14,18 +19,29 @@ const runsOnServerSide = typeof window === "undefined";
 i18next
   .use(initReactI18next)
   .use(LanguageDetector)
-  .use(resourcesToBackend((language: string, namespace: string) => import(`./locales/${language}/${namespace}.json`)))
+  .use(
+    resourcesToBackend(
+      (language: string, namespace: string) => import(`./locales/${language}/${namespace}.json`),
+    ),
+  )
   .init({
     ...getOptions(),
     lng: undefined, // let detect the language on client side
     detection: {
       order: ["path", "htmlTag", "cookie", "navigator"],
     },
-    preload: runsOnServerSide ? languages : []
-  })
+    preload: runsOnServerSide ? languages : [],
+  });
 
-export function useTranslation(ns: string, options?: UseTranslationOptions<string>): UseTranslationResponse<string, string>;
-export function useTranslation(lng: string, ns: string, options?: UseTranslationOptions<string>): UseTranslationResponse<string, string>;
+export function useTranslation(
+  ns: string,
+  options?: UseTranslationOptions<string>,
+): UseTranslationResponse<string, string>;
+export function useTranslation(
+  lng: string,
+  ns: string,
+  options?: UseTranslationOptions<string>,
+): UseTranslationResponse<string, string>;
 
 export function useTranslation(...args: any[]): UseTranslationResponse<string, string> {
   let lng: string;
@@ -34,7 +50,7 @@ export function useTranslation(...args: any[]): UseTranslationResponse<string, s
 
   const i18nContext = useContext(I18nContext);
 
-  if(typeof args[1] == "string") {
+  if (typeof args[1] == "string") {
     [lng, ns, options] = args;
   } else {
     [ns, options] = args;
@@ -53,17 +69,17 @@ export function useTranslation(...args: any[]): UseTranslationResponse<string, s
     useEffect(() => {
       if (activeLng === i18n.resolvedLanguage) return;
       setActiveLng(i18n.resolvedLanguage);
-    }, [activeLng, i18n.resolvedLanguage])
+    }, [activeLng, i18n.resolvedLanguage]);
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
       if (!lng || i18n.resolvedLanguage === lng) return;
       i18n.changeLanguage(lng);
-    }, [lng, i18n])
+    }, [lng, i18n]);
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
       if (cookies.i18next === lng) return;
       setCookie(cookieName, lng, { path: "/" });
-    }, [lng, cookies.i18next, setCookie])
+    }, [lng, cookies.i18next, setCookie]);
   }
-  return ret
+  return ret;
 }

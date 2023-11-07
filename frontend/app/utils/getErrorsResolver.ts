@@ -15,10 +15,9 @@ type TErrorsResolverResponse = {
 type TGetErrorsResolver = (resolver: TResolverError) => TErrorsResolverResponse;
 
 export const getErrorsResolver: TGetErrorsResolver = (resolver) => {
-  return Object.fromEntries(Object.entries(resolver.error.flatten().fieldErrors).map(([field, errors]) => {
-    return [
-      field,
-      errors,
-    ];
-  }));
+  return Object.fromEntries(
+    Object.entries(resolver.error.flatten().fieldErrors).map(([field, errors]) => {
+      return [field, errors];
+    }),
+  );
 };

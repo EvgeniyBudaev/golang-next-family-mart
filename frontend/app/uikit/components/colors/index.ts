@@ -1,3 +1,3 @@
-import {EColorText, EColorType} from "./enum";
+import { EColorText, EColorType } from "./enum";
 
-export {EColorText, EColorType}
+export { EColorText, EColorType };

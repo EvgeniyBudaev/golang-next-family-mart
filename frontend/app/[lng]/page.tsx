@@ -1,7 +1,3 @@
 export default function Home() {
-  return (
-    <main>
-      Главная страница
-    </main>
-  )
+  return <main>Главная страница</main>;
 }

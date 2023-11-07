@@ -24,7 +24,7 @@ export async function loginAction(prevState: any, formData: FormData) {
   } catch (error) {
     const errorResponse = error as Response;
     const responseData: TCommonResponseError = await errorResponse.json();
-    const { message: formError, fieldErrors, success } = (getResponseError(responseData)) ?? {};
+    const { message: formError, fieldErrors, success } = getResponseError(responseData) ?? {};
     return { error: formError, success: false };
   }
 }

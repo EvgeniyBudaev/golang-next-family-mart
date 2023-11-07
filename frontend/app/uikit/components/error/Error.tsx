@@ -9,7 +9,7 @@ import "./Error.scss";
 
 type TProps = {
   errors?: string[];
-}
+};
 
 const ErrorComponent: FC<TProps> = ({ errors }) => {
   const { t } = useTranslation("index");

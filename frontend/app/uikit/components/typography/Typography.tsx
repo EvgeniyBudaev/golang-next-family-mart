@@ -17,12 +17,12 @@ type TProps = {
 } & PropsWithChildren;
 
 const TypographyComponent: FC<TProps> = ({
-                                           as = "span",
-                                           color = EColorText.Dark,
-                                           dataTestId = "uikit__typography",
-                                           value,
-                                           variant = ETypographyVariant.TextB3Regular,
-                                         }) => {
+  as = "span",
+  color = EColorText.Dark,
+  dataTestId = "uikit__typography",
+  value,
+  variant = ETypographyVariant.TextB3Regular,
+}) => {
   const currentTheme = TYPOGRAPHY_THEMES({ color })[variant];
 
   return createElement(

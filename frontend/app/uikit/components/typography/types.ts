@@ -1,3 +1,3 @@
-import {EColorText} from "@/app/uikit/components/colors";
+import { EColorText } from "@/app/uikit/components/colors";
 
 export type TTypographyColor = `${EColorText}` | "inherit";

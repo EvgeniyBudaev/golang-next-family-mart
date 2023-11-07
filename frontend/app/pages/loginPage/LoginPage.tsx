@@ -16,7 +16,7 @@ export const LoginPage: FC<I18nProps> = ({ i18n }) => {
               variant={ETypographyVariant.TextH1Bold}
             />
           </div>
-            <LoginForm />
+          <LoginForm />
         </div>
       </div>
     </div>

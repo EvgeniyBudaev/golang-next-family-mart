@@ -1,13 +1,16 @@
+import Link from "next/link";
 import type { FC } from "react";
+import { ERoutes } from "@/app/enums";
+import { I18nProps } from "@/app/i18n/props";
 import { LoginForm } from "@/app/pages/loginPage/loginForm";
 import { Typography } from "@/app/uikit/components/typography";
 import { ETypographyVariant } from "@/app/uikit/components/typography/enum";
+import { createPath } from "@/app/utils";
 import "./LoginPage.scss";
-import { I18nProps } from "@/app/i18n/props";
 
 export const LoginPage: FC<I18nProps> = ({ i18n }) => {
   return (
-    <div className="LoginPage">
+    <section className="LoginPage">
       <div className="LoginPage-Center">
         <div className="LoginPage-CenterContent">
           <div className="LoginPage-CenterContentTitle">
@@ -17,8 +20,24 @@ export const LoginPage: FC<I18nProps> = ({ i18n }) => {
             />
           </div>
           <LoginForm />
+          <div className="LoginPage-Signup">
+            <Typography
+              value={i18n.t("pages.login.noAccount")}
+              variant={ETypographyVariant.TextB3Regular}
+            />
+            <Link
+              href={createPath({
+                route: ERoutes.Signup,
+              })}
+            >
+              <Typography
+                value={i18n.t("pages.login.signup")}
+                variant={ETypographyVariant.TextB3Regular}
+              />
+            </Link>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };

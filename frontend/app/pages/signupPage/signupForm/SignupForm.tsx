@@ -3,13 +3,14 @@
 import type { FC } from "react";
 import { experimental_useFormState as useFormState } from "react-dom";
 import { experimental_useFormStatus as useFormStatus } from "react-dom";
-import { loginAction } from "@/app/actions/login/loginAction";
+import { signupAction } from "@/app/actions/signup/signupAction";
 import { useTranslation } from "@/app/i18n/client";
-import { EFormFields } from "@/app/pages/loginPage/enums";
+import { EFormFields } from "@/app/pages/signupPage/enums";
+import { PhoneInputMask } from "@/app/shared/form/phoneInputMask";
 import { Button } from "@/app/uikit/components/button";
 import { Input } from "@/app/uikit/components/input";
 import { notify } from "@/app/uikit/components/toast/utils";
-import "./LoginForm.scss";
+import "./SignupForm.scss";
 
 declare module "react-dom" {
   function experimental_useFormState<State>(
@@ -34,14 +35,14 @@ const SubmitButton = () => {
   const { t } = useTranslation("index");
 
   return (
-    <Button className="LoginForm-Button" type="submit" aria-disabled={pending}>
-      {t("pages.login.enter")}
+    <Button className="SignupForm-Button" type="submit" aria-disabled={pending}>
+      {t("pages.signup.register")}
     </Button>
   );
 };
 
-export const LoginForm: FC = () => {
-  const [state, formAction] = useFormState(loginAction, initialState);
+export const SignupForm: FC = () => {
+  const [state, formAction] = useFormState(signupAction, initialState);
   console.log("state: ", state);
   const { t } = useTranslation("index");
   if (state?.error) {
@@ -50,7 +51,34 @@ export const LoginForm: FC = () => {
 
   return (
     <form action={formAction}>
-      <div className="LoginForm-FormFieldGroup">
+      <div className="SignupForm-FormFieldGroup">
+        <Input
+          errors={state?.errors?.userName}
+          isRequired={true}
+          label={t("form.userName.title") ?? "User name"}
+          name={EFormFields.UserName}
+          type="text"
+        />
+        <Input
+          errors={state?.errors?.firstName}
+          isRequired={true}
+          label={t("form.firstName.title") ?? "First Name"}
+          name={EFormFields.FirstName}
+          type="text"
+        />
+        <Input
+          errors={state?.errors?.lastName}
+          isRequired={true}
+          label={t("form.lastName.title") ?? "Last Name"}
+          name={EFormFields.LastName}
+          type="text"
+        />
+        <PhoneInputMask
+          errors={state?.errors?.mobileNumber}
+          isRequired={true}
+          label={t("form.mobileNumber.title") ?? "Mobile phone"}
+          name={EFormFields.MobileNumber}
+        />
         <Input
           errors={state?.errors?.email}
           isRequired={true}
@@ -65,9 +93,15 @@ export const LoginForm: FC = () => {
           name={EFormFields.Password}
           type="text"
         />
+        <Input
+          errors={state?.errors?.passwordConfirm}
+          isRequired={true}
+          label={t("form.passwordConfirm.title") ?? "Password confirm"}
+          name={EFormFields.PasswordConfirm}
+          type="text"
+        />
       </div>
-      <div className="LoginForm-FormFieldGroup"></div>
-      <div className="LoginForm-Control">
+      <div className="SignupForm-Control">
         <SubmitButton />
       </div>
     </form>

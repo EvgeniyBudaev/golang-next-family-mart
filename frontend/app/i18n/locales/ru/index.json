@@ -5,7 +5,38 @@
   "pages": {
     "login": {
       "enter": "Войти",
-      "title": "Вход"
+      "title": "Вход",
+      "noAccount": "нет аккаунта?",
+      "signup": "Зарегистрироваться"
+    },
+    "signup": {
+      "register": "Зарегистрироваться",
+      "title": "Регистрация",
+      "haveAccount": "Есть аккаунт?",
+      "enter": "Войти"
+    }
+  },
+  "form": {
+    "email": {
+      "title": "Электронная почта"
+    },
+    "password": {
+      "title": "Пароль"
+    },
+    "userName": {
+      "title": "Логин"
+    },
+    "firstName": {
+      "title": "Имя"
+    },
+    "lastName": {
+      "title": "Фамилия"
+    },
+    "mobileNumber": {
+      "title": "Мобильный номер"
+    },
+    "passwordConfirm": {
+      "title": "Подтверждение пароля"
     }
   },
   "common": {
@@ -21,14 +52,6 @@
         "maxSize": "Максимальный размер 200mb",
         "maxAmount": "Максимальное кол-во файлов 50"
       }
-    }
-  },
-  "form": {
-    "email": {
-      "title": "Электронная почта"
-    },
-    "password": {
-      "title": "Пароль"
     }
   }
 }

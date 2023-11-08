@@ -5,7 +5,38 @@
   "pages": {
     "login": {
       "enter": "Login",
-      "title": "Entry"
+      "title": "Entry",
+      "noAccount": "no account?",
+      "signup": "Register"
+    },
+    "signup": {
+      "register": "Register!",
+      "title": "Registration",
+      "haveAccount": "Have an account?",
+      "enter": "Enter"
+    }
+  },
+  "form": {
+    "email": {
+      "title": "Email"
+    },
+    "password": {
+      "title": "Password"
+    },
+    "userName": {
+      "title": "Login"
+    },
+    "firstName": {
+      "title": "First name"
+    },
+    "lastName": {
+      "title": "Last name"
+    },
+    "mobileNumber": {
+      "title": "Mobile number"
+    },
+    "passwordConfirm": {
+      "title": "Password confirm"
     }
   },
   "common": {
@@ -21,14 +52,6 @@
         "maxSize": "Maximum size 200mb",
         "maxAmount": "Maximum number of files 50"
       }
-    }
-  },
-  "form": {
-    "email": {
-      "title": "Email"
-    },
-    "password": {
-      "title": "Password"
     }
   }
 }

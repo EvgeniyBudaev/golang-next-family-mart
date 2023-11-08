@@ -1,11 +1,11 @@
 @import "@/app/styles";
 
-.LoginPage {
+.SignupPage {
   display: flex;
   justify-content: center;
-  height: 50vh;
+  height: 100%;
 
-  &-Center {
+  &-Inner {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -13,22 +13,22 @@
     flex-direction: column;
     max-width: 470px;
     width: 100%;
-
-    &Content {
-      padding: 24px;
-      width: 100%;
-      height: auto;
-      border-radius: 16px;
-      box-shadow: $shadow-form;
-    }
-
-    &ContentTitle {
-      margin-bottom: 25px;
-      text-align: center;
-    }
   }
 
-  &-Signup {
+  &-Content {
+    padding: 24px;
+    width: 100%;
+    height: auto;
+    border-radius: 16px;
+    box-shadow: $shadow-form;
+  }
+
+  &-Title {
+    margin-bottom: 25px;
+    text-align: center;
+  }
+
+  &-Login {
     text-align: center;
 
     span {

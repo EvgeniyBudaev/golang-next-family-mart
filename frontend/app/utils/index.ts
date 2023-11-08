@@ -5,6 +5,7 @@ import { gatewayTimeout } from "./gatewayTimeout";
 import { getResponseError } from "./getResponseError";
 import { getErrorsResolver } from "./getErrorsResolver";
 import { internalError } from "./internalError";
+import { normalizePhoneNumber } from "./normalizePhoneNumber";
 import { processError } from "./processError";
 import { processSuccessResponse } from "./processSuccessResponse";
 import { setResponseTimeout } from "./setResponseTimeout";
@@ -17,6 +18,7 @@ export {
   getResponseError,
   getErrorsResolver,
   internalError,
+  normalizePhoneNumber,
   processError,
   processSuccessResponse,
   setResponseTimeout,

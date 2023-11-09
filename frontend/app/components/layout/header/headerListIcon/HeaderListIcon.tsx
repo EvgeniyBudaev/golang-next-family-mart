@@ -1,17 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import type { FC } from "react";
 import { useTranslation } from "@/app/i18n/client";
 import { ERoutes } from "@/app/shared/enums";
+import { createPath } from "@/app/shared/utils";
+import { Avatar } from "@/app/uikit/components/avatar";
 import { DropDown } from "@/app/uikit/components/dropdown";
 import { Icon } from "@/app/uikit/components/icon";
+import { notify } from "@/app/uikit/components/toast/utils";
 import { Typography } from "@/app/uikit/components/typography";
 import { ETypographyVariant } from "@/app/uikit/components/typography/enum";
-import { createPath } from "@/app/shared/utils";
 import "./HeaderListIcon.scss";
-import { Avatar } from "@/app/uikit/components/avatar";
+
+async function keycloakSessionLogOut() {
+  try {
+    await fetch(`/api/auth/logout`, { method: "GET" });
+  } catch (error) {
+    notify.error({ title: error });
+  }
+}
 
 export const HeaderListIcon: FC = () => {
   const { data: session, status } = useSession();
@@ -22,7 +31,9 @@ export const HeaderListIcon: FC = () => {
 
   const handleRedirectAdminPanel = () => {};
 
-  const handleLogout = () => {};
+  const handleLogout = () => {
+    keycloakSessionLogOut().then(() => signOut({ callbackUrl: "/" }));
+  };
 
   return (
     <div className="HeaderListIcon">

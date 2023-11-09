@@ -7,6 +7,5 @@ export const formatToCapitalize = (value: string): string => {
 };
 
 export const formatInitialUserName = (value: string): string => {
-  console.log("formatInitialUserName", value);
   return value[0].toUpperCase();
 };

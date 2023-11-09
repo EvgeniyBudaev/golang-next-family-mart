@@ -8,27 +8,27 @@ import { formatInitialUserName, formatToStringWithPx } from "@/app/uikit/utils";
 import "./Avatar.scss";
 
 type TProps = {
-  className?: string;
   altImage?: string;
   backgroundColor?: string;
+  className?: string;
   color?: string;
   dataTestId?: string;
   image?: string | null | undefined;
+  onClick?: (event: MouseEvent<HTMLDivElement>) => void;
   size?: number;
   user?: string | null | undefined;
-  onClick?: (event: MouseEvent<HTMLDivElement>) => void;
 };
 
 const AvatarComponent: FC<TProps> = ({
-  className,
   altImage = "",
   backgroundColor = "#E9E9ED",
+  className,
   color = "#0A0A0B",
   dataTestId = "uikit__avatar",
   image,
+  onClick,
   size = 24,
   user,
-  onClick,
 }) => {
   const [imageAvatar, setImageAvatar] = useState<string | null | undefined>(image);
   const [userAvatar, setUserAvatar] = useState<string | null | undefined>(user);

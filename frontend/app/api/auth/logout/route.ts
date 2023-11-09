@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import { getIdToken } from "@/app/utils/auth";
+import { getIdToken } from "@/app/shared/utils/auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function GET() {

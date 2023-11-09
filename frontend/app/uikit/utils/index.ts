@@ -1,3 +1,3 @@
-import { formatToCapitalize, formatToStringWithPx } from "./format";
+import { formatInitialUserName, formatToCapitalize, formatToStringWithPx } from "./format";
 
-export { formatToCapitalize, formatToStringWithPx };
+export { formatInitialUserName, formatToCapitalize, formatToStringWithPx };

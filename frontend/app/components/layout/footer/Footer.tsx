@@ -3,7 +3,7 @@ import type { FC } from "react";
 import { NavLink } from "@/app/components/navLink";
 import { Typography } from "@/app/uikit/components/typography";
 import { ETypographyVariant } from "@/app/uikit/components/typography/enum";
-import { ERoutes } from "@/app/enums";
+import { ERoutes } from "../../../shared/enums";
 import "./Footer.scss";
 
 export const Footer: FC = () => {

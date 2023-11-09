@@ -1,14 +1,12 @@
 .Error {
   &-List {
     display: flex;
-    align-items: center;
+    flex-direction: column;
   }
 
   &-ListItem {
-    margin-right: 4px;
-
     &:last-child {
-      margin-right: 0;
+      margin-bottom: 0;
     }
   }
 }

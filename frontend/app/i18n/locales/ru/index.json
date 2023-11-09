@@ -1,10 +1,12 @@
 {
   "header": {
+    "adminPanel": "Панель администратора",
+    "exit": "Выход",
     "enter": "Войти"
   },
   "pages": {
     "login": {
-      "enter": "Войти",
+      "service": "Войти в сервис авторизации",
       "title": "Вход",
       "noAccount": "нет аккаунта?",
       "signup": "Зарегистрироваться"
@@ -17,12 +19,6 @@
     }
   },
   "form": {
-    "email": {
-      "title": "Электронная почта"
-    },
-    "password": {
-      "title": "Пароль"
-    },
     "userName": {
       "title": "Логин"
     },
@@ -34,6 +30,12 @@
     },
     "mobileNumber": {
       "title": "Мобильный номер"
+    },
+    "email": {
+      "title": "Электронная почта"
+    },
+    "password": {
+      "title": "Пароль"
     },
     "passwordConfirm": {
       "title": "Подтверждение пароля"

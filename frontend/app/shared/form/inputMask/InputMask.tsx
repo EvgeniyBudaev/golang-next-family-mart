@@ -24,7 +24,6 @@ const InputMaskComponent: FC<TInputMaskProps> = (props) => {
     alwaysShowMask,
     beforeMaskedStateChange,
     defaultValue = "",
-    name,
     normalize,
     mask,
     maskPlaceholder,

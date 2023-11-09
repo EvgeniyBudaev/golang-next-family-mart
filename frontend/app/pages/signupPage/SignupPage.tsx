@@ -1,10 +1,10 @@
 import Link from "next/link";
 import type { FC } from "react";
-import { ERoutes } from "@/app/enums";
+import { ERoutes } from "../../shared/enums";
 import { I18nProps } from "@/app/i18n/props";
 import { SignupForm } from "@/app/pages/signupPage/signupForm";
 import { ETypographyVariant, Typography } from "@/app/uikit/components/typography";
-import { createPath } from "@/app/utils";
+import { createPath } from "../../shared/utils";
 import "./SignupPage.scss";
 
 export const SignupPage: FC<I18nProps> = ({ i18n }) => {

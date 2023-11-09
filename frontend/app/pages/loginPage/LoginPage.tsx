@@ -1,11 +1,11 @@
 import Link from "next/link";
 import type { FC } from "react";
-import { ERoutes } from "@/app/enums";
+import { ERoutes } from "../../shared/enums";
 import { I18nProps } from "@/app/i18n/props";
-import { LoginForm } from "@/app/pages/loginPage/loginForm";
+import { LoginForm } from "@/app/pages/loginPage/LoginForm";
 import { Typography } from "@/app/uikit/components/typography";
 import { ETypographyVariant } from "@/app/uikit/components/typography/enum";
-import { createPath } from "@/app/utils";
+import { createPath } from "../../shared/utils";
 import "./LoginPage.scss";
 
 export const LoginPage: FC<I18nProps> = ({ i18n }) => {

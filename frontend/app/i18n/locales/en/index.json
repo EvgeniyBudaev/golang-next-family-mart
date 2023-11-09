@@ -1,10 +1,12 @@
 {
   "header": {
+    "adminPanel": "Admin panel",
+    "exit": "Exit",
     "enter": "Enter"
   },
   "pages": {
     "login": {
-      "enter": "Login",
+      "service": "Login to the authorization service",
       "title": "Entry",
       "noAccount": "no account?",
       "signup": "Register"
@@ -17,12 +19,6 @@
     }
   },
   "form": {
-    "email": {
-      "title": "Email"
-    },
-    "password": {
-      "title": "Password"
-    },
     "userName": {
       "title": "Login"
     },
@@ -34,6 +30,12 @@
     },
     "mobileNumber": {
       "title": "Mobile number"
+    },
+    "email": {
+      "title": "Email"
+    },
+    "password": {
+      "title": "Password"
     },
     "passwordConfirm": {
       "title": "Password confirm"

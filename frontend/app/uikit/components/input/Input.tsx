@@ -10,7 +10,6 @@ import "./Input.scss";
 export interface IInputProps
   extends DetailedHTMLProps<HTMLAttributes<HTMLInputElement>, HTMLInputElement> {
   autoComplete?: string;
-  // children?: ReactNode | undefined;
   className?: string;
   dataTestId?: string;
   errors?: string[];

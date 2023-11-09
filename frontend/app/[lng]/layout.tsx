@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import AuthStatus from "@/app/components/authStatus/authStatus";
 import { Layout } from "@/app/components/layout";
 import { ToastContainer } from "@/app/uikit/components/toast/toastContainer";
-import { SessionProviderWrapper } from "@/app/utils/auth";
+import { SessionProviderWrapper } from "@/app/shared/utils/auth";
 import { useTranslation } from "../i18n";
 import { I18nContextProvider } from "../i18n/context";
 

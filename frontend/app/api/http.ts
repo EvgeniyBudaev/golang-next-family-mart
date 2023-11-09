@@ -1,5 +1,5 @@
 import { Environment } from "@/app/environment";
-import { createApi } from "@/app/utils";
+import { createApi } from "../shared/utils";
 
 export const { fetchApi, setApiLanguage, getApiLanguage } = createApi({
   basePath: Environment.API_URL,

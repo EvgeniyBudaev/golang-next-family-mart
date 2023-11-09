@@ -2,13 +2,13 @@ import Link from "next/link";
 import type { FC } from "react";
 import { Container } from "@/app/components/layout/container";
 import { HeaderListIcon } from "@/app/components/layout/header/headerListIcon";
-import { ERoutes } from "@/app/enums";
+import { I18nProps } from "@/app/i18n/props";
+import { ERoutes } from "@/app/shared/enums";
+import { createPath } from "@/app/shared/utils";
 import { Spacer } from "@/app/uikit/components/spacer";
 import { Typography } from "@/app/uikit/components/typography";
 import { ETypographyVariant } from "@/app/uikit/components/typography/enum";
-import { createPath } from "@/app/utils";
 import "./HeaderContent.scss";
-import { I18nProps } from "@/app/i18n/props";
 
 export const HeaderContent: FC<I18nProps> = ({ i18n }) => {
   return (
@@ -31,7 +31,7 @@ export const HeaderContent: FC<I18nProps> = ({ i18n }) => {
                 </Link>
               </div>
               <Spacer />
-              <HeaderListIcon i18n={i18n} />
+              <HeaderListIcon />
             </div>
           </div>
         </div>

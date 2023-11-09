@@ -17,6 +17,42 @@
     width: 100%;
   }
 
+  &-AvatarDropDown {
+    position: relative;
+    height: max-content;
+    width: max-content;
+
+    &_Menu {
+      padding: 4px;
+    }
+
+    &_MenuItem {
+      display: flex;
+      align-items: center;
+      margin: 3px;
+      padding: 0 16px;
+      min-height: 44px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all $transition;
+
+      &:hover {
+        background-color: $color-light-beige;
+      }
+
+      &Icon {
+        svg {
+          height: 24px;
+          width: 24px;
+        }
+      }
+
+      &Text {
+        margin-left: 16px;
+      }
+    }
+  }
+
   &-IconLink {
     position: relative;
     text-decoration: none;
@@ -39,6 +75,41 @@
       #{$this}-IconDescription {
         color: $color-white;
       }
+    }
+  }
+
+  /* ----- Открытие/закрытие DropDown ----- */
+  $positionDropDown: -500px;
+
+  &-DropDownUser {
+    content: "";
+    position: absolute;
+    right: 0;
+    height: max-content;
+    width: max-content;
+    background-color: $color-white;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    box-shadow: $shadow-perimeter;
+    z-index: 110;
+
+    &.enter {
+      opacity: 0;
+    }
+
+    &.enter-active {
+      opacity: 1;
+      transition: opacity $transition;
+    }
+
+    &.exit {
+      opacity: 1;
+      transition: opacity $transition;
+    }
+
+    &.exit-active {
+      opacity: 0;
+      transition: opacity $transition;
     }
   }
 }

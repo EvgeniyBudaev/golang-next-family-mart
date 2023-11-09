@@ -1,3 +1,5 @@
+"use client";
+
 import { memo } from "react";
 import type { FC } from "react";
 import type { BeforeMaskedStateChangeStates } from "react-input-mask";
@@ -20,6 +22,7 @@ const PhoneInputMaskComponent: FC<TPhoneInputMaskProps> = ({
   hasLabel = true,
   hasPlaceholder = true,
   label,
+  name,
   mask = PHONE_MASK,
   maskPlaceholder = "",
   placeholder,
@@ -47,6 +50,7 @@ const PhoneInputMaskComponent: FC<TPhoneInputMaskProps> = ({
       label={hasLabel && label ? label : undefined}
       mask={mask}
       maskPlaceholder={maskPlaceholder}
+      name={name}
       placeholder={hasPlaceholder && placeholder ? placeholder : undefined}
     />
   );

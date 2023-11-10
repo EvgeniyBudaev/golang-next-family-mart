@@ -2,7 +2,6 @@ import { dir } from "i18next";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import AuthStatus from "@/app/components/authStatus/authStatus";
 import { Layout } from "@/app/components/layout";
 import { ToastContainer } from "@/app/uikit/components/toast/toastContainer";
 import { SessionProviderWrapper } from "@/app/shared/utils/auth";
@@ -30,7 +29,6 @@ export default async function RootLayout({
           <I18nContextProvider lng={lng}>
             <Layout i18n={{ lng, t }}>{children}</Layout>
             <ToastContainer />
-            {/*<AuthStatus />*/}
           </I18nContextProvider>
         </body>
       </html>

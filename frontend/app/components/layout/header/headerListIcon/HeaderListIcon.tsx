@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
+import { useEffect } from "react";
 import type { FC } from "react";
 import { useTranslation } from "@/app/i18n/client";
-import { ERoutes } from "@/app/shared/enums";
+import { EPermissions, ERoutes } from "@/app/shared/enums";
+import { useCheckPermission } from "@/app/shared/hooks";
 import { createPath } from "@/app/shared/utils";
 import { Avatar } from "@/app/uikit/components/avatar";
 import { DropDown } from "@/app/uikit/components/dropdown";
@@ -23,11 +25,22 @@ async function keycloakSessionLogOut() {
 }
 
 export const HeaderListIcon: FC = () => {
+  const checkPermission = useCheckPermission();
+  const permissions = [EPermissions.Customer];
+  const isPerm = checkPermission(permissions);
+  console.log("isPerm: ", isPerm);
+
   const { data: session, status } = useSession();
   const { t } = useTranslation("index");
   const isSession = Boolean(session);
   console.log("session: ", session);
   const isAdmin = true;
+
+  useEffect(() => {
+    if (status != "loading" && session && session?.error === "RefreshAccessTokenError") {
+      signOut({ callbackUrl: "/" });
+    }
+  }, [session, status]);
 
   const handleRedirectAdminPanel = () => {};
 

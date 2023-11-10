@@ -3,17 +3,15 @@ package api
 import (
 	"context"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/config"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/identity"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/middleware"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/model"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/store"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/use_cases/user"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/useCase/user"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/zap"
 	"net/http"
-	"time"
 )
 
 var (
@@ -21,7 +19,6 @@ var (
 )
 
 type API struct {
-	auth   *model.Auth
 	config *config.Config
 	logger *logrus.Logger
 	router *mux.Router
@@ -51,55 +48,26 @@ func (api *API) Start() error {
 	}
 	logger.Log.Info("Running server", zap.String("port", api.config.Port))
 
-	// JWT Default
-	api.auth = &model.Auth{
-		Issuer:        api.config.JWTIssuer,
-		Audience:      api.config.JWTAudience,
-		Secret:        api.config.JWTSecret,
-		TokenExpiry:   time.Minute * 15,
-		RefreshExpiry: time.Hour * 24,
-		CookieDomain:  api.config.CookieDomain,
-		CookiePath:    "/",
-		CookieName:    "Host-refresh-token",
-		UserID:        0,
-	}
-
 	// Store
 	storeNew := store.NewStore(api.config)
 	if err := storeNew.Open(); err != nil {
 		return err
 	}
 	api.store = storeNew
-	userStore := store.NewDBUserStore(storeNew)
 
-	identityManager := model.NewIdentityManager(api.config)
+	identityManager := identity.NewIdentity(api.config)
 	registerUseCase := user.NewRegisterUseCase(identityManager)
 
 	// handlers
-	userHandler := NewUserHandler(userStore)
-	authHandler := NewAuthHandler(userStore, api.auth, registerUseCase)
+	authHandler := NewAuthHandler(registerUseCase)
 
 	// CORS
 	headersOk := handlers.AllowedHeaders([]string{"Content-Type", "X-Requested-With", "Authorization"})
 	originsOk := handlers.AllowedOrigins([]string{"*"})
 	methodsOk := handlers.AllowedMethods([]string{"Get", "POST", "PUT", "DELETE", "OPTIONS"})
 
-	// admin user handlers
-	api.router.Handle(prefix+"/admin/users", middleware.JwtMiddleware.Handler(
-		http.HandlerFunc(userHandler.GetUserList),
-	)).Methods(http.MethodGet)
-	api.router.Handle(prefix+"/admin/users/{id}", middleware.JwtMiddleware.Handler(
-		http.HandlerFunc(userHandler.GetUserById),
-	)).Methods(http.MethodGet)
-
-	// user handlers
-	api.router.HandleFunc(prefix+"/users/{id}", userHandler.GetUserById).Methods(http.MethodGet)
-
 	// auth handlers
-	api.router.HandleFunc(prefix+"/user/register", authHandler.RegisterHandler).Methods(http.MethodPost)
-	api.router.HandleFunc(prefix+"/auth/register", authHandler.PostRegister).Methods(http.MethodPost)
-	api.router.HandleFunc(prefix+"/auth/login", authHandler.PostAuthenticate).Methods(http.MethodPost)
-	api.router.HandleFunc(prefix+"/auth/refresh", authHandler.RefreshToken).Methods(http.MethodPost)
+	api.router.HandleFunc(prefix+"/user/register", authHandler.PostRegisterHandler).Methods(http.MethodPost)
 
 	return http.ListenAndServe(api.config.Port, handlers.CORS(originsOk, headersOk, methodsOk)(api.router))
 }

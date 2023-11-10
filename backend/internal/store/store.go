@@ -9,9 +9,8 @@ import (
 )
 
 type Store struct {
-	config    *config.Config
-	db        *sql.DB
-	userStore *UserStore
+	config *config.Config
+	db     *sql.DB
 }
 
 func NewStore(config *config.Config) *Store {

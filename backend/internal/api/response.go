@@ -2,12 +2,12 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/model"
+	error2 "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/error"
 	"net/http"
 )
 
 func WrapError(w http.ResponseWriter, err error, httpStatusCode int) {
-	msg := model.ErrorResponse{
+	msg := error2.ErrorResponse{
 		StatusCode: httpStatusCode,
 		Success:    false,
 		Message:    err.Error(),

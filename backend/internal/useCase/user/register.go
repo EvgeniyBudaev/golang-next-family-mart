@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/model"
 	"github.com/Nerzal/gocloak/v13"
 	"strings"
 )
@@ -21,12 +20,12 @@ type RegisterResponse struct {
 }
 
 type RegisterUseCase struct {
-	identityManager model.IIdentityManager
+	identity IIdentity
 }
 
-func NewRegisterUseCase(im model.IIdentityManager) *RegisterUseCase {
+func NewRegisterUseCase(i IIdentity) *RegisterUseCase {
 	return &RegisterUseCase{
-		identityManager: im,
+		identity: i,
 	}
 }
 
@@ -41,10 +40,10 @@ func (uc *RegisterUseCase) Register(ctx context.Context, request RegisterRequest
 		Attributes:    &map[string][]string{},
 	}
 	if strings.TrimSpace(request.MobileNumber) != "" {
-		(*user.Attributes)["mobile"] = []string{request.MobileNumber}
+		(*user.Attributes)["mobileNumber"] = []string{request.MobileNumber}
 	}
 
-	userResponse, err := uc.identityManager.CreateUser(ctx, user, request.Password, "customer")
+	userResponse, err := uc.identity.CreateUser(ctx, user, request.Password, "customer")
 	if err != nil {
 		return nil, err
 	}

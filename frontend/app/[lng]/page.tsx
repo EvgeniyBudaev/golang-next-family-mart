@@ -1,3 +1,5 @@
+import { HomePage } from "@/app/pages/homePage/HomePage";
+
 export default function Home() {
-  return <main>Главная страница</main>;
+  return <main><HomePage /></main>;
 }

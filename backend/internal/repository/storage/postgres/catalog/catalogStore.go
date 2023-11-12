@@ -4,16 +4,16 @@ import (
 	"context"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/catalog"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/store"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres"
 	"go.uber.org/zap"
 	"log"
 )
 
 type PGUserStore struct {
-	store *store.Store
+	store *postgres.Store
 }
 
-func NewDBCatalogStore(store *store.Store) *PGUserStore {
+func NewDBCatalogStore(store *postgres.Store) *PGUserStore {
 	return &PGUserStore{
 		store: store,
 	}

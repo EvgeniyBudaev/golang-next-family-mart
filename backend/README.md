@@ -95,3 +95,9 @@ https://github.com/google/uuid
 ```
 go get -u github.com/google/uuid
 ```
+
+Go Util
+https://github.com/gookit/goutil
+```
+go get -u github.com/gookit/goutil
+```

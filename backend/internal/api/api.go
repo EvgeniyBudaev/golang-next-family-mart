@@ -5,8 +5,9 @@ import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/config"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/identity"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/store"
-	catalogStore "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/store/catalog"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/middlewares"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres"
+	catalogStore "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres/catalog"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/useCase/catalog"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/useCase/user"
 	"github.com/gorilla/handlers"
@@ -24,7 +25,7 @@ type API struct {
 	config *config.Config
 	logger *logrus.Logger
 	router *mux.Router
-	store  *store.Store
+	store  *postgres.Store
 }
 
 func NewAPI(config *config.Config) *API {
@@ -51,7 +52,7 @@ func (api *API) Start() error {
 	logger.Log.Info("Running server", zap.String("port", api.config.Port))
 
 	// Store
-	newStore := store.NewStore(api.config)
+	newStore := postgres.NewStore(api.config)
 	if err := newStore.Open(); err != nil {
 		return err
 	}
@@ -75,7 +76,10 @@ func (api *API) Start() error {
 	// handlers
 	api.router.HandleFunc(prefix+"/user/register", authHandler.PostRegisterHandler).Methods(http.MethodPost)
 	api.router.HandleFunc(prefix+"/catalog/create", catalogHandler.PostCatalogCreateHandler).Methods(http.MethodPost)
-	api.router.HandleFunc(prefix+"/catalog/all", catalogHandler.GetCatalogListHandler).Methods(http.MethodGet)
+	//api.router.HandleFunc(prefix+"/catalog/all", catalogHandler.GetCatalogListHandler).Methods(http.MethodGet)
+
+	api.router.Handle(prefix+"/catalog/all", middlewares.RequiresRealmRole("admin")(http.HandlerFunc(
+		catalogHandler.GetCatalogListHandler))).Methods(http.MethodGet)
 
 	return http.ListenAndServe(api.config.Port, handlers.CORS(originsOk, headersOk, methodsOk)(api.router))
 }

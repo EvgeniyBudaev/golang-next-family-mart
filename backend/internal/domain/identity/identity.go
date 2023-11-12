@@ -33,7 +33,7 @@ func (i *Identity) loginRestApiClient(ctx context.Context) (*gocloak.JWT, error)
 	token, err := client.LoginClient(ctx, i.ClientId, i.ClientSecret, i.Realm)
 	if err != nil {
 		logger.Log.Debug(
-			"error while identity_manager_store.loginRestApiClient. Unable to login the rest client",
+			"error while identity.loginRestApiClient. Unable to login the rest client",
 			zap.Error(err))
 		return nil, errors.Wrap(err, "unable to login the rest client")
 	}

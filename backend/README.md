@@ -47,7 +47,7 @@ go get -u github.com/jackc/pgx/v5/pgxpool
 https://github.com/golang-migrate/migrate/blob/master/cmd/migrate/README.md
 Создание миграционного репозитория
 ```
-migrate create -ext sql -dir migrations UsersCreationMigration
+migrate create -ext sql -dir migrations CatalogsCreationMigration
 ```
 Создание up sql файлов
 ```
@@ -88,4 +88,10 @@ Golang Keycloak API Package
 https://github.com/Nerzal/gocloak
 ```
 go get -u github.com/Nerzal/gocloak/v13
+```
+
+UUID
+https://github.com/google/uuid
+```
+go get -u github.com/google/uuid
 ```

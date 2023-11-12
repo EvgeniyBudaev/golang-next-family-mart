@@ -31,7 +31,7 @@ func (a *AuthHandler) PostRegisterHandler(w http.ResponseWriter, r *http.Request
 	err := json.NewDecoder(r.Body).Decode(&params)
 	if err != nil {
 		logger.Log.Debug(
-			"error while auth_handler.PostRegister. Invalid json received from client",
+			"error while auth_handler.PostRegisterHandler. Invalid json received from client",
 			zap.Error(err))
 		msg := fmt.Errorf("provided json is invalid")
 		WrapError(w, msg, http.StatusBadRequest)
@@ -40,7 +40,7 @@ func (a *AuthHandler) PostRegisterHandler(w http.ResponseWriter, r *http.Request
 	response, err := a.useCase.Register(ctx, params)
 	if err != nil {
 		logger.Log.Debug(
-			"error while auth_handler.PostRegister. Invalid json received from client",
+			"error while auth_handler.PostRegisterHandler. Invalid json received from client",
 			zap.Error(err))
 		msg := fmt.Errorf("register is invalid")
 		WrapError(w, msg, http.StatusBadRequest)

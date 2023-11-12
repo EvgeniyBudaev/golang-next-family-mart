@@ -6,6 +6,8 @@ import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/identity"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/store"
+	catalogStore "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/store/catalog"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/useCase/catalog"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/useCase/user"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -49,25 +51,31 @@ func (api *API) Start() error {
 	logger.Log.Info("Running server", zap.String("port", api.config.Port))
 
 	// Store
-	storeNew := store.NewStore(api.config)
-	if err := storeNew.Open(); err != nil {
+	newStore := store.NewStore(api.config)
+	if err := newStore.Open(); err != nil {
 		return err
 	}
-	api.store = storeNew
+	api.store = newStore
+	catalogDataStore := catalogStore.NewDBCatalogStore(newStore)
 
 	identityManager := identity.NewIdentity(api.config)
 	registerUseCase := user.NewRegisterUseCase(identityManager)
+	useCaseCreateCatalog := catalog.NewCreateCatalogUseCase(catalogDataStore)
+	useCaseGetCatalogList := catalog.NewGetCatalogListUseCase(catalogDataStore)
 
 	// handlers
 	authHandler := NewAuthHandler(registerUseCase)
+	catalogHandler := NewCatalogHandler(useCaseCreateCatalog, useCaseGetCatalogList)
 
 	// CORS
 	headersOk := handlers.AllowedHeaders([]string{"Content-Type", "X-Requested-With", "Authorization"})
 	originsOk := handlers.AllowedOrigins([]string{"*"})
 	methodsOk := handlers.AllowedMethods([]string{"Get", "POST", "PUT", "DELETE", "OPTIONS"})
 
-	// auth handlers
+	// handlers
 	api.router.HandleFunc(prefix+"/user/register", authHandler.PostRegisterHandler).Methods(http.MethodPost)
+	api.router.HandleFunc(prefix+"/catalog/create", catalogHandler.PostCatalogCreateHandler).Methods(http.MethodPost)
+	api.router.HandleFunc(prefix+"/catalog/all", catalogHandler.GetCatalogListHandler).Methods(http.MethodGet)
 
 	return http.ListenAndServe(api.config.Port, handlers.CORS(originsOk, headersOk, methodsOk)(api.router))
 }

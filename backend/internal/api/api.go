@@ -2,23 +2,17 @@ package api
 
 import (
 	"context"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/api/routes"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/config"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/identity"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/middlewares"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres"
-	catalogStore "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres/catalog"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/useCase/catalog"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/useCase/user"
-	"github.com/gorilla/handlers"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/zap"
 	"net/http"
-)
-
-var (
-	prefix string = "/api/v1"
 )
 
 type API struct {
@@ -37,16 +31,21 @@ func NewAPI(config *config.Config) *API {
 }
 
 func (api *API) Start() error {
+	// Инициализация
+	app := fiber.New()
+
 	// Логирование
 	// Logrus
 	logLevel, err := logrus.ParseLevel(api.config.LoggerLevel)
 	if err != nil {
+		logger.Log.Debug("error while Start. Error in ParseLevel", zap.Error(err))
 		return err
 	}
 	api.logger.SetLevel(logLevel)
 	// api.logger.Info("starting api server at port: ", api.config.Port)
 	// Zap
 	if err := logger.Initialize(api.config.LoggerLevel); err != nil {
+		logger.Log.Debug("error while Start. Error in Initialize", zap.Error(err))
 		return err
 	}
 	logger.Log.Info("Running server", zap.String("port", api.config.Port))
@@ -54,34 +53,22 @@ func (api *API) Start() error {
 	// Store
 	newStore := postgres.NewStore(api.config)
 	if err := newStore.Open(); err != nil {
+		logger.Log.Debug("error while Start. Error in NewStore", zap.Error(err))
 		return err
 	}
 	api.store = newStore
-	catalogDataStore := catalogStore.NewDBCatalogStore(newStore)
-
-	identityManager := identity.NewIdentity(api.config)
-	registerUseCase := user.NewRegisterUseCase(identityManager)
-	useCaseCreateCatalog := catalog.NewCreateCatalogUseCase(catalogDataStore)
-	useCaseGetCatalogList := catalog.NewGetCatalogListUseCase(catalogDataStore)
-
-	// handlers
-	authHandler := NewAuthHandler(registerUseCase)
-	catalogHandler := NewCatalogHandler(useCaseCreateCatalog, useCaseGetCatalogList)
 
 	// CORS
-	headersOk := handlers.AllowedHeaders([]string{"Content-Type", "X-Requested-With", "Authorization"})
-	originsOk := handlers.AllowedOrigins([]string{"*"})
-	methodsOk := handlers.AllowedMethods([]string{"Get", "POST", "PUT", "DELETE", "OPTIONS"})
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*",
+		AllowHeaders: "Content-Type, X-Requested-With, Authorization",
+		AllowMethods: "GET, POST, PUT, DELETE, OPTIONS",
+	}))
 
-	// handlers
-	api.router.HandleFunc(prefix+"/user/register", authHandler.PostRegisterHandler).Methods(http.MethodPost)
-	api.router.HandleFunc(prefix+"/catalog/create", catalogHandler.PostCatalogCreateHandler).Methods(http.MethodPost)
-	//api.router.HandleFunc(prefix+"/catalog/all", catalogHandler.GetCatalogListHandler).Methods(http.MethodGet)
+	// middlewares
+	middlewares.InitFiberMiddlewares(app, api.config, newStore, routes.InitPublicRoutes, routes.InitProtectedRoutes)
 
-	api.router.Handle(prefix+"/catalog/all", middlewares.RequiresRealmRole("admin")(http.HandlerFunc(
-		catalogHandler.GetCatalogListHandler))).Methods(http.MethodGet)
-
-	return http.ListenAndServe(api.config.Port, handlers.CORS(originsOk, headersOk, methodsOk)(api.router))
+	return app.Listen(api.config.Port)
 }
 
 func (api *API) contextMiddleware(ctx context.Context, h http.Handler) http.Handler {

@@ -21,15 +21,13 @@ func NewCreateCatalogUseCase(ds ICatalogStore) *CreateCatalogUseCase {
 	}
 }
 
-func (uc *CreateCatalogUseCase) CreateCatalog(ctx context.Context, request CreateCatalogRequest) (*catalog.Catalog, error) {
+func (uc *CreateCatalogUseCase) CreateCatalog(ctx context.Context, r CreateCatalogRequest) (*catalog.Catalog, error) {
 	var catalogRequest = &catalog.Catalog{
-		Name: request.Name,
+		Name: r.Name,
 	}
 	newCatalog, err := uc.dataStore.Create(ctx, catalogRequest)
 	if err != nil {
-		logger.Log.Debug(
-			"error while CreateCatalog. error in method Create",
-			zap.Error(err))
+		logger.Log.Debug("error while CreateCatalog. error in method Create", zap.Error(err))
 		return nil, err
 	}
 	return newCatalog, nil

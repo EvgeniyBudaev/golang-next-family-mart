@@ -2,7 +2,9 @@ package user
 
 import (
 	"context"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/Nerzal/gocloak/v13"
+	"go.uber.org/zap"
 	"strings"
 )
 
@@ -42,12 +44,11 @@ func (uc *RegisterUseCase) Register(ctx context.Context, request RegisterRequest
 	if strings.TrimSpace(request.MobileNumber) != "" {
 		(*user.Attributes)["mobileNumber"] = []string{request.MobileNumber}
 	}
-
 	userResponse, err := uc.identity.CreateUser(ctx, user, request.Password, "customer")
 	if err != nil {
+		logger.Log.Debug("error while Register. Error in CreateUser", zap.Error(err))
 		return nil, err
 	}
-
 	var response = &RegisterResponse{User: userResponse}
 	return response, nil
 }

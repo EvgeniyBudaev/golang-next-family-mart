@@ -1,38 +1,35 @@
-package api
+package response
 
 import (
-	"encoding/json"
 	errorResponse "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/error"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/success"
+	"github.com/gofiber/fiber/v2"
 	"net/http"
 )
 
-func WrapError(w http.ResponseWriter, err error, httpStatusCode int) {
+func WrapError(ctx *fiber.Ctx, err error, httpStatusCode int) error {
 	msg := errorResponse.ErrorResponse{
 		StatusCode: httpStatusCode,
 		Success:    false,
 		Message:    err.Error(),
 	}
-	w.WriteHeader(httpStatusCode)
-	json.NewEncoder(w).Encode(msg)
+	return ctx.Status(httpStatusCode).JSON(msg)
 }
 
-func WrapOk(w http.ResponseWriter, data interface{}) {
+func WrapOk(ctx *fiber.Ctx, data interface{}) error {
 	msg := success.Success{
 		Data:       data,
 		StatusCode: http.StatusOK,
 		Success:    true,
 	}
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(msg)
+	return ctx.Status(fiber.StatusOK).JSON(msg)
 }
 
-func WrapCreated(w http.ResponseWriter, data interface{}) {
+func WrapCreated(ctx *fiber.Ctx, data interface{}) error {
 	msg := success.Success{
 		Data:       data,
 		StatusCode: http.StatusCreated,
 		Success:    true,
 	}
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(msg)
+	return ctx.Status(fiber.StatusCreated).JSON(msg)
 }

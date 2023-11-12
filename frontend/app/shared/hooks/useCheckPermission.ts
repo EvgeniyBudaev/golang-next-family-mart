@@ -1,12 +1,12 @@
 import { useCallback } from "react";
 import { EPermissions } from "@/app/shared/enums";
+import { usePermissions } from "@/app/shared/hooks/usePermissions";
 import { checkPermission } from "@/app/shared/utils/permissions/checkPermission";
-import { APP_BASE_PERMISSIONS } from "@/app/shared/constants/permissions";
 
-export type TUseCheckPermissionReturn = (permissions: EPermissions[]) => boolean;
+type TUseCheckPermissionReturn = (permissions: EPermissions[]) => boolean;
 
 export const useCheckPermission = (): TUseCheckPermissionReturn => {
-  const userPermissions = APP_BASE_PERMISSIONS;
+  const userPermissions = usePermissions();
 
   return useCallback(
     (permissions: EPermissions[]) => {

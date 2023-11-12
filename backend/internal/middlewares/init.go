@@ -5,7 +5,7 @@ import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/config"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/identity"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/shared/enums"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/shared/enums"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 )

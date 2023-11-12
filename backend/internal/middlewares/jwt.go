@@ -9,7 +9,7 @@ import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/config"
 	r "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/response"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/shared/enums"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/shared/enums"
 	"github.com/Nerzal/gocloak/v13"
 	contribJwt "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"

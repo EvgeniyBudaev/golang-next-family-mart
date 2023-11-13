@@ -25,7 +25,7 @@ func (pg *PGUserStore) Create(ctx context.Context, c *catalog.Catalog) (*catalog
 		return nil, err
 	}
 	defer tx.Rollback()
-	sqlSelect := "INSERT INTO catalogs (alias, name) VALUES ($1, $2) RETURNING id"
+	sqlSelect := "INSERT INTO catalogs (alias, created_at, name, uuid) VALUES ($1, $2, $3, $4) RETURNING id"
 	stmt, err := tx.PrepareContext(context.TODO(),
 		sqlSelect)
 	if err != nil {
@@ -33,7 +33,7 @@ func (pg *PGUserStore) Create(ctx context.Context, c *catalog.Catalog) (*catalog
 		return nil, err
 	}
 	defer stmt.Close()
-	if err := stmt.QueryRowContext(ctx, c.Alias, c.Name).Scan(&c.Id); err != nil {
+	if err := stmt.QueryRowContext(ctx, c.Alias, c.CreatedAt, c.Name, c.Uuid).Scan(&c.Id); err != nil {
 		logger.Log.Debug("error while Create. error in method QueryRowContext", zap.Error(err))
 		return nil, err
 	}
@@ -58,7 +58,7 @@ func (pg *PGUserStore) SelectAll(ctx context.Context) ([]*catalog.Catalog, error
 	catalogList := make([]*catalog.Catalog, 0)
 	for rows.Next() {
 		catalog := catalog.Catalog{}
-		err := rows.Scan(&catalog.Id, &catalog.Alias, &catalog.Name)
+		err := rows.Scan(&catalog.Id, &catalog.Alias, &catalog.CreatedAt, &catalog.Name, &catalog.Uuid)
 		if err != nil {
 			logger.Log.Debug("error while SelectAll. error in method Scan", zap.Error(err))
 			continue

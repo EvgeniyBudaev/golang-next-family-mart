@@ -4,7 +4,9 @@ import (
 	"context"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/catalog"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
+	"time"
 )
 
 type CreateCatalogRequest struct {
@@ -24,8 +26,10 @@ func NewCreateCatalogUseCase(ds ICatalogStore) *CreateCatalogUseCase {
 
 func (uc *CreateCatalogUseCase) CreateCatalog(ctx context.Context, r CreateCatalogRequest) (*catalog.Catalog, error) {
 	var request = &catalog.Catalog{
-		Alias: r.Alias,
-		Name:  r.Name,
+		Alias:     r.Alias,
+		CreatedAt: time.Now(),
+		Name:      r.Name,
+		Uuid:      uuid.New(),
 	}
 	response, err := uc.dataStore.Create(ctx, request)
 	if err != nil {

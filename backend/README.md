@@ -58,6 +58,7 @@ https://github.com/golang-migrate/migrate/blob/master/cmd/migrate/README.md
 
 ```
 migrate create -ext sql -dir migrations CatalogsCreationMigration
+migrate create -ext sql -dir migrations ProductsCreationMigration
 ```
 
 Создание up sql файлов

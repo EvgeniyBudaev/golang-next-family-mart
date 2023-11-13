@@ -15,7 +15,7 @@ type ICreateCatalogUseCase interface {
 	CreateCatalog(ctx context.Context, request catalogUseCase.CreateCatalogRequest) (*catalog.Catalog, error)
 }
 
-type IGetProductsUseCase interface {
+type IGetCatalogListUseCase interface {
 	GetCatalogList(ctx context.Context) ([]*catalog.Catalog, error)
 }
 
@@ -50,7 +50,7 @@ func (c *CatalogHandler) PostCatalogCreateHandler(uc ICreateCatalogUseCase) fibe
 	}
 }
 
-func (c *CatalogHandler) GetCatalogListHandler(uc IGetProductsUseCase) fiber.Handler {
+func (c *CatalogHandler) GetCatalogListHandler(uc IGetCatalogListUseCase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var ctx = c.UserContext()
 		logger.Log.Info("get catalog list GET /api/v1/catalog/list")

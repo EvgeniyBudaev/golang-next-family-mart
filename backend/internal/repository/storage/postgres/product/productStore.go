@@ -1,8 +1,8 @@
-package catalog
+package product
 
 import (
 	"context"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/catalog"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/product"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres"
 	"go.uber.org/zap"
@@ -12,20 +12,20 @@ type PGUserStore struct {
 	store *postgres.Store
 }
 
-func NewDBCatalogStore(store *postgres.Store) *PGUserStore {
+func NewDBProductStore(store *postgres.Store) *PGUserStore {
 	return &PGUserStore{
 		store: store,
 	}
 }
 
-func (pg *PGUserStore) Create(ctx context.Context, c *catalog.Catalog) (*catalog.Catalog, error) {
+func (pg *PGUserStore) Create(ctx context.Context, p *product.Product) (*product.Product, error) {
 	tx, err := pg.store.Db().Begin()
 	if err != nil {
 		logger.Log.Debug("error while Create. error in method Begin", zap.Error(err))
 		return nil, err
 	}
 	defer tx.Rollback()
-	sqlSelect := "INSERT INTO catalogs (alias, name) VALUES ($1, $2) RETURNING id"
+	sqlSelect := "INSERT INTO products (alias, catalog_alias, name) VALUES ($1, $2, $3) RETURNING id"
 	stmt, err := tx.PrepareContext(context.TODO(),
 		sqlSelect)
 	if err != nil {
@@ -33,16 +33,16 @@ func (pg *PGUserStore) Create(ctx context.Context, c *catalog.Catalog) (*catalog
 		return nil, err
 	}
 	defer stmt.Close()
-	if err := stmt.QueryRowContext(ctx, c.Alias, c.Name).Scan(&c.Id); err != nil {
+	if err := stmt.QueryRowContext(ctx, p.Alias, p.CatalogAlias, p.Name).Scan(&p.Id); err != nil {
 		logger.Log.Debug("error while Create. error in method QueryRowContext", zap.Error(err))
 		return nil, err
 	}
 	tx.Commit()
-	return c, nil
+	return p, nil
 }
 
-func (pg *PGUserStore) SelectAll(ctx context.Context) ([]*catalog.Catalog, error) {
-	sqlSelect := "SELECT * FROM catalogs"
+func (pg *PGUserStore) SelectAll(ctx context.Context) ([]*product.Product, error) {
+	sqlSelect := "SELECT * FROM products"
 	stmt, err := pg.store.Db().PrepareContext(ctx, sqlSelect)
 	if err != nil {
 		logger.Log.Debug("error while SelectAll. error in method PrepareContext", zap.Error(err))
@@ -55,15 +55,15 @@ func (pg *PGUserStore) SelectAll(ctx context.Context) ([]*catalog.Catalog, error
 		return nil, err
 	}
 	defer rows.Close()
-	catalogList := make([]*catalog.Catalog, 0)
+	productList := make([]*product.Product, 0)
 	for rows.Next() {
-		catalog := catalog.Catalog{}
-		err := rows.Scan(&catalog.Id, &catalog.Alias, &catalog.Name)
+		product := product.Product{}
+		err := rows.Scan(&product.Id, &product.Alias, &product.CatalogAlias, &product.Name)
 		if err != nil {
 			logger.Log.Debug("error while SelectAll. error in method Scan", zap.Error(err))
 			continue
 		}
-		catalogList = append(catalogList, &catalog)
+		productList = append(productList, &product)
 	}
-	return catalogList, nil
+	return productList, nil
 }

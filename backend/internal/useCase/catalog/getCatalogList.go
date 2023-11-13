@@ -18,10 +18,10 @@ func NewGetCatalogListUseCase(ds ICatalogStore) *GetCatalogListUseCase {
 }
 
 func (uc *GetCatalogListUseCase) GetCatalogList(ctx context.Context) ([]*catalog.Catalog, error) {
-	catalogList, err := uc.dataStore.SelectAll(ctx)
+	response, err := uc.dataStore.SelectAll(ctx)
 	if err != nil {
 		logger.Log.Debug("error while GetCatalogList. error in method SelectAll", zap.Error(err))
 		return nil, err
 	}
-	return catalogList, nil
+	return response, nil
 }

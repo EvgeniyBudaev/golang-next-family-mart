@@ -8,7 +8,8 @@ import (
 )
 
 type CreateCatalogRequest struct {
-	Name string `json:"name"`
+	Alias string `json:"alias"`
+	Name  string `json:"name"`
 }
 
 type CreateCatalogUseCase struct {
@@ -22,13 +23,14 @@ func NewCreateCatalogUseCase(ds ICatalogStore) *CreateCatalogUseCase {
 }
 
 func (uc *CreateCatalogUseCase) CreateCatalog(ctx context.Context, r CreateCatalogRequest) (*catalog.Catalog, error) {
-	var catalogRequest = &catalog.Catalog{
-		Name: r.Name,
+	var request = &catalog.Catalog{
+		Alias: r.Alias,
+		Name:  r.Name,
 	}
-	newCatalog, err := uc.dataStore.Create(ctx, catalogRequest)
+	response, err := uc.dataStore.Create(ctx, request)
 	if err != nil {
 		logger.Log.Debug("error while CreateCatalog. error in method Create", zap.Error(err))
 		return nil, err
 	}
-	return newCatalog, nil
+	return response, nil
 }

@@ -1,4 +1,4 @@
-package handlers
+package catalog
 
 import (
 	"context"
@@ -19,19 +19,7 @@ type IGetCatalogListUseCase interface {
 	GetCatalogList(ctx context.Context) ([]*catalog.Catalog, error)
 }
 
-type CatalogHandler struct {
-	useCaseCreateCatalog  *catalogUseCase.CreateCatalogUseCase
-	useCaseGetCatalogList *catalogUseCase.GetCatalogListUseCase
-}
-
-func NewCatalogHandler(c *catalogUseCase.CreateCatalogUseCase, g *catalogUseCase.GetCatalogListUseCase) *CatalogHandler {
-	return &CatalogHandler{
-		useCaseCreateCatalog:  c,
-		useCaseGetCatalogList: g,
-	}
-}
-
-func (c *CatalogHandler) PostCatalogCreateHandler(uc ICreateCatalogUseCase) fiber.Handler {
+func PostCatalogCreateHandler(uc ICreateCatalogUseCase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var ctx = c.UserContext()
 		logger.Log.Info("post to catalog create POST /api/v1/catalog/create")
@@ -50,7 +38,7 @@ func (c *CatalogHandler) PostCatalogCreateHandler(uc ICreateCatalogUseCase) fibe
 	}
 }
 
-func (c *CatalogHandler) GetCatalogListHandler(uc IGetCatalogListUseCase) fiber.Handler {
+func GetCatalogListHandler(uc IGetCatalogListUseCase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var ctx = c.UserContext()
 		logger.Log.Info("get catalog list GET /api/v1/catalog/list")

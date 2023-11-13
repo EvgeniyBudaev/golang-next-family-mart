@@ -1,4 +1,4 @@
-package handlers
+package product
 
 import (
 	"context"
@@ -19,19 +19,7 @@ type IGetProductListUseCase interface {
 	GetProductList(ctx context.Context) ([]*product.Product, error)
 }
 
-type ProductHandler struct {
-	useCaseCreateProduct  *productUseCase.CreateProductUseCase
-	useCaseGetProductList *productUseCase.GetProductListUseCase
-}
-
-func NewProductHandler(c *productUseCase.CreateProductUseCase, g *productUseCase.GetProductListUseCase) *ProductHandler {
-	return &ProductHandler{
-		useCaseCreateProduct:  c,
-		useCaseGetProductList: g,
-	}
-}
-
-func (c *ProductHandler) PostProductCreateHandler(uc ICreateProductUseCase) fiber.Handler {
+func PostProductCreateHandler(uc ICreateProductUseCase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var ctx = c.UserContext()
 		logger.Log.Info("post to product create POST /api/v1/product/create")
@@ -50,7 +38,7 @@ func (c *ProductHandler) PostProductCreateHandler(uc ICreateProductUseCase) fibe
 	}
 }
 
-func (c *ProductHandler) GetProductListHandler(uc IGetProductListUseCase) fiber.Handler {
+func GetProductListHandler(uc IGetProductListUseCase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var ctx = c.UserContext()
 		logger.Log.Info("get product list GET /api/v1/product/list")

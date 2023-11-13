@@ -1,4 +1,4 @@
-package handlers
+package register
 
 import (
 	"context"
@@ -14,17 +14,7 @@ type IRegisterUseCase interface {
 	Register(ctx context.Context, request user.RegisterRequest) (*user.RegisterResponse, error)
 }
 
-type RegisterHandler struct {
-	useCaseRegister *user.RegisterUseCase
-}
-
-func NewRegisterHandler(uc *user.RegisterUseCase) *RegisterHandler {
-	return &RegisterHandler{
-		useCaseRegister: uc,
-	}
-}
-
-func (c *RegisterHandler) PostRegisterHandler(uc IRegisterUseCase) fiber.Handler {
+func PostRegisterHandler(uc IRegisterUseCase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var ctx = c.UserContext()
 		logger.Log.Info("post to auth POST /api/v1/user/register")

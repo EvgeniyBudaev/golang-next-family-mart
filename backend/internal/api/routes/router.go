@@ -1,9 +1,9 @@
 package routes
 
 import (
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/api/handlers"
 	catalogHandler "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/api/handlers/catalog"
 	productHandler "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/api/handlers/product"
+	registerHandler "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/api/handlers/register"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/config"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/identity"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/middlewares"
@@ -28,7 +28,6 @@ func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Sto
 	useCaseRegister := user.NewRegisterUseCase(identityManager)
 	useCaseGetCatalogList := catalog.NewGetCatalogListUseCase(catalogDataStore)
 	useCaseGetProductList := product.NewGetProductListUseCase(productDataStore)
-	registerHandler := handlers.NewRegisterHandler(useCaseRegister)
 
 	// handlers
 	grp.Post("/user/register", registerHandler.PostRegisterHandler(useCaseRegister))

@@ -22,9 +22,13 @@ var (
 
 func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Store) {
 	grp := app.Group(prefix)
+
+	// store
 	catalogDataStore := catalogStore.NewDBCatalogStore(store)
 	productDataStore := productStore.NewDBProductStore(store)
 	identityManager := identity.NewIdentity(config)
+
+	// useCase
 	useCaseRegister := user.NewRegisterUseCase(identityManager)
 	useCaseGetCatalogList := catalog.NewGetCatalogListUseCase(catalogDataStore)
 	useCaseGetProductList := product.NewGetProductListUseCase(productDataStore)
@@ -37,8 +41,12 @@ func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Sto
 
 func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.Store) {
 	grp := app.Group(prefix)
+
+	// store
 	catalogDataStore := catalogStore.NewDBCatalogStore(store)
 	productDataStore := productStore.NewDBProductStore(store)
+
+	// useCase
 	useCaseCreateCatalog := catalog.NewCreateCatalogUseCase(catalogDataStore)
 	useCaseCreateProduct := product.NewCreateProductUseCase(productDataStore)
 

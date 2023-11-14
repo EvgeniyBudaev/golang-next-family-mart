@@ -1,9 +1,9 @@
 package catalog
 
 import (
-	"context"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/catalog"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
+	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"time"
@@ -24,7 +24,7 @@ func NewCreateCatalogUseCase(ds ICatalogStore) *CreateCatalogUseCase {
 	}
 }
 
-func (uc *CreateCatalogUseCase) CreateCatalog(ctx context.Context, r CreateCatalogRequest) (*catalog.Catalog, error) {
+func (uc *CreateCatalogUseCase) CreateCatalog(ctx *fiber.Ctx, r CreateCatalogRequest) (*catalog.Catalog, error) {
 	var request = &catalog.Catalog{
 		Alias:     r.Alias,
 		CreatedAt: time.Now(),

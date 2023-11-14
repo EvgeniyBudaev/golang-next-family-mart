@@ -1,7 +1,6 @@
 package catalog
 
 import (
-	"context"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/catalog"
 	r "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/response"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
@@ -12,16 +11,15 @@ import (
 )
 
 type ICreateCatalogUseCase interface {
-	CreateCatalog(ctx context.Context, request catalogUseCase.CreateCatalogRequest) (*catalog.Catalog, error)
+	CreateCatalog(ctx *fiber.Ctx, request catalogUseCase.CreateCatalogRequest) (*catalog.Catalog, error)
 }
 
 type IGetCatalogListUseCase interface {
-	GetCatalogList(ctx context.Context) ([]*catalog.Catalog, error)
+	GetCatalogList(ctx *fiber.Ctx) ([]*catalog.Catalog, error)
 }
 
 func PostCatalogCreateHandler(uc ICreateCatalogUseCase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var ctx = c.UserContext()
 		logger.Log.Info("post to catalog create POST /api/v1/catalog/create")
 		var request = catalogUseCase.CreateCatalogRequest{}
 		err := c.BodyParser(&request)
@@ -29,7 +27,7 @@ func PostCatalogCreateHandler(uc ICreateCatalogUseCase) fiber.Handler {
 			logger.Log.Debug("error while PostCatalogCreateHandler. Error in BodyParser", zap.Error(err))
 			return r.WrapError(c, err, http.StatusBadRequest)
 		}
-		response, err := uc.CreateCatalog(ctx, request)
+		response, err := uc.CreateCatalog(c, request)
 		if err != nil {
 			logger.Log.Debug("error while PostCatalogCreateHandler. Error in CreateCatalog", zap.Error(err))
 			return r.WrapError(c, err, http.StatusBadRequest)
@@ -40,9 +38,8 @@ func PostCatalogCreateHandler(uc ICreateCatalogUseCase) fiber.Handler {
 
 func GetCatalogListHandler(uc IGetCatalogListUseCase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var ctx = c.UserContext()
 		logger.Log.Info("get catalog list GET /api/v1/catalog/list")
-		response, err := uc.GetCatalogList(ctx)
+		response, err := uc.GetCatalogList(c)
 		if err != nil {
 			logger.Log.Debug("error while GetCatalogListHandler. Error in GetCatalogList", zap.Error(err))
 			return r.WrapError(c, err, http.StatusBadRequest)

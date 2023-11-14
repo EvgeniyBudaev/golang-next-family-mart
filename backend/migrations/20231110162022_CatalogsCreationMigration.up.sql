@@ -3,5 +3,5 @@ CREATE TABLE catalogs (
                        alias varchar not null unique,
                        created_at timestamp not null,
                        name varchar not null unique,
-                       uuid varchar not null unique
+                       uuid uuid not null unique
 );

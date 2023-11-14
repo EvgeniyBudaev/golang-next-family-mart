@@ -19,51 +19,39 @@ func NewDBCatalogStore(store *postgres.Store) *PGUserStore {
 }
 
 func (pg *PGUserStore) Create(ctx context.Context, c *catalog.Catalog) (*catalog.Catalog, error) {
-	tx, err := pg.store.Db().Begin()
+	tx, err := pg.store.Db().Begin(ctx)
 	if err != nil {
 		logger.Log.Debug("error while Create. error in method Begin", zap.Error(err))
 		return nil, err
 	}
-	defer tx.Rollback()
+	defer tx.Rollback(ctx)
 	sqlSelect := "INSERT INTO catalogs (alias, created_at, name, uuid) VALUES ($1, $2, $3, $4) RETURNING id"
-	stmt, err := tx.PrepareContext(context.TODO(),
-		sqlSelect)
-	if err != nil {
-		logger.Log.Debug("error while Create. error in method PrepareContext", zap.Error(err))
+	if err := tx.QueryRow(ctx,
+		sqlSelect, c.Alias, c.CreatedAt, c.Name, c.Uuid).Scan(&c.Id); err != nil {
+		logger.Log.Debug("error while Create. error in method QueryRow", zap.Error(err))
 		return nil, err
 	}
-	defer stmt.Close()
-	if err := stmt.QueryRowContext(ctx, c.Alias, c.CreatedAt, c.Name, c.Uuid).Scan(&c.Id); err != nil {
-		logger.Log.Debug("error while Create. error in method QueryRowContext", zap.Error(err))
-		return nil, err
-	}
-	tx.Commit()
+	tx.Commit(ctx)
 	return c, nil
 }
 
 func (pg *PGUserStore) SelectAll(ctx context.Context) ([]*catalog.Catalog, error) {
-	sqlSelect := "SELECT * FROM catalogs"
-	stmt, err := pg.store.Db().PrepareContext(ctx, sqlSelect)
+	sqlSelect := "SELECT * FROM catalogs ORDER BY created_at DESC, id DESC"
+	catalogList := make([]*catalog.Catalog, 0)
+	rows, err := pg.store.Db().Query(ctx, sqlSelect)
 	if err != nil {
-		logger.Log.Debug("error while SelectAll. error in method PrepareContext", zap.Error(err))
-		return nil, err
-	}
-	defer stmt.Close()
-	rows, err := stmt.QueryContext(ctx)
-	if err != nil {
-		logger.Log.Debug("error while SelectAll. error in method QueryContext", zap.Error(err))
+		logger.Log.Debug("error while SelectAll. error in method Query", zap.Error(err))
 		return nil, err
 	}
 	defer rows.Close()
-	catalogList := make([]*catalog.Catalog, 0)
 	for rows.Next() {
-		catalog := catalog.Catalog{}
-		err := rows.Scan(&catalog.Id, &catalog.Alias, &catalog.CreatedAt, &catalog.Name, &catalog.Uuid)
+		catalogData := catalog.Catalog{}
+		err := rows.Scan(&catalogData.Id, &catalogData.Alias, &catalogData.CreatedAt, &catalogData.Name, &catalogData.Uuid)
 		if err != nil {
 			logger.Log.Debug("error while SelectAll. error in method Scan", zap.Error(err))
 			continue
 		}
-		catalogList = append(catalogList, &catalog)
+		catalogList = append(catalogList, &catalogData)
 	}
 	return catalogList, nil
 }

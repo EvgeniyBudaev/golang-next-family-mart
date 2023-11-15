@@ -15,7 +15,7 @@ type ICreateCatalogUseCase interface {
 }
 
 type IGetCatalogListUseCase interface {
-	GetCatalogList(ctx *fiber.Ctx) ([]*catalog.Catalog, error)
+	GetCatalogList(ctx *fiber.Ctx) (*catalog.ListCatalogResponse, error)
 }
 
 func PostCatalogCreateHandler(uc ICreateCatalogUseCase) fiber.Handler {

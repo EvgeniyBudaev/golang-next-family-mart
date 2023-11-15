@@ -8,6 +8,7 @@ import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
+	"strings"
 )
 
 type PGUserStore struct {
@@ -38,7 +39,7 @@ func (pg *PGUserStore) Create(cf *fiber.Ctx, c *catalog.Catalog) (*catalog.Catal
 	return c, nil
 }
 
-func (pg *PGUserStore) SelectAll(ctx *fiber.Ctx, pag *pagination.Pagination) ([]*catalog.Catalog, error) {
+func (pg *PGUserStore) SelectList(ctx *fiber.Ctx, qp *catalog.QueryParamsCatalogList) (*catalog.ListCatalogResponse, error) {
 	var totalItems int64
 	countQuery := "SELECT COUNT(*) FROM catalogs"
 	err := pg.store.Db().QueryRow(ctx.Context(), countQuery).Scan(&totalItems)
@@ -46,21 +47,30 @@ func (pg *PGUserStore) SelectAll(ctx *fiber.Ctx, pag *pagination.Pagination) ([]
 		logger.Log.Debug("error while counting SelectAll. error in method QueryRow", zap.Error(err))
 		return nil, err
 	}
-	fmt.Println("totalItems: ", totalItems)
-	currentPage := pag.Page
-	fmt.Println("currentPage: ", currentPage)
-	currentLimit := pag.Page
-	fmt.Println("currentLimit: ", currentLimit)
-
-	hasPrevious := pag.Page > 1
-	hasNext := (pag.Page * pag.Limit) < totalItems
-	fmt.Println("hasPrevious: ", hasPrevious)
-	fmt.Println("hasNext: ", hasNext)
-
-	fmt.Println("Params: ", pag)
-	limit := pag.Limit
-	offset := (pag.Page - 1) * limit
-	sqlSelect := "SELECT * FROM catalogs ORDER BY created_at DESC, id DESC LIMIT $1 OFFSET $2"
+	hasPrevious := qp.Page > 1
+	hasNext := (qp.Page * qp.Limit) < totalItems
+	limit := qp.Limit
+	offset := (qp.Page - 1) * limit
+	sortParams := strings.Split(qp.Sort, ",")
+	sqlSelect := "SELECT * FROM catalogs"
+	sqlSelect += " ORDER BY"
+	if len(sortParams) > 0 {
+		for i, sortParam := range sortParams {
+			sortFields := strings.Split(sortParam, "_")
+			if len(sortFields) != 2 {
+				continue
+			}
+			fieldName := sortFields[0]
+			if fieldName == "createdAt" {
+				fieldName = "created_at"
+			}
+			if i > 0 {
+				sqlSelect += ","
+			}
+			sqlSelect += fmt.Sprintf(" %s %s", fieldName, sortFields[1])
+		}
+	}
+	sqlSelect += " LIMIT $1 OFFSET $2"
 	catalogList := make([]*catalog.Catalog, 0)
 	rows, err := pg.store.Db().Query(ctx.Context(), sqlSelect, limit, offset)
 	if err != nil {
@@ -77,5 +87,16 @@ func (pg *PGUserStore) SelectAll(ctx *fiber.Ctx, pag *pagination.Pagination) ([]
 		}
 		catalogList = append(catalogList, &catalogData)
 	}
-	return catalogList, nil
+	paging := pagination.NewPagination(&pagination.Pagination{
+		HasNext:     hasNext,
+		HasPrevious: hasPrevious,
+		Limit:       qp.Limit,
+		Page:        qp.Page,
+		TotalItems:  totalItems,
+	})
+	response := catalog.ListCatalogResponse{
+		Pagination: paging,
+		Content:    catalogList,
+	}
+	return &response, nil
 }

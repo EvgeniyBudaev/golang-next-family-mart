@@ -2,7 +2,6 @@ package catalog
 
 import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/catalog"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/pagination"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
@@ -12,23 +11,19 @@ type GetCatalogListUseCase struct {
 	dataStore ICatalogStore
 }
 
-type QueryParamsCatalog struct {
-	pagination.Pagination
-}
-
 func NewGetCatalogListUseCase(ds ICatalogStore) *GetCatalogListUseCase {
 	return &GetCatalogListUseCase{
 		dataStore: ds,
 	}
 }
 
-func (uc *GetCatalogListUseCase) GetCatalogList(ctx *fiber.Ctx) ([]*catalog.Catalog, error) {
-	var params QueryParamsCatalog
+func (uc *GetCatalogListUseCase) GetCatalogList(ctx *fiber.Ctx) (*catalog.ListCatalogResponse, error) {
+	var params catalog.QueryParamsCatalogList
 	if err := ctx.QueryParser(&params); err != nil {
 		logger.Log.Debug("error while SelectAll. error in method QueryParser", zap.Error(err))
 		return nil, err
 	}
-	response, err := uc.dataStore.SelectAll(ctx, &params.Pagination)
+	response, err := uc.dataStore.SelectList(ctx, &params)
 	if err != nil {
 		logger.Log.Debug("error while GetCatalogList. error in method SelectAll", zap.Error(err))
 		return nil, err

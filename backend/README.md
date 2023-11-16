@@ -132,3 +132,10 @@ https://github.com/gookit/goutil
 ```
 go get -u github.com/gookit/goutil
 ```
+
+Squirrel - fluent SQL generator for Go
+https://github.com/Masterminds/squirrel
+
+```
+go get -u github.com/Masterminds/squirrel
+```

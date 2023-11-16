@@ -6,6 +6,7 @@ import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/pagination"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres"
+	sq "github.com/Masterminds/squirrel"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 	"strings"
@@ -40,12 +41,13 @@ func (pg *PGCatalogStore) Create(cf *fiber.Ctx, c *catalog.Catalog) (*catalog.Ca
 }
 
 func (pg *PGCatalogStore) SelectList(ctx *fiber.Ctx, qp *catalog.QueryParamsCatalogList) (*catalog.ListCatalogResponse, error) {
-	sqlSelect := "SELECT * FROM catalogs"
+	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	sqlSelect := psql.Select("*").From("catalogs")
 	countQuery := "SELECT COUNT(*) FROM catalogs"
 	// searching
 	if qp.Search != "" {
 		searchString := strings.ToLower(strings.TrimSpace(qp.Search))
-		sqlSelect += fmt.Sprintf(" WHERE LOWER(name) LIKE '%%%s%%'", searchString)
+		sqlSelect = sqlSelect.Where("LOWER(name) LIKE ?", "%"+searchString+"%")
 		countQuery += fmt.Sprintf(" WHERE LOWER(name) LIKE '%%%s%%'", searchString)
 	}
 	// pagination
@@ -60,37 +62,35 @@ func (pg *PGCatalogStore) SelectList(ctx *fiber.Ctx, qp *catalog.QueryParamsCata
 	limit := qp.Limit
 	offset := (qp.Page - 1) * limit
 	if qp.Sort == "" {
-		sqlSelect += " ORDER BY created_at DESC"
+		sqlSelect = sqlSelect.OrderBy("created_at DESC")
 		countQuery += " ORDER BY created_at DESC"
 	}
 	// sorting
 	if qp.Sort != "" {
-		sqlSelect += " ORDER BY"
-		countQuery += " ORDER BY"
+		sortFields := make([]string, 0)
 		sortParams := strings.Split(qp.Sort, ",")
-		if len(sortParams) > 0 {
-			for i, sortParam := range sortParams {
-				sortFields := strings.Split(sortParam, "_")
-				if len(sortFields) != 2 {
-					continue
-				}
-				fieldName := sortFields[0]
-				if fieldName == "createdAt" {
-					fieldName = "created_at"
-				}
-				if i > 0 {
-					sqlSelect += ","
-					countQuery += ","
-				}
-				sqlSelect += fmt.Sprintf(" %s %s", fieldName, sortFields[1])
-				countQuery += fmt.Sprintf(" %s %s", fieldName, sortFields[1])
+		for _, sortParam := range sortParams {
+			fields := strings.Split(sortParam, "_")
+			if len(fields) != 2 {
+				continue
 			}
+			field := fields[0]
+			if field == "createdAt" {
+				field = "created_at"
+			}
+			sortFields = append(sortFields, field+" "+fields[1])
 		}
+		sqlSelect = sqlSelect.OrderBy(sortFields...)
 	}
-	sqlSelect += " LIMIT $1 OFFSET $2"  // for pagination
+	sqlSelect = sqlSelect.Limit(uint64(limit)).Offset(uint64(offset))
 	countQuery += " LIMIT $1 OFFSET $2" // for pagination
 	catalogList := make([]*catalog.Catalog, 0)
-	rows, err := pg.store.Db().Query(ctx.Context(), sqlSelect, limit, offset)
+	query, args, err := sqlSelect.ToSql()
+	if err != nil {
+		logger.Log.Debug("error while SelectList. error in method ToSql", zap.Error(err))
+		return nil, err
+	}
+	rows, err := pg.store.Db().Query(ctx.Context(), query, args...)
 	if err != nil {
 		logger.Log.Debug("error while SelectList. error in method Query", zap.Error(err))
 		return nil, err

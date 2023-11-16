@@ -1,7 +1,6 @@
 package catalog
 
 import (
-	"fmt"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/catalog"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/pagination"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
@@ -43,18 +42,23 @@ func (pg *PGCatalogStore) Create(cf *fiber.Ctx, c *catalog.Catalog) (*catalog.Ca
 func (pg *PGCatalogStore) SelectList(ctx *fiber.Ctx, qp *catalog.QueryParamsCatalogList) (*catalog.ListCatalogResponse, error) {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	sqlSelect := psql.Select("*").From("catalogs")
-	countQuery := "SELECT COUNT(*) FROM catalogs"
+	countSelect := psql.Select("COUNT(*)").From("catalogs")
 	// searching
 	if qp.Search != "" {
 		searchString := strings.ToLower(strings.TrimSpace(qp.Search))
 		sqlSelect = sqlSelect.Where("LOWER(name) LIKE ?", "%"+searchString+"%")
-		countQuery += fmt.Sprintf(" WHERE LOWER(name) LIKE '%%%s%%'", searchString)
+		countSelect = countSelect.Where(sq.Like{"LOWER(name)": "%" + searchString + "%"})
 	}
 	// pagination
 	var totalItems int64
-	err := pg.store.Db().QueryRow(ctx.Context(), countQuery).Scan(&totalItems)
+	count, args, err := countSelect.ToSql()
 	if err != nil {
-		logger.Log.Debug("error while counting SelectList. error in method QueryRow", zap.Error(err))
+		logger.Log.Debug("error while counting SelectList. error in method ToSql", zap.Error(err))
+		return nil, err
+	}
+	err = pg.store.Db().QueryRow(ctx.Context(), count, args...).Scan(&totalItems)
+	if err != nil {
+		logger.Log.Debug("error while counting SelectList. error in method Scan", zap.Error(err))
 		return nil, err
 	}
 	hasPrevious := qp.Page > 1
@@ -63,7 +67,7 @@ func (pg *PGCatalogStore) SelectList(ctx *fiber.Ctx, qp *catalog.QueryParamsCata
 	offset := (qp.Page - 1) * limit
 	if qp.Sort == "" {
 		sqlSelect = sqlSelect.OrderBy("created_at DESC")
-		countQuery += " ORDER BY created_at DESC"
+		countSelect = countSelect.OrderBy("created_at DESC")
 	}
 	// sorting
 	if qp.Sort != "" {
@@ -83,7 +87,7 @@ func (pg *PGCatalogStore) SelectList(ctx *fiber.Ctx, qp *catalog.QueryParamsCata
 		sqlSelect = sqlSelect.OrderBy(sortFields...)
 	}
 	sqlSelect = sqlSelect.Limit(uint64(limit)).Offset(uint64(offset))
-	countQuery += " LIMIT $1 OFFSET $2" // for pagination
+	countSelect = countSelect.Limit(uint64(limit)).Offset(uint64(offset)) // for pagination
 	catalogList := make([]*catalog.Catalog, 0)
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {

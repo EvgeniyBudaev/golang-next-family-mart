@@ -2,6 +2,7 @@ package catalog
 
 import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/pagination"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/searching"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/sorting"
 	"github.com/google/uuid"
 	"time"
@@ -22,5 +23,6 @@ type ListCatalogResponse struct {
 
 type QueryParamsCatalogList struct {
 	pagination.Pagination
+	searching.Searching
 	sorting.Sorting
 }

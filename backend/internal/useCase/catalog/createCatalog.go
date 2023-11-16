@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
+	"strings"
 	"time"
 )
 
@@ -26,9 +27,9 @@ func NewCreateCatalogUseCase(ds ICatalogStore) *CreateCatalogUseCase {
 
 func (uc *CreateCatalogUseCase) CreateCatalog(ctx *fiber.Ctx, r CreateCatalogRequest) (*catalog.Catalog, error) {
 	var request = &catalog.Catalog{
-		Alias:     r.Alias,
+		Alias:     strings.ToLower(r.Alias),
 		CreatedAt: time.Now(),
-		Name:      r.Name,
+		Name:      strings.ToLower(r.Name),
 		Uuid:      uuid.New(),
 	}
 	response, err := uc.dataStore.Create(ctx, request)

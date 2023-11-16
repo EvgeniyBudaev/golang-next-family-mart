@@ -8,17 +8,17 @@ import (
 	"go.uber.org/zap"
 )
 
-type PGUserStore struct {
+type PGProductStore struct {
 	store *postgres.Store
 }
 
-func NewDBProductStore(store *postgres.Store) *PGUserStore {
-	return &PGUserStore{
+func NewDBProductStore(store *postgres.Store) *PGProductStore {
+	return &PGProductStore{
 		store: store,
 	}
 }
 
-func (pg *PGUserStore) Create(ctx context.Context, p *product.Product) (*product.Product, error) {
+func (pg *PGProductStore) Create(ctx context.Context, p *product.Product) (*product.Product, error) {
 	tx, err := pg.store.Db().Begin(ctx)
 	if err != nil {
 		logger.Log.Debug("error while Create. error in method Begin", zap.Error(err))
@@ -35,7 +35,7 @@ func (pg *PGUserStore) Create(ctx context.Context, p *product.Product) (*product
 	return p, nil
 }
 
-func (pg *PGUserStore) SelectAll(ctx context.Context) ([]*product.Product, error) {
+func (pg *PGProductStore) SelectAll(ctx context.Context) ([]*product.Product, error) {
 	sqlSelect := "SELECT * FROM products"
 	productList := make([]*product.Product, 0)
 	rows, err := pg.store.Db().Query(ctx, sqlSelect)

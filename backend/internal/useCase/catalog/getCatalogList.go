@@ -20,7 +20,7 @@ func NewGetCatalogListUseCase(ds ICatalogStore) *GetCatalogListUseCase {
 func (uc *GetCatalogListUseCase) GetCatalogList(ctx *fiber.Ctx) (*catalog.ListCatalogResponse, error) {
 	var params catalog.QueryParamsCatalogList
 	if err := ctx.QueryParser(&params); err != nil {
-		logger.Log.Debug("error while SelectAll. error in method QueryParser", zap.Error(err))
+		logger.Log.Debug("error while GetCatalogList. error in method QueryParser", zap.Error(err))
 		return nil, err
 	}
 	response, err := uc.dataStore.SelectList(ctx, &params)

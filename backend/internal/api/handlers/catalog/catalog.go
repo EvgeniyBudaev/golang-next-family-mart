@@ -22,6 +22,10 @@ type IGetCatalogByAliasUseCase interface {
 	GetCatalogByAlias(ctx *fiber.Ctx) (*catalog.Catalog, error)
 }
 
+type IGetCatalogByUuidUseCase interface {
+	GetCatalogByUuid(ctx *fiber.Ctx) (*catalog.Catalog, error)
+}
+
 func PostCatalogCreateHandler(uc ICreateCatalogUseCase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		logger.Log.Info("post to catalog create POST /api/v1/catalog/create")
@@ -42,10 +46,22 @@ func PostCatalogCreateHandler(uc ICreateCatalogUseCase) fiber.Handler {
 
 func GetCatalogByAliasHandler(uc IGetCatalogByAliasUseCase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		logger.Log.Info("get catalog list GET /api/v1/catalog/:alias")
+		logger.Log.Info("get catalog by alias GET /api/v1/catalog/:alias")
 		response, err := uc.GetCatalogByAlias(c)
 		if err != nil {
 			logger.Log.Debug("error while GetCatalogByAliasHandler. Error in GetCatalogByAlias", zap.Error(err))
+			return r.WrapError(c, err, http.StatusBadRequest)
+		}
+		return r.WrapOk(c, response)
+	}
+}
+
+func GetCatalogByUuidHandler(uc IGetCatalogByUuidUseCase) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		logger.Log.Info("get catalog by uuid GET /api/v1/catalog/:uuid")
+		response, err := uc.GetCatalogByUuid(c)
+		if err != nil {
+			logger.Log.Debug("error while GetCatalogByUuidHandler. Error in GetCatalogByUuid", zap.Error(err))
 			return r.WrapError(c, err, http.StatusBadRequest)
 		}
 		return r.WrapOk(c, response)

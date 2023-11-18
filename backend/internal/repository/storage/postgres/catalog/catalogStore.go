@@ -69,6 +69,41 @@ func (pg *PGCatalogStore) FindByAlias(ctx *fiber.Ctx, alias string) (*catalog.Ca
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
+	if catalogData.Deleted == true {
+		msg := errors.Wrap(err, "catalog not found")
+		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
+		return nil, err
+	}
+	return &catalogData, nil
+}
+
+func (pg *PGCatalogStore) FindByUuid(ctx *fiber.Ctx, uuid string) (*catalog.Catalog, error) {
+	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	sqlSelect := psql.Select("*").From("catalogs").Where(sq.Eq{"uuid": uuid})
+	catalogData := catalog.Catalog{}
+	query, args, err := sqlSelect.ToSql()
+	if err != nil {
+		logger.Log.Debug("error while FindByUuid. error in method ToSql", zap.Error(err))
+		return nil, err
+	}
+	row := pg.store.Db().QueryRow(ctx.Context(), query, args...)
+	if err != nil {
+		logger.Log.Debug("error while FindByUuid. error in method Query", zap.Error(err))
+		return nil, err
+	}
+	err = row.Scan(&catalogData.Id, &catalogData.Alias, &catalogData.CreatedAt, &catalogData.Deleted,
+		&catalogData.Enabled, &catalogData.Image, &catalogData.Name, &catalogData.UpdatedAt, &catalogData.Uuid)
+	if err != nil {
+		logger.Log.Debug("error while FindByUuid. error in method Scan", zap.Error(err))
+		msg := errors.Wrap(err, "catalog not found")
+		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
+		return nil, err
+	}
+	if catalogData.Deleted == true {
+		msg := errors.Wrap(err, "catalog not found")
+		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
+		return nil, err
+	}
 	return &catalogData, nil
 }
 

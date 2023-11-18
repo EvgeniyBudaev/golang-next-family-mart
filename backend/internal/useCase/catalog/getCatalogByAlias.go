@@ -18,8 +18,8 @@ func NewGetCatalogByAliasUseCase(ds ICatalogStore) *GetCatalogByAliasUseCase {
 }
 
 func (uc *GetCatalogByAliasUseCase) GetCatalogByAlias(ctx *fiber.Ctx) (*catalog.Catalog, error) {
-	alias := ctx.Params("alias")
-	response, err := uc.dataStore.FindByAlias(ctx, alias)
+	params := ctx.Params("alias")
+	response, err := uc.dataStore.FindByAlias(ctx, params)
 	if err != nil {
 		logger.Log.Debug("error while GetCatalogByAlias. error in method FindByAlias", zap.Error(err))
 		return nil, err

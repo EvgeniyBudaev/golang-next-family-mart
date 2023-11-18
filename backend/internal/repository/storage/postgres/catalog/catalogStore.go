@@ -10,6 +10,7 @@ import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"net/http"
@@ -26,6 +27,7 @@ func NewDBCatalogStore(store *postgres.Store) *PGCatalogStore {
 }
 
 func (pg *PGCatalogStore) Create(cf *fiber.Ctx, c *catalog.Catalog) (*catalog.Catalog, error) {
+	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	ctx := cf.Context()
 	tx, err := pg.store.Db().Begin(ctx)
 	if err != nil {
@@ -33,9 +35,17 @@ func (pg *PGCatalogStore) Create(cf *fiber.Ctx, c *catalog.Catalog) (*catalog.Ca
 		return nil, err
 	}
 	defer tx.Rollback(ctx)
-	sqlSelect := "INSERT INTO catalogs (alias, created_at, deleted, enabled, image, name, updated_at, uuid) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id"
-	if err := tx.QueryRow(ctx,
-		sqlSelect, c.Alias, c.CreatedAt, c.Deleted, c.Enabled, c.Image, c.Name, c.UpdatedAt, c.Uuid).Scan(&c.Id); err != nil {
+	sqlSelect := sqlBuilder.Insert("catalogs").
+		Columns("alias", "created_at", "deleted", "enabled", "image", "name", "updated_at", "uuid").
+		Values(c.Alias, c.CreatedAt, c.Deleted, c.Enabled, c.Image, c.Name, c.UpdatedAt, c.Uuid).
+		Suffix("RETURNING id")
+	query, args, err := sqlSelect.ToSql()
+	if err != nil {
+		logger.Log.Debug("error while Create. Error building SQL", zap.Error(err))
+		return nil, err
+	}
+	err = tx.QueryRow(ctx, query, args...).Scan(&c.Id)
+	if err != nil {
 		logger.Log.Debug("error while Create. error in method QueryRow", zap.Error(err))
 		msg := errors.Wrap(err, "bad request")
 		err = errorDomain.NewCustomError(msg, http.StatusBadRequest)
@@ -45,11 +55,44 @@ func (pg *PGCatalogStore) Create(cf *fiber.Ctx, c *catalog.Catalog) (*catalog.Ca
 	return c, nil
 }
 
+func (pg *PGCatalogStore) Update(cf *fiber.Ctx, c *catalog.Catalog) (*catalog.Catalog, error) {
+	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	ctx := cf.Context()
+	tx, err := pg.store.Db().Begin(ctx)
+	if err != nil {
+		logger.Log.Debug("error while Update. error in method Begin", zap.Error(err))
+		return nil, err
+	}
+	defer tx.Rollback(ctx)
+	sqlSelect := sqlBuilder.Update("catalogs").
+		Set("alias", c.Alias).
+		Set("created_at", c.CreatedAt).
+		Set("deleted", c.Deleted).
+		Set("enabled", c.Enabled).
+		Set("image", c.Image).
+		Set("name", c.Name).
+		Set("updated_at", c.UpdatedAt).
+		Set("uuid", c.Uuid).
+		Where(sq.Eq{"uuid": c.Uuid})
+	query, args, err := sqlSelect.ToSql()
+	if err != nil {
+		logger.Log.Debug("error while Update. error in method ToSql", zap.Error(err))
+		return nil, err
+	}
+	_, err = tx.Exec(ctx, query, args...)
+	if err != nil {
+		logger.Log.Debug("error while Update. Error in Exec method", zap.Error(err))
+		return nil, err
+	}
+	tx.Commit(ctx)
+	return c, nil
+}
+
 func (pg *PGCatalogStore) FindByAlias(ctx *fiber.Ctx, alias string) (*catalog.Catalog, error) {
 	//c, cancel := context.WithTimeout(ctx.Context(), 3*time.Second)
 	//defer cancel()
-	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	sqlSelect := psql.Select("*").From("catalogs").Where(sq.Eq{"alias": alias})
+	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	sqlSelect := sqlBuilder.Select("*").From("catalogs").Where(sq.Eq{"alias": alias})
 	catalogData := catalog.Catalog{}
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
@@ -77,9 +120,9 @@ func (pg *PGCatalogStore) FindByAlias(ctx *fiber.Ctx, alias string) (*catalog.Ca
 	return &catalogData, nil
 }
 
-func (pg *PGCatalogStore) FindByUuid(ctx *fiber.Ctx, uuid string) (*catalog.Catalog, error) {
-	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	sqlSelect := psql.Select("*").From("catalogs").Where(sq.Eq{"uuid": uuid})
+func (pg *PGCatalogStore) FindByUuid(ctx *fiber.Ctx, uuid uuid.UUID) (*catalog.Catalog, error) {
+	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	sqlSelect := sqlBuilder.Select("*").From("catalogs").Where(sq.Eq{"uuid": uuid})
 	catalogData := catalog.Catalog{}
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
@@ -110,9 +153,9 @@ func (pg *PGCatalogStore) FindByUuid(ctx *fiber.Ctx, uuid string) (*catalog.Cata
 func (pg *PGCatalogStore) SelectList(
 	ctx *fiber.Ctx,
 	qp *catalog.QueryParamsCatalogList) (*catalog.ListCatalogResponse, error) {
-	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	sqlSelect := psql.Select("*").From("catalogs")
-	countSelect := psql.Select("COUNT(*)").From("catalogs")
+	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	sqlSelect := sqlBuilder.Select("*").From("catalogs")
+	countSelect := sqlBuilder.Select("COUNT(*)").From("catalogs")
 	limit := qp.Limit
 	page := qp.Page
 	// search

@@ -14,6 +14,10 @@ type ICreateCatalogUseCase interface {
 	CreateCatalog(ctx *fiber.Ctx, request catalogUseCase.CreateCatalogRequest) (*catalog.Catalog, error)
 }
 
+type IUpdateCatalogUseCase interface {
+	UpdateCatalog(ctx *fiber.Ctx, request catalogUseCase.UpdateCatalogRequest) (*catalog.Catalog, error)
+}
+
 type IGetCatalogListUseCase interface {
 	GetCatalogList(ctx *fiber.Ctx) (*catalog.ListCatalogResponse, error)
 }
@@ -38,6 +42,24 @@ func PostCatalogCreateHandler(uc ICreateCatalogUseCase) fiber.Handler {
 		response, err := uc.CreateCatalog(c, request)
 		if err != nil {
 			logger.Log.Debug("error while PostCatalogCreateHandler. Error in CreateCatalog", zap.Error(err))
+			return r.WrapError(c, err, http.StatusBadRequest)
+		}
+		return r.WrapCreated(c, response)
+	}
+}
+
+func PutCatalogUpdateHandler(uc IUpdateCatalogUseCase) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		logger.Log.Info("post to catalog create POST /api/v1/catalog/update")
+		var request = catalogUseCase.UpdateCatalogRequest{}
+		err := c.BodyParser(&request)
+		if err != nil {
+			logger.Log.Debug("error while PutCatalogUpdateHandler. Error in BodyParser", zap.Error(err))
+			return r.WrapError(c, err, http.StatusBadRequest)
+		}
+		response, err := uc.UpdateCatalog(c, request)
+		if err != nil {
+			logger.Log.Debug("error while PutCatalogUpdateHandler. Error in UpdateCatalog", zap.Error(err))
 			return r.WrapError(c, err, http.StatusBadRequest)
 		}
 		return r.WrapCreated(c, response)

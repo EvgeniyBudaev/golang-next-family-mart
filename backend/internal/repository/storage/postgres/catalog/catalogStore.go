@@ -30,9 +30,9 @@ func (pg *PGCatalogStore) Create(cf *fiber.Ctx, c *catalog.Catalog) (*catalog.Ca
 		return nil, err
 	}
 	defer tx.Rollback(ctx)
-	sqlSelect := "INSERT INTO catalogs (alias, created_at, name, uuid) VALUES ($1, $2, $3, $4) RETURNING id"
+	sqlSelect := "INSERT INTO catalogs (alias, created_at, deleted, enabled, image, name, updated_at, uuid) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id"
 	if err := tx.QueryRow(ctx,
-		sqlSelect, c.Alias, c.CreatedAt, c.Name, c.Uuid).Scan(&c.Id); err != nil {
+		sqlSelect, c.Alias, c.CreatedAt, c.Deleted, c.Enabled, c.Image, c.Name, c.UpdatedAt, c.Uuid).Scan(&c.Id); err != nil {
 		logger.Log.Debug("error while Create. error in method QueryRow", zap.Error(err))
 		return nil, err
 	}
@@ -85,8 +85,8 @@ func (pg *PGCatalogStore) SelectList(
 	defer rows.Close()
 	for rows.Next() {
 		catalogData := catalog.Catalog{}
-		err := rows.Scan(&catalogData.Id, &catalogData.Alias, &catalogData.CreatedAt, &catalogData.Name,
-			&catalogData.Uuid)
+		err := rows.Scan(&catalogData.Id, &catalogData.Alias, &catalogData.CreatedAt, &catalogData.Deleted,
+			&catalogData.Enabled, &catalogData.Image, &catalogData.Name, &catalogData.UpdatedAt, &catalogData.Uuid)
 		if err != nil {
 			logger.Log.Debug("error while SelectList. error in method Scan", zap.Error(err))
 			continue

@@ -29,7 +29,11 @@ func (uc *CreateCatalogUseCase) CreateCatalog(ctx *fiber.Ctx, r CreateCatalogReq
 	var request = &catalog.Catalog{
 		Alias:     strings.ToLower(r.Alias),
 		CreatedAt: time.Now(),
+		Deleted:   false,
+		Enabled:   true,
+		Image:     "",
 		Name:      strings.ToLower(r.Name),
+		UpdatedAt: time.Now(),
 		Uuid:      uuid.New(),
 	}
 	response, err := uc.dataStore.Create(ctx, request)

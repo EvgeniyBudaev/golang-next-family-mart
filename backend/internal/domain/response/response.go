@@ -9,16 +9,16 @@ import (
 )
 
 func WrapError(ctx *fiber.Ctx, err error, httpStatusCode int) error {
-	var responseError *errorDomain.ResponseError
-	if errors.As(err, &responseError) {
-		msg := errorDomain.CustomError{
-			StatusCode: responseError.StatusCode,
+	var customError *errorDomain.CustomError
+	if errors.As(err, &customError) {
+		msg := errorDomain.ResponseError{
+			StatusCode: customError.StatusCode,
 			Success:    false,
-			Message:    responseError.Err.Error(),
+			Message:    customError.Err.Error(),
 		}
 		return ctx.Status(httpStatusCode).JSON(msg)
 	}
-	msg := errorDomain.CustomError{
+	msg := errorDomain.ResponseError{
 		StatusCode: httpStatusCode,
 		Success:    false,
 		Message:    err.Error(),

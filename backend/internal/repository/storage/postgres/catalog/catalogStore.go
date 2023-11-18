@@ -38,7 +38,7 @@ func (pg *PGCatalogStore) Create(cf *fiber.Ctx, c *catalog.Catalog) (*catalog.Ca
 		sqlSelect, c.Alias, c.CreatedAt, c.Deleted, c.Enabled, c.Image, c.Name, c.UpdatedAt, c.Uuid).Scan(&c.Id); err != nil {
 		logger.Log.Debug("error while Create. error in method QueryRow", zap.Error(err))
 		msg := errors.Wrap(err, "bad request")
-		err = errorDomain.NewResponseError(msg, http.StatusBadRequest)
+		err = errorDomain.NewCustomError(msg, http.StatusBadRequest)
 		return nil, err
 	}
 	tx.Commit(ctx)
@@ -66,7 +66,7 @@ func (pg *PGCatalogStore) FindByAlias(ctx *fiber.Ctx, alias string) (*catalog.Ca
 	if err != nil {
 		logger.Log.Debug("error while FindByAlias. error in method Scan", zap.Error(err))
 		msg := errors.Wrap(err, "catalog not found")
-		err = errorDomain.NewResponseError(msg, http.StatusNotFound)
+		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
 	return &catalogData, nil

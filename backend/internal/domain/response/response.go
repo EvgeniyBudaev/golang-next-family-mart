@@ -16,7 +16,7 @@ func WrapError(ctx *fiber.Ctx, err error, httpStatusCode int) error {
 			Success:    false,
 			Message:    customError.Err.Error(),
 		}
-		return ctx.Status(httpStatusCode).JSON(msg)
+		return ctx.Status(customError.StatusCode).JSON(msg)
 	}
 	msg := errorDomain.ResponseError{
 		StatusCode: httpStatusCode,

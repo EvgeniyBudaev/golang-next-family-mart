@@ -1,6 +1,7 @@
 package catalog
 
 import (
+	"fmt"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/catalog"
 	errorDomain "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/error"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/pagination"
@@ -49,6 +50,39 @@ func (pg *PGCatalogStore) Create(cf *fiber.Ctx, c *catalog.Catalog) (*catalog.Ca
 		logger.Log.Debug("error while Create. error in method QueryRow", zap.Error(err))
 		msg := errors.Wrap(err, "bad request")
 		err = errorDomain.NewCustomError(msg, http.StatusBadRequest)
+		return nil, err
+	}
+	tx.Commit(ctx)
+	return c, nil
+}
+
+func (pg *PGCatalogStore) Delete(cf *fiber.Ctx, c *catalog.Catalog) (*catalog.Catalog, error) {
+	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	ctx := cf.Context()
+	tx, err := pg.store.Db().Begin(ctx)
+	if err != nil {
+		logger.Log.Debug("error while Delete. error in method Begin", zap.Error(err))
+		return nil, err
+	}
+	defer tx.Rollback(ctx)
+	sqlSelect := sqlBuilder.Update("catalogs").
+		Set("alias", c.Alias).
+		Set("created_at", c.CreatedAt).
+		Set("deleted", c.Deleted).
+		Set("enabled", c.Enabled).
+		Set("image", c.Image).
+		Set("name", c.Name).
+		Set("updated_at", c.UpdatedAt).
+		Set("uuid", c.Uuid).
+		Where(sq.Eq{"uuid": c.Uuid})
+	query, args, err := sqlSelect.ToSql()
+	if err != nil {
+		logger.Log.Debug("error while Delete. error in method ToSql", zap.Error(err))
+		return nil, err
+	}
+	_, err = tx.Exec(ctx, query, args...)
+	if err != nil {
+		logger.Log.Debug("error while Delete. Error in Exec method", zap.Error(err))
 		return nil, err
 	}
 	tx.Commit(ctx)
@@ -113,7 +147,7 @@ func (pg *PGCatalogStore) FindByAlias(ctx *fiber.Ctx, alias string) (*catalog.Ca
 		return nil, err
 	}
 	if catalogData.Deleted == true {
-		msg := errors.Wrap(err, "catalog not found")
+		msg := fmt.Errorf("catalog has already been deleted")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
@@ -143,7 +177,7 @@ func (pg *PGCatalogStore) FindByUuid(ctx *fiber.Ctx, uuid uuid.UUID) (*catalog.C
 		return nil, err
 	}
 	if catalogData.Deleted == true {
-		msg := errors.Wrap(err, "catalog not found")
+		msg := fmt.Errorf("catalog has already been deleted")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
@@ -169,11 +203,11 @@ func (pg *PGCatalogStore) SelectList(
 	}
 	// sorting
 	if qp.Sort == "" {
-		sqlSelect = sqlSelect.OrderBy("created_at DESC")
-		countSelect = countSelect.OrderBy("created_at DESC")
+		sqlSelect = sqlSelect.OrderBy("updated_at DESC")
+		countSelect = countSelect.OrderBy("updated_at DESC")
 	}
 	fieldMapping := map[string]string{
-		"createdAt": "created_at",
+		"updatedAt": "updated_at",
 	}
 	sqlSelect = sorting.ApplySorting(sqlSelect, qp.Sort, fieldMapping)
 	countSelect = sorting.ApplySorting(countSelect, qp.Sort, fieldMapping)

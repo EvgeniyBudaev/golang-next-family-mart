@@ -52,14 +52,17 @@ func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.
 
 	// useCase
 	useCaseCreateCatalog := catalog.NewCreateCatalogUseCase(catalogDataStore)
+	useCaseDeleteCatalog := catalog.NewDeleteCatalogUseCase(catalogDataStore)
 	useCaseUpdateCatalog := catalog.NewUpdateCatalogUseCase(catalogDataStore)
 	useCaseCreateProduct := product.NewCreateProductUseCase(productDataStore)
 
 	// handlers
 	grp.Post("/catalog/create", middlewares.NewRequiresRealmRole("admin"),
-		catalogHandler.PostCatalogCreateHandler(useCaseCreateCatalog))
+		catalogHandler.CreateCatalogHandler(useCaseCreateCatalog))
+	grp.Delete("/catalog/delete/:uuid", middlewares.NewRequiresRealmRole("admin"),
+		catalogHandler.DeleteCatalogHandler(useCaseDeleteCatalog))
 	grp.Put("/catalog/update", middlewares.NewRequiresRealmRole("admin"),
-		catalogHandler.PutCatalogUpdateHandler(useCaseUpdateCatalog))
+		catalogHandler.UpdateCatalogHandler(useCaseUpdateCatalog))
 	grp.Post("/product/create", middlewares.NewRequiresRealmRole("admin"),
 		productHandler.PostProductCreateHandler(useCaseCreateProduct))
 }

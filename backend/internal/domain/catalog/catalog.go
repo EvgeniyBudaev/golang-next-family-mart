@@ -30,3 +30,7 @@ type QueryParamsCatalogList struct {
 	searching.Searching
 	sorting.Sorting
 }
+
+type QueryParamsCatalogByAlias struct {
+	Alias string `json:"alias"`
+}

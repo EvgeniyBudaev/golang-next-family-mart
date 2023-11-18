@@ -31,11 +31,13 @@ func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Sto
 	// useCase
 	useCaseRegister := user.NewRegisterUseCase(identityManager)
 	useCaseGetCatalogList := catalog.NewGetCatalogListUseCase(catalogDataStore)
+	useCaseGetCatalogByAlias := catalog.NewGetCatalogByAliasUseCase(catalogDataStore)
 	useCaseGetProductList := product.NewGetProductListUseCase(productDataStore)
 
 	// handlers
 	grp.Post("/user/register", registerHandler.PostRegisterHandler(useCaseRegister))
 	grp.Get("/catalog/list", catalogHandler.GetCatalogListHandler(useCaseGetCatalogList))
+	grp.Get("/catalog/:alias", catalogHandler.GetCatalogByAliasHandler(useCaseGetCatalogByAlias))
 	grp.Get("/product/list", productHandler.GetProductListHandler(useCaseGetProductList))
 }
 

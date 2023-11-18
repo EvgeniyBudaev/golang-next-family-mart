@@ -1,6 +1,7 @@
 package catalog
 
 import (
+	"fmt"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/catalog"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/pagination"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/searching"
@@ -38,6 +39,32 @@ func (pg *PGCatalogStore) Create(cf *fiber.Ctx, c *catalog.Catalog) (*catalog.Ca
 	}
 	tx.Commit(ctx)
 	return c, nil
+}
+
+func (pg *PGCatalogStore) FindByAlias(ctx *fiber.Ctx, alias string) (*catalog.Catalog, error) {
+	//c, cancel := context.WithTimeout(ctx.Context(), 3*time.Second)
+	//defer cancel()
+	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	sqlSelect := psql.Select("*").From("catalogs").Where(sq.Eq{"alias": alias})
+	catalogData := catalog.Catalog{}
+	query, args, err := sqlSelect.ToSql()
+	if err != nil {
+		logger.Log.Debug("error while FindByAlias. error in method ToSql", zap.Error(err))
+		err = fmt.Errorf("catalog not found1")
+		return nil, err
+	}
+	row := pg.store.Db().QueryRow(ctx.Context(), query, args...)
+	if err != nil {
+		logger.Log.Debug("error while FindByAlias. error in method Query", zap.Error(err))
+		return nil, err
+	}
+	err = row.Scan(&catalogData.Id, &catalogData.Alias, &catalogData.CreatedAt, &catalogData.Deleted,
+		&catalogData.Enabled, &catalogData.Image, &catalogData.Name, &catalogData.UpdatedAt, &catalogData.Uuid)
+	if err != nil {
+		logger.Log.Debug("error while FindByAlias. error in method Scan", zap.Error(err))
+		return nil, err
+	}
+	return &catalogData, nil
 }
 
 func (pg *PGCatalogStore) SelectList(

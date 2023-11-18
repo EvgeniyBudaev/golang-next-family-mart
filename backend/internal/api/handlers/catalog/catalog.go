@@ -18,6 +18,10 @@ type IGetCatalogListUseCase interface {
 	GetCatalogList(ctx *fiber.Ctx) (*catalog.ListCatalogResponse, error)
 }
 
+type IGetCatalogByAliasUseCase interface {
+	GetCatalogByAlias(ctx *fiber.Ctx) (*catalog.Catalog, error)
+}
+
 func PostCatalogCreateHandler(uc ICreateCatalogUseCase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		logger.Log.Info("post to catalog create POST /api/v1/catalog/create")
@@ -33,6 +37,18 @@ func PostCatalogCreateHandler(uc ICreateCatalogUseCase) fiber.Handler {
 			return r.WrapError(c, err, http.StatusBadRequest)
 		}
 		return r.WrapCreated(c, response)
+	}
+}
+
+func GetCatalogByAliasHandler(uc IGetCatalogByAliasUseCase) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		logger.Log.Info("get catalog list GET /api/v1/catalog/:alias")
+		response, err := uc.GetCatalogByAlias(c)
+		if err != nil {
+			logger.Log.Debug("error while GetCatalogByAliasHandler. Error in GetCatalogByAlias", zap.Error(err))
+			return r.WrapError(c, err, http.StatusBadRequest)
+		}
+		return r.WrapOk(c, response)
 	}
 }
 

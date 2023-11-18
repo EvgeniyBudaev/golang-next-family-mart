@@ -1,8 +1,8 @@
 package catalog
 
 import (
-	"fmt"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/catalog"
+	errorDomain "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/error"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/pagination"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/searching"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/sorting"
@@ -10,7 +10,9 @@ import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/gofiber/fiber/v2"
+	"github.com/pkg/errors"
 	"go.uber.org/zap"
+	"net/http"
 )
 
 type PGCatalogStore struct {
@@ -35,6 +37,8 @@ func (pg *PGCatalogStore) Create(cf *fiber.Ctx, c *catalog.Catalog) (*catalog.Ca
 	if err := tx.QueryRow(ctx,
 		sqlSelect, c.Alias, c.CreatedAt, c.Deleted, c.Enabled, c.Image, c.Name, c.UpdatedAt, c.Uuid).Scan(&c.Id); err != nil {
 		logger.Log.Debug("error while Create. error in method QueryRow", zap.Error(err))
+		msg := errors.Wrap(err, "bad request")
+		err = errorDomain.NewResponseError(msg, http.StatusBadRequest)
 		return nil, err
 	}
 	tx.Commit(ctx)
@@ -50,7 +54,6 @@ func (pg *PGCatalogStore) FindByAlias(ctx *fiber.Ctx, alias string) (*catalog.Ca
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
 		logger.Log.Debug("error while FindByAlias. error in method ToSql", zap.Error(err))
-		err = fmt.Errorf("catalog not found1")
 		return nil, err
 	}
 	row := pg.store.Db().QueryRow(ctx.Context(), query, args...)
@@ -62,6 +65,8 @@ func (pg *PGCatalogStore) FindByAlias(ctx *fiber.Ctx, alias string) (*catalog.Ca
 		&catalogData.Enabled, &catalogData.Image, &catalogData.Name, &catalogData.UpdatedAt, &catalogData.Uuid)
 	if err != nil {
 		logger.Log.Debug("error while FindByAlias. error in method Scan", zap.Error(err))
+		msg := errors.Wrap(err, "catalog not found")
+		err = errorDomain.NewResponseError(msg, http.StatusNotFound)
 		return nil, err
 	}
 	return &catalogData, nil

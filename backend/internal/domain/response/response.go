@@ -1,14 +1,24 @@
 package response
 
 import (
-	errorResponse "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/error"
+	"errors"
+	errorDomain "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/error"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/success"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
 )
 
 func WrapError(ctx *fiber.Ctx, err error, httpStatusCode int) error {
-	msg := errorResponse.ErrorResponse{
+	var responseError *errorDomain.ResponseError
+	if errors.As(err, &responseError) {
+		msg := errorDomain.CustomError{
+			StatusCode: responseError.StatusCode,
+			Success:    false,
+			Message:    responseError.Err.Error(),
+		}
+		return ctx.Status(httpStatusCode).JSON(msg)
+	}
+	msg := errorDomain.CustomError{
 		StatusCode: httpStatusCode,
 		Success:    false,
 		Message:    err.Error(),

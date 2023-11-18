@@ -188,8 +188,8 @@ func (pg *PGCatalogStore) SelectList(
 	ctx *fiber.Ctx,
 	qp *catalog.QueryParamsCatalogList) (*catalog.ListCatalogResponse, error) {
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	sqlSelect := sqlBuilder.Select("*").From("catalogs")
-	countSelect := sqlBuilder.Select("COUNT(*)").From("catalogs")
+	sqlSelect := sqlBuilder.Select("*").From("catalogs").Where(sq.Eq{"deleted": false})
+	countSelect := sqlBuilder.Select("COUNT(*)").From("catalogs").Where(sq.Eq{"deleted": false})
 	limit := qp.Limit
 	page := qp.Page
 	// search

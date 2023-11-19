@@ -1,9 +1,9 @@
 package product
 
 import (
-	"context"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/product"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
+	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 )
 
@@ -17,8 +17,13 @@ func NewGetProductListUseCase(ds IProductStore) *GetProductListUseCase {
 	}
 }
 
-func (uc *GetProductListUseCase) GetProductList(ctx context.Context) ([]*product.Product, error) {
-	response, err := uc.dataStore.SelectAll(ctx)
+func (uc *GetProductListUseCase) GetProductList(ctx *fiber.Ctx) (*product.ListProductResponse, error) {
+	var params product.QueryParamsProductList
+	if err := ctx.QueryParser(&params); err != nil {
+		logger.Log.Debug("error while GetProductList. error in method QueryParser", zap.Error(err))
+		return nil, err
+	}
+	response, err := uc.dataStore.SelectList(ctx, &params)
 	if err != nil {
 		logger.Log.Debug("error while GetProductList. error in method SelectAll", zap.Error(err))
 		return nil, err

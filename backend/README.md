@@ -30,6 +30,13 @@ https://github.com/joho/godotenv
 go get -u github.com/joho/godotenv
 ```
 
+ENV Config
+https://github.com/kelseyhightower/envconfig
+
+```
+go get -u github.com/kelseyhightower/envconfig
+```
+
 Логирование
 https://github.com/sirupsen/logrus
 
@@ -57,6 +64,7 @@ https://github.com/golang-migrate/migrate/blob/master/cmd/migrate/README.md
 Создание миграционного репозитория
 
 ```
+migrate create -ext sql -dir migrations AttributesCreationMigration
 migrate create -ext sql -dir migrations CatalogsCreationMigration
 migrate create -ext sql -dir migrations ProductsCreationMigration
 ```

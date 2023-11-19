@@ -228,14 +228,14 @@ func (pg *PGCatalogStore) SelectList(
 	}
 	defer rows.Close()
 	for rows.Next() {
-		catalogData := catalog.Catalog{}
-		err := rows.Scan(&catalogData.Id, &catalogData.Alias, &catalogData.CreatedAt, &catalogData.Deleted,
-			&catalogData.Enabled, &catalogData.Image, &catalogData.Name, &catalogData.UpdatedAt, &catalogData.Uuid)
+		data := catalog.Catalog{}
+		err := rows.Scan(&data.Id, &data.Alias, &data.CreatedAt, &data.Deleted,
+			&data.Enabled, &data.Image, &data.Name, &data.UpdatedAt, &data.Uuid)
 		if err != nil {
 			logger.Log.Debug("error while SelectList. error in method Scan", zap.Error(err))
 			continue
 		}
-		catalogList = append(catalogList, &catalogData)
+		catalogList = append(catalogList, &data)
 	}
 	paging := pagination.GetPagination(limit, page, totalItems)
 	response := catalog.ListCatalogResponse{

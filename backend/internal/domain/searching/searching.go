@@ -7,13 +7,8 @@ import (
 )
 
 type Searching struct {
-	Search string `json:"search"`
-}
-
-func NewSearching(s *Searching) *Searching {
-	return &Searching{
-		Search: s.Search,
-	}
+	Catalog string `json:"catalog"`
+	Search  string `json:"search"`
 }
 
 func ApplySearch(sqlBuilder sq.SelectBuilder, searchKey, searchString string) sq.SelectBuilder {

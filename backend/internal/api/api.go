@@ -9,7 +9,6 @@ import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/zap"
 	"net/http"
@@ -18,7 +17,6 @@ import (
 type API struct {
 	config *config.Config
 	logger *logrus.Logger
-	router *mux.Router
 	store  *postgres.Store
 }
 
@@ -26,7 +24,6 @@ func NewAPI(config *config.Config) *API {
 	return &API{
 		config: config,
 		logger: logrus.New(),
-		router: mux.NewRouter(),
 	}
 }
 

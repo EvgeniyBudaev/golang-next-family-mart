@@ -9,12 +9,6 @@ type Sorting struct {
 	Sort string `json:"sort"`
 }
 
-func NewSorting(s *Sorting) *Sorting {
-	return &Sorting{
-		Sort: s.Sort,
-	}
-}
-
 func ApplySorting(sqlBuilder sq.SelectBuilder, sort string, fieldMap map[string]string) sq.SelectBuilder {
 	if sort != "" {
 		sortFields := make([]string, 0)

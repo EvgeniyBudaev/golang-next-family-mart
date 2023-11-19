@@ -1,10 +1,12 @@
 package product
 
 import (
-	"context"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/product"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
+	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
+	"time"
 )
 
 type CreateProductRequest struct {
@@ -23,11 +25,17 @@ func NewCreateProductUseCase(ds IProductStore) *CreateProductUseCase {
 	}
 }
 
-func (uc *CreateProductUseCase) CreateProduct(ctx context.Context, r CreateProductRequest) (*product.Product, error) {
+func (uc *CreateProductUseCase) CreateProduct(ctx *fiber.Ctx, r CreateProductRequest) (*product.Product, error) {
 	var request = &product.Product{
 		Alias:        r.Alias,
 		CatalogAlias: r.CatalogAlias,
+		CreatedAt:    time.Now(),
+		Deleted:      false,
+		Enabled:      true,
+		Image:        "",
 		Name:         r.Name,
+		UpdatedAt:    time.Now(),
+		Uuid:         uuid.New(),
 	}
 	response, err := uc.dataStore.Create(ctx, request)
 	if err != nil {

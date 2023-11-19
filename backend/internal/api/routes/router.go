@@ -1,6 +1,7 @@
 package routes
 
 import (
+	attributeHandler "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/api/handlers/attribute"
 	catalogHandler "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/api/handlers/catalog"
 	productHandler "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/api/handlers/product"
 	registerHandler "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/api/handlers/register"
@@ -8,8 +9,10 @@ import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/identity"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/middlewares"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres"
+	attributeStore "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres/attribute"
 	catalogStore "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres/catalog"
 	productStore "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres/product"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/useCase/attribute"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/useCase/catalog"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/useCase/product"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/useCase/user"
@@ -47,16 +50,20 @@ func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.
 	grp := app.Group(prefix)
 
 	// store
+	attributeDataStore := attributeStore.NewDBAttributeStore(store)
 	catalogDataStore := catalogStore.NewDBCatalogStore(store)
 	productDataStore := productStore.NewDBProductStore(store)
 
 	// useCase
+	useCaseCreateAttribute := attribute.NewCreateAttributeUseCase(attributeDataStore)
 	useCaseCreateCatalog := catalog.NewCreateCatalogUseCase(catalogDataStore)
 	useCaseDeleteCatalog := catalog.NewDeleteCatalogUseCase(catalogDataStore)
 	useCaseUpdateCatalog := catalog.NewUpdateCatalogUseCase(catalogDataStore)
 	useCaseCreateProduct := product.NewCreateProductUseCase(productDataStore)
 
 	// handlers
+	grp.Post("/attribute/create", middlewares.NewRequiresRealmRole("admin"),
+		attributeHandler.CreateAttributeHandler(useCaseCreateAttribute))
 	grp.Post("/catalog/create", middlewares.NewRequiresRealmRole("admin"),
 		catalogHandler.CreateCatalogHandler(useCaseCreateCatalog))
 	grp.Delete("/catalog/delete/:uuid", middlewares.NewRequiresRealmRole("admin"),

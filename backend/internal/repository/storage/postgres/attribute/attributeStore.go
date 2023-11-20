@@ -1,6 +1,7 @@
 package attribute
 
 import (
+	"fmt"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/attribute"
 	errorDomain "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/error"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
@@ -10,6 +11,7 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"net/http"
+	"strings"
 )
 
 type PGAttributeStore struct {
@@ -31,9 +33,22 @@ func (pg *PGAttributeStore) Create(cf *fiber.Ctx, a *attribute.Attribute) (*attr
 		return nil, err
 	}
 	defer tx.Rollback(ctx)
+	var selectableQueries []string
+	for _, s := range a.Selectable {
+		subQuery := sqlBuilder.Insert("selectables").
+			Columns("attribute_id", "value").
+			Values(a.Id, s.Value).
+			Suffix("RETURNING id")
+		query, _, err := subQuery.ToSql()
+		if err != nil {
+			logger.Log.Debug("error while Create. Error building subQuery.ToSql", zap.Error(err))
+			return nil, err
+		}
+		selectableQueries = append(selectableQueries, fmt.Sprintf("(%s)", query))
+	}
 	sqlSelect := sqlBuilder.Insert("attributes").
-		Columns("alias", "created_at", "deleted", "enabled", "filtered", "name", "type", "updated_at", "uuid").
-		Values(a.Alias, a.CreatedAt, a.Deleted, a.Enabled, a.Filtered, a.Name, a.Type, a.UpdatedAt, a.Uuid).
+		Columns("alias", "created_at", "deleted", "enabled", "filtered", "name", "type", "updated_at", "uuid", "selectable").
+		Values(a.Alias, a.CreatedAt, a.Deleted, a.Enabled, a.Filtered, a.Name, a.Type, a.UpdatedAt, a.Uuid, sq.Expr(strings.Join(selectableQueries, ","))).
 		Suffix("RETURNING id")
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {

@@ -1,17 +1,19 @@
 package selectable
 
-import "github.com/google/uuid"
-
 type Selectable struct {
-	AliasAttribute string    `json:"alias_attribute"`
-	Uuid           uuid.UUID `json:"uuid"`
-	Value          string    `json:"value"`
+	Id          int    `json:"id"`
+	AttributeId int    `json:"attribute_id"`
+	Value       string `json:"value"`
 }
 
 func NewSelectable(s *Selectable) *Selectable {
 	return &Selectable{
-		AliasAttribute: s.AliasAttribute,
-		Uuid:           s.Uuid,
-		Value:          s.Value,
+		Id:          s.Id,
+		AttributeId: s.AttributeId,
+		Value:       s.Value,
 	}
+}
+
+type RequestSelectable struct {
+	Value string `json:"value"`
 }

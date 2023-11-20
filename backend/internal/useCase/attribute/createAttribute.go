@@ -11,16 +11,12 @@ import (
 	"time"
 )
 
-type SelectableRequest struct {
-	Value string `json:"value"`
-}
-
 type CreateAttributeRequest struct {
-	Alias      string               `json:"alias"`
-	Filtered   bool                 `json:"filtered"`
-	Name       string               `json:"name"`
-	Selectable *[]SelectableRequest `json:"selectable"`
-	Type       string               `json:"type"`
+	Alias      string                          `json:"alias"`
+	Filtered   bool                            `json:"filtered"`
+	Name       string                          `json:"name"`
+	Selectable []*selectable.RequestSelectable `json:"selectable"`
+	Type       string                          `json:"type"`
 }
 
 type CreateAttributeUseCase struct {
@@ -35,11 +31,9 @@ func NewCreateAttributeUseCase(ds IAttributeStore) *CreateAttributeUseCase {
 
 func (uc *CreateAttributeUseCase) CreateAttribute(ctx *fiber.Ctx, r CreateAttributeRequest) (*attribute.Attribute, error) {
 	selectableRequest := make([]*selectable.Selectable, 0)
-	for _, selReq := range selectableRequest {
+	for _, selReq := range r.Selectable {
 		newSelectable := selectable.NewSelectable(&selectable.Selectable{
-			AliasAttribute: r.Alias,
-			Uuid:           uuid.New(),
-			Value:          selReq.Value,
+			Value: selReq.Value,
 		})
 		selectableRequest = append(selectableRequest, newSelectable)
 	}
@@ -48,7 +42,7 @@ func (uc *CreateAttributeUseCase) CreateAttribute(ctx *fiber.Ctx, r CreateAttrib
 		CreatedAt:  time.Now(),
 		Deleted:    false,
 		Enabled:    true,
-		Filtered:   r.Filtered,
+		Filtered:   true,
 		Name:       strings.ToLower(r.Name),
 		Type:       strings.ToLower(r.Type),
 		UpdatedAt:  time.Now(),

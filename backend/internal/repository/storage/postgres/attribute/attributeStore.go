@@ -33,28 +33,34 @@ func (pg *PGAttributeStore) Create(cf *fiber.Ctx, a *attribute.Attribute) (*attr
 		return nil, err
 	}
 	defer tx.Rollback(ctx)
+
 	var selectableQueries []string
 	for _, s := range a.Selectable {
 		subQuery := sqlBuilder.Insert("selectables").
-			Columns("attribute_id", "value").
+			Columns("value").
 			Values(a.Id, s.Value).
-			Suffix("RETURNING id")
+			Suffix("RETURNING id, attribute_id")
 		query, _, err := subQuery.ToSql()
 		if err != nil {
 			logger.Log.Debug("error while Create. Error building subQuery.ToSql", zap.Error(err))
 			return nil, err
 		}
-		selectableQueries = append(selectableQueries, fmt.Sprintf("(%s)", query))
+		selectableQueries = append(selectableQueries, query)
 	}
+
 	sqlSelect := sqlBuilder.Insert("attributes").
-		Columns("alias", "created_at", "deleted", "enabled", "filtered", "name", "type", "updated_at", "uuid", "selectable").
-		Values(a.Alias, a.CreatedAt, a.Deleted, a.Enabled, a.Filtered, a.Name, a.Type, a.UpdatedAt, a.Uuid, sq.Expr(strings.Join(selectableQueries, ","))).
+		Columns("alias", "created_at", "deleted", "enabled", "filtered", "name", "type", "updated_at", "uuid",
+			"selectable").
+		Values(a.Alias, a.CreatedAt, a.Deleted, a.Enabled, a.Filtered, a.Name, a.Type, a.UpdatedAt, a.Uuid,
+			sq.Expr(strings.Join(selectableQueries, ","))).
 		Suffix("RETURNING id")
+
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
-		logger.Log.Debug("error while Create. Error building SQL", zap.Error(err))
 		return nil, err
 	}
+	fmt.Println("SQL Query:", query)
+	fmt.Println("Arguments:", args)
 	err = tx.QueryRow(ctx, query, args...).Scan(&a.Id)
 	if err != nil {
 		logger.Log.Debug("error while Create. error in method QueryRow", zap.Error(err))

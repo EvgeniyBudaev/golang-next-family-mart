@@ -55,6 +55,36 @@ func (pg *PGProductStore) Create(cf *fiber.Ctx, p *product.Product) (*product.Pr
 	return p, nil
 }
 
+func (pg *PGProductStore) FindByAlias(ctx *fiber.Ctx, alias string) (*product.Product, error) {
+	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	sqlSelect := sqlBuilder.Select("*").From("products").Where(sq.Eq{"alias": alias})
+	data := product.Product{}
+	query, args, err := sqlSelect.ToSql()
+	if err != nil {
+		logger.Log.Debug("error while FindByAlias. error in method ToSql", zap.Error(err))
+		return nil, err
+	}
+	row := pg.store.Db().QueryRow(ctx.Context(), query, args...)
+	if err != nil {
+		logger.Log.Debug("error while FindByAlias. error in method Query", zap.Error(err))
+		return nil, err
+	}
+	err = row.Scan(&data.Id, &data.Alias, &data.CatalogAlias, &data.CreatedAt, &data.Deleted,
+		&data.Enabled, &data.Image, &data.Name, &data.UpdatedAt, &data.Uuid)
+	if err != nil {
+		logger.Log.Debug("error while FindByAlias. error in method Scan", zap.Error(err))
+		msg := errors.Wrap(err, "catalog not found")
+		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
+		return nil, err
+	}
+	if data.Deleted == true {
+		msg := fmt.Errorf("product has already been deleted")
+		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
+		return nil, err
+	}
+	return &data, nil
+}
+
 func (pg *PGProductStore) SelectList(
 	ctx *fiber.Ctx,
 	qp *product.QueryParamsProductList) (*product.ListProductResponse, error) {
@@ -64,8 +94,6 @@ func (pg *PGProductStore) SelectList(
 	limit := qp.Limit
 	page := qp.Page
 	// search
-	fmt.Println("qp.Catalog: ", qp.Catalog)
-	fmt.Println("qp.Search: ", qp.Search)
 	sqlSelect = searching.ApplySearch(sqlSelect, "catalog_alias", qp.Catalog)
 	countSelect = searching.ApplySearch(countSelect, "catalog_alias", qp.Catalog)
 	sqlSelect = searching.ApplySearch(sqlSelect, "name", qp.Search)

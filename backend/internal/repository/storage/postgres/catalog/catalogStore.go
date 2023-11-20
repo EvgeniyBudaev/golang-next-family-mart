@@ -127,7 +127,7 @@ func (pg *PGCatalogStore) FindByAlias(ctx *fiber.Ctx, alias string) (*catalog.Ca
 	//defer cancel()
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	sqlSelect := sqlBuilder.Select("*").From("catalogs").Where(sq.Eq{"alias": alias})
-	catalogData := catalog.Catalog{}
+	data := catalog.Catalog{}
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
 		logger.Log.Debug("error while FindByAlias. error in method ToSql", zap.Error(err))
@@ -138,26 +138,26 @@ func (pg *PGCatalogStore) FindByAlias(ctx *fiber.Ctx, alias string) (*catalog.Ca
 		logger.Log.Debug("error while FindByAlias. error in method Query", zap.Error(err))
 		return nil, err
 	}
-	err = row.Scan(&catalogData.Id, &catalogData.Alias, &catalogData.CreatedAt, &catalogData.Deleted,
-		&catalogData.Enabled, &catalogData.Image, &catalogData.Name, &catalogData.UpdatedAt, &catalogData.Uuid)
+	err = row.Scan(&data.Id, &data.Alias, &data.CreatedAt, &data.Deleted,
+		&data.Enabled, &data.Image, &data.Name, &data.UpdatedAt, &data.Uuid)
 	if err != nil {
 		logger.Log.Debug("error while FindByAlias. error in method Scan", zap.Error(err))
 		msg := errors.Wrap(err, "catalog not found")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
-	if catalogData.Deleted == true {
+	if data.Deleted == true {
 		msg := fmt.Errorf("catalog has already been deleted")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
-	return &catalogData, nil
+	return &data, nil
 }
 
 func (pg *PGCatalogStore) FindByUuid(ctx *fiber.Ctx, uuid uuid.UUID) (*catalog.Catalog, error) {
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	sqlSelect := sqlBuilder.Select("*").From("catalogs").Where(sq.Eq{"uuid": uuid})
-	catalogData := catalog.Catalog{}
+	data := catalog.Catalog{}
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
 		logger.Log.Debug("error while FindByUuid. error in method ToSql", zap.Error(err))
@@ -168,20 +168,20 @@ func (pg *PGCatalogStore) FindByUuid(ctx *fiber.Ctx, uuid uuid.UUID) (*catalog.C
 		logger.Log.Debug("error while FindByUuid. error in method Query", zap.Error(err))
 		return nil, err
 	}
-	err = row.Scan(&catalogData.Id, &catalogData.Alias, &catalogData.CreatedAt, &catalogData.Deleted,
-		&catalogData.Enabled, &catalogData.Image, &catalogData.Name, &catalogData.UpdatedAt, &catalogData.Uuid)
+	err = row.Scan(&data.Id, &data.Alias, &data.CreatedAt, &data.Deleted,
+		&data.Enabled, &data.Image, &data.Name, &data.UpdatedAt, &data.Uuid)
 	if err != nil {
 		logger.Log.Debug("error while FindByUuid. error in method Scan", zap.Error(err))
 		msg := errors.Wrap(err, "catalog not found")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
-	if catalogData.Deleted == true {
+	if data.Deleted == true {
 		msg := fmt.Errorf("catalog has already been deleted")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
-	return &catalogData, nil
+	return &data, nil
 }
 
 func (pg *PGCatalogStore) SelectList(

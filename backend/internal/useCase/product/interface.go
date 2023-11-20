@@ -7,5 +7,6 @@ import (
 
 type IProductStore interface {
 	Create(ctx *fiber.Ctx, catalog *product.Product) (*product.Product, error)
+	FindByAlias(ctx *fiber.Ctx, alias string) (*product.Product, error)
 	SelectList(ctx *fiber.Ctx, qp *product.QueryParamsProductList) (*product.ListProductResponse, error)
 }

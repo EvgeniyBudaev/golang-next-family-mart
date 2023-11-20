@@ -37,6 +37,7 @@ func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Sto
 	useCaseGetCatalogByAlias := catalog.NewGetCatalogByAliasUseCase(catalogDataStore)
 	useCaseGetCatalogByUuid := catalog.NewGetCatalogByUuidUseCase(catalogDataStore)
 	useCaseGetProductList := product.NewGetProductListUseCase(productDataStore)
+	useCaseGetProductByAlias := product.NewGetProductByAliasUseCase(productDataStore)
 
 	// handlers
 	grp.Post("/user/register", registerHandler.PostRegisterHandler(useCaseRegister))
@@ -44,6 +45,7 @@ func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Sto
 	grp.Get("/catalog/alias/:alias", catalogHandler.GetCatalogByAliasHandler(useCaseGetCatalogByAlias))
 	grp.Get("/catalog/uuid/:uuid", catalogHandler.GetCatalogByUuidHandler(useCaseGetCatalogByUuid))
 	grp.Get("/product/list", productHandler.GetProductListHandler(useCaseGetProductList))
+	grp.Get("/product/alias/:alias", productHandler.GetProductByAliasHandler(useCaseGetProductByAlias))
 }
 
 func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.Store) {
@@ -71,5 +73,5 @@ func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.
 	grp.Put("/catalog/update", middlewares.NewRequiresRealmRole("admin"),
 		catalogHandler.UpdateCatalogHandler(useCaseUpdateCatalog))
 	grp.Post("/product/create", middlewares.NewRequiresRealmRole("admin"),
-		productHandler.PostProductCreateHandler(useCaseCreateProduct))
+		productHandler.CreateProductHandler(useCaseCreateProduct))
 }

@@ -36,7 +36,8 @@ func (pg *PGProductStore) Create(cf *fiber.Ctx, p *product.Product) (*product.Pr
 	}
 	defer tx.Rollback(ctx)
 	sqlSelect := sqlBuilder.Insert("products").
-		Columns("alias", "catalog_alias", "created_at", "deleted", "enabled", "image", "name", "updated_at", "uuid").
+		Columns("alias", "catalog_alias", "created_at", "deleted", "enabled", "image", "name", "updated_at",
+			"uuid").
 		Values(p.Alias, p.CatalogAlias, p.CreatedAt, p.Deleted, p.Enabled, p.Image, p.Name, p.UpdatedAt, p.Uuid).
 		Suffix("RETURNING id")
 	query, args, err := sqlSelect.ToSql()
@@ -57,7 +58,8 @@ func (pg *PGProductStore) Create(cf *fiber.Ctx, p *product.Product) (*product.Pr
 
 func (pg *PGProductStore) FindByAlias(ctx *fiber.Ctx, alias string) (*product.Product, error) {
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	sqlSelect := sqlBuilder.Select("*").From("products").Where(sq.Eq{"alias": alias})
+	sqlSelect := sqlBuilder.Select("id", "alias", "catalog_alias", "created_at", "deleted", "enabled", "image",
+		"name", "updated_at", "uuid").From("products").Where(sq.Eq{"alias": alias})
 	data := product.Product{}
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
@@ -89,7 +91,8 @@ func (pg *PGProductStore) SelectList(
 	ctx *fiber.Ctx,
 	qp *product.QueryParamsProductList) (*product.ListProductResponse, error) {
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	sqlSelect := sqlBuilder.Select("*").From("products").Where(sq.Eq{"deleted": false})
+	sqlSelect := sqlBuilder.Select("id", "alias", "catalog_alias", "created_at", "deleted", "enabled", "image",
+		"name", "updated_at", "uuid").From("products").Where(sq.Eq{"deleted": false})
 	countSelect := sqlBuilder.Select("COUNT(*)").From("products").Where(sq.Eq{"deleted": false})
 	limit := qp.Limit
 	page := qp.Page

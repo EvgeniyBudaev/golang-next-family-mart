@@ -133,11 +133,13 @@ func (pg *PGCatalogStore) FindByAlias(ctx *fiber.Ctx, alias string) (*catalog.Ca
 		logger.Log.Debug("error while FindByAlias. error in method ToSql", zap.Error(err))
 		return nil, err
 	}
+	fmt.Println("query: ", query)
 	row := pg.store.Db().QueryRow(ctx.Context(), query, args...)
 	if err != nil {
 		logger.Log.Debug("error while FindByAlias. error in method Query", zap.Error(err))
 		return nil, err
 	}
+	fmt.Println("row: ", row.Scan(&data.Id))
 	err = row.Scan(&data.Id, &data.Alias, &data.CreatedAt, &data.Deleted,
 		&data.Enabled, &data.Image, &data.Name, &data.UpdatedAt, &data.Uuid)
 	if err != nil {

@@ -56,11 +56,10 @@ func (pg *PGAttributeStore) Create(cf *fiber.Ctx, a *attribute.Attribute) (*attr
 		Suffix("RETURNING id")
 
 	query, args, err := sqlSelect.ToSql()
+	fmt.Println("QUERY:", query)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("SQL Query:", query)
-	fmt.Println("Arguments:", args)
 	err = tx.QueryRow(ctx, query, args...).Scan(&a.Id)
 	if err != nil {
 		logger.Log.Debug("error while Create. error in method QueryRow", zap.Error(err))

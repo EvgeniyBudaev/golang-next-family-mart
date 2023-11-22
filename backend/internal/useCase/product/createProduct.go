@@ -10,9 +10,9 @@ import (
 )
 
 type CreateProductRequest struct {
-	Alias        string `json:"alias"`
-	CatalogAlias string `json:"catalog_alias"`
-	Name         string `json:"name"`
+	Alias     string `json:"alias"`
+	CatalogId int    `json:"catalog_id"`
+	Name      string `json:"name"`
 }
 
 type CreateProductUseCase struct {
@@ -27,15 +27,15 @@ func NewCreateProductUseCase(ds IProductStore) *CreateProductUseCase {
 
 func (uc *CreateProductUseCase) CreateProduct(ctx *fiber.Ctx, r CreateProductRequest) (*product.Product, error) {
 	var request = &product.Product{
-		Alias:        r.Alias,
-		CatalogAlias: r.CatalogAlias,
-		CreatedAt:    time.Now(),
-		Deleted:      false,
-		Enabled:      true,
-		Image:        "",
-		Name:         r.Name,
-		UpdatedAt:    time.Now(),
-		Uuid:         uuid.New(),
+		Alias:     r.Alias,
+		CatalogId: r.CatalogId,
+		CreatedAt: time.Now(),
+		Deleted:   false,
+		Enabled:   true,
+		Image:     "",
+		Name:      r.Name,
+		UpdatedAt: time.Now(),
+		Uuid:      uuid.New(),
 	}
 	response, err := uc.dataStore.Create(ctx, request)
 	if err != nil {

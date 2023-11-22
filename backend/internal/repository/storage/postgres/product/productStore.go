@@ -36,9 +36,9 @@ func (pg *PGProductStore) Create(cf *fiber.Ctx, p *product.Product) (*product.Pr
 	}
 	defer tx.Rollback(ctx)
 	sqlSelect := sqlBuilder.Insert("products").
-		Columns("alias", "catalog_alias", "created_at", "deleted", "enabled", "image", "name", "updated_at",
+		Columns("alias", "catalog_id", "created_at", "deleted", "enabled", "image", "name", "updated_at",
 			"uuid").
-		Values(p.Alias, p.CatalogAlias, p.CreatedAt, p.Deleted, p.Enabled, p.Image, p.Name, p.UpdatedAt, p.Uuid).
+		Values(p.Alias, p.CatalogId, p.CreatedAt, p.Deleted, p.Enabled, p.Image, p.Name, p.UpdatedAt, p.Uuid).
 		Suffix("RETURNING id")
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
@@ -58,7 +58,7 @@ func (pg *PGProductStore) Create(cf *fiber.Ctx, p *product.Product) (*product.Pr
 
 func (pg *PGProductStore) FindByAlias(ctx *fiber.Ctx, alias string) (*product.Product, error) {
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	sqlSelect := sqlBuilder.Select("id", "alias", "catalog_alias", "created_at", "deleted", "enabled", "image",
+	sqlSelect := sqlBuilder.Select("id", "alias", "catalog_id", "created_at", "deleted", "enabled", "image",
 		"name", "updated_at", "uuid").From("products").Where(sq.Eq{"alias": alias})
 	data := product.Product{}
 	query, args, err := sqlSelect.ToSql()
@@ -71,11 +71,42 @@ func (pg *PGProductStore) FindByAlias(ctx *fiber.Ctx, alias string) (*product.Pr
 		logger.Log.Debug("error while FindByAlias. error in method Query", zap.Error(err))
 		return nil, err
 	}
-	err = row.Scan(&data.Id, &data.Alias, &data.CatalogAlias, &data.CreatedAt, &data.Deleted,
+	err = row.Scan(&data.Id, &data.Alias, &data.CatalogId, &data.CreatedAt, &data.Deleted,
 		&data.Enabled, &data.Image, &data.Name, &data.UpdatedAt, &data.Uuid)
 	if err != nil {
 		logger.Log.Debug("error while FindByAlias. error in method Scan", zap.Error(err))
-		msg := errors.Wrap(err, "catalog not found")
+		msg := errors.Wrap(err, "product not found")
+		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
+		return nil, err
+	}
+	if data.Deleted == true {
+		msg := fmt.Errorf("product has already been deleted")
+		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
+		return nil, err
+	}
+	return &data, nil
+}
+
+func (pg *PGProductStore) FindByUuid(ctx *fiber.Ctx, uuid string) (*product.Product, error) {
+	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	sqlSelect := sqlBuilder.Select("id", "alias", "catalog_id", "created_at", "deleted", "enabled", "image",
+		"name", "updated_at", "uuid").From("products").Where(sq.Eq{"uuid": uuid})
+	data := product.Product{}
+	query, args, err := sqlSelect.ToSql()
+	if err != nil {
+		logger.Log.Debug("error while FindByUuid. error in method ToSql", zap.Error(err))
+		return nil, err
+	}
+	row := pg.store.Db().QueryRow(ctx.Context(), query, args...)
+	if err != nil {
+		logger.Log.Debug("error while FindByUuid. error in method Query", zap.Error(err))
+		return nil, err
+	}
+	err = row.Scan(&data.Id, &data.Alias, &data.CatalogId, &data.CreatedAt, &data.Deleted,
+		&data.Enabled, &data.Image, &data.Name, &data.UpdatedAt, &data.Uuid)
+	if err != nil {
+		logger.Log.Debug("error while FindByUuid. error in method Scan", zap.Error(err))
+		msg := errors.Wrap(err, "product not found")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
@@ -91,14 +122,12 @@ func (pg *PGProductStore) SelectList(
 	ctx *fiber.Ctx,
 	qp *product.QueryParamsProductList) (*product.ListProductResponse, error) {
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	sqlSelect := sqlBuilder.Select("id", "alias", "catalog_alias", "created_at", "deleted", "enabled", "image",
+	sqlSelect := sqlBuilder.Select("id", "alias", "catalog_id", "created_at", "deleted", "enabled", "image",
 		"name", "updated_at", "uuid").From("products").Where(sq.Eq{"deleted": false})
 	countSelect := sqlBuilder.Select("COUNT(*)").From("products").Where(sq.Eq{"deleted": false})
 	limit := qp.Limit
 	page := qp.Page
 	// search
-	sqlSelect = searching.ApplySearch(sqlSelect, "catalog_alias", qp.Catalog)
-	countSelect = searching.ApplySearch(countSelect, "catalog_alias", qp.Catalog)
 	sqlSelect = searching.ApplySearch(sqlSelect, "name", qp.Search)
 	countSelect = searching.ApplySearch(countSelect, "name", qp.Search)
 	// get totalItems
@@ -135,7 +164,7 @@ func (pg *PGProductStore) SelectList(
 	defer rows.Close()
 	for rows.Next() {
 		data := product.Product{}
-		err := rows.Scan(&data.Id, &data.Alias, &data.CatalogAlias, &data.CreatedAt, &data.Deleted,
+		err := rows.Scan(&data.Id, &data.Alias, &data.CatalogId, &data.CreatedAt, &data.Deleted,
 			&data.Enabled, &data.Image, &data.Name, &data.UpdatedAt, &data.Uuid)
 		if err != nil {
 			logger.Log.Debug("error while SelectList. error in method Scan", zap.Error(err))

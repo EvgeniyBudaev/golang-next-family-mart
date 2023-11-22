@@ -9,16 +9,16 @@ import (
 )
 
 type Product struct {
-	Id           int       `json:"id"`
-	Alias        string    `json:"alias"`
-	CatalogAlias string    `json:"catalog_alias"`
-	CreatedAt    time.Time `json:"created_at"`
-	Deleted      bool      `json:"deleted"`
-	Enabled      bool      `json:"enabled"`
-	Image        string    `json:"image"`
-	Name         string    `json:"name"`
-	UpdatedAt    time.Time `json:"updated_at"`
-	Uuid         uuid.UUID `json:"uuid"`
+	Id        int       `json:"id"`
+	Alias     string    `json:"alias"`
+	CatalogId int       `json:"catalog_id"`
+	CreatedAt time.Time `json:"created_at"`
+	Deleted   bool      `json:"deleted"`
+	Enabled   bool      `json:"enabled"`
+	Image     string    `json:"image"`
+	Name      string    `json:"name"`
+	UpdatedAt time.Time `json:"updated_at"`
+	Uuid      uuid.UUID `json:"uuid"`
 }
 
 type ListProductResponse struct {

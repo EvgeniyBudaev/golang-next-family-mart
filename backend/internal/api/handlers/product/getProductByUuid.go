@@ -9,16 +9,16 @@ import (
 	"net/http"
 )
 
-type IGetProductByAliasUseCase interface {
-	GetProductByAlias(ctx *fiber.Ctx) (*product.Product, error)
+type IGetProductByUuidUseCase interface {
+	GetProductByUuid(ctx *fiber.Ctx) (*product.Product, error)
 }
 
-func GetProductByAliasHandler(uc IGetProductByAliasUseCase) fiber.Handler {
+func GetProductByUuidHandler(uc IGetProductByUuidUseCase) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
-		logger.Log.Info("get catalog by alias GET /api/v1/product/alias/:alias")
-		response, err := uc.GetProductByAlias(ctx)
+		logger.Log.Info("get catalog by alias GET /api/v1/product/uuid/:uuid")
+		response, err := uc.GetProductByUuid(ctx)
 		if err != nil {
-			logger.Log.Debug("error while GetProductByAliasHandler. Error in GetProductByAlias", zap.Error(err))
+			logger.Log.Debug("error while GetProductByUuidHandler. Error in GetProductByUuid", zap.Error(err))
 			return r.WrapError(ctx, err, http.StatusBadRequest)
 		}
 		return r.WrapOk(ctx, response)

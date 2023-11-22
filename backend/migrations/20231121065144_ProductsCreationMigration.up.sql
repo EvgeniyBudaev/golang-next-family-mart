@@ -11,5 +11,5 @@ CREATE TABLE products (
 );
 
 ALTER TABLE products
-    ADD COLUMN catalog_alias varchar,
-    ADD FOREIGN KEY (catalog_alias) REFERENCES catalogs(alias);
+    ADD COLUMN catalog_id bigint,
+    ADD FOREIGN KEY (catalog_id) REFERENCES catalogs(id);

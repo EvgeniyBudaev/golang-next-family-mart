@@ -38,6 +38,7 @@ func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Sto
 	useCaseGetCatalogByUuid := catalog.NewGetCatalogByUuidUseCase(catalogDataStore)
 	useCaseGetProductList := product.NewGetProductListUseCase(productDataStore)
 	useCaseGetProductByAlias := product.NewGetProductByAliasUseCase(productDataStore)
+	useCaseGetProductByUuid := product.NewGetProductByUuidUseCase(productDataStore)
 
 	// handlers
 	grp.Post("/user/register", registerHandler.PostRegisterHandler(useCaseRegister))
@@ -46,6 +47,7 @@ func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Sto
 	grp.Get("/catalog/uuid/:uuid", catalogHandler.GetCatalogByUuidHandler(useCaseGetCatalogByUuid))
 	grp.Get("/product/list", productHandler.GetProductListHandler(useCaseGetProductList))
 	grp.Get("/product/alias/:alias", productHandler.GetProductByAliasHandler(useCaseGetProductByAlias))
+	grp.Get("/product/uuid/:uuid", productHandler.GetProductByUuidHandler(useCaseGetProductByUuid))
 }
 
 func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.Store) {

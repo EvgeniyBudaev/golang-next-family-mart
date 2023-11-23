@@ -2,11 +2,11 @@ package catalog
 
 import (
 	"fmt"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/catalog"
-	errorDomain "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/error"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/pagination"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/searching"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/sorting"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/catalog"
+	errorDomain "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/error"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/pagination"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/searching"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/sorting"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres"
 	sq "github.com/Masterminds/squirrel"

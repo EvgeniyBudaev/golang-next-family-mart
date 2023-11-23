@@ -1,7 +1,7 @@
 package attribute
 
 import (
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/selectable"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/selectable"
 	"github.com/google/uuid"
 	"time"
 )

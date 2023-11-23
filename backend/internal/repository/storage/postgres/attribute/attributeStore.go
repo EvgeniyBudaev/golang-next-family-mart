@@ -1,8 +1,8 @@
 package attribute
 
 import (
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/attribute"
-	errorDomain "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/error"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/attribute"
+	errorDomain "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/error"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres"
 	sq "github.com/Masterminds/squirrel"

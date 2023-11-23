@@ -1,8 +1,8 @@
 package catalog
 
 import (
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/catalog"
-	errorDomain "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/error"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/catalog"
+	errorDomain "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/error"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"

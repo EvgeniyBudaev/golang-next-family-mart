@@ -1,8 +1,8 @@
 package catalog
 
 import (
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/catalog"
-	r "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/response"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/catalog"
+	r "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/response"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	catalogUseCase "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/useCase/catalog"
 	"github.com/gofiber/fiber/v2"

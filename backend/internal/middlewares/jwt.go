@@ -7,7 +7,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/config"
-	r "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/response"
+	r "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/response"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/shared/enums"
 	"github.com/Nerzal/gocloak/v13"

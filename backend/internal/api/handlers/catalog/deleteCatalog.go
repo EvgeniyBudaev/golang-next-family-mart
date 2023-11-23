@@ -1,8 +1,8 @@
 package catalog
 
 import (
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/catalog"
-	r "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/response"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/catalog"
+	r "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/response"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"

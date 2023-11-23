@@ -1,7 +1,7 @@
 package product
 
 import (
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/product"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/product"
 	"github.com/gofiber/fiber/v2"
 )
 

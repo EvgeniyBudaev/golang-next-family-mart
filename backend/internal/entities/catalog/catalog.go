@@ -1,9 +1,9 @@
 package catalog
 
 import (
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/pagination"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/searching"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/sorting"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/pagination"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/searching"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/sorting"
 	"github.com/google/uuid"
 	"time"
 )

@@ -1,8 +1,8 @@
 package attribute
 
 import (
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/attribute"
-	r "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/response"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/attribute"
+	r "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/response"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	attributeUseCase "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/useCase/attribute"
 	"github.com/gofiber/fiber/v2"

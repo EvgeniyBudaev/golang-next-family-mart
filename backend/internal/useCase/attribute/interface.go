@@ -1,7 +1,7 @@
 package attribute
 
 import (
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/attribute"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/attribute"
 	"github.com/gofiber/fiber/v2"
 )
 

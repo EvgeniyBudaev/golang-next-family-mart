@@ -1,8 +1,8 @@
 package selectable
 
 import (
-	errorDomain "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/error"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/selectable"
+	errorDomain "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/error"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/selectable"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres"
 	sq "github.com/Masterminds/squirrel"

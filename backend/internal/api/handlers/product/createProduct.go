@@ -1,8 +1,8 @@
 package product
 
 import (
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/product"
-	r "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/response"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/product"
+	r "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/response"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	productUseCase "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/useCase/product"
 	"github.com/gofiber/fiber/v2"

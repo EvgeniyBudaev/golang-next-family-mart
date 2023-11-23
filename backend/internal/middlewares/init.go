@@ -3,7 +3,7 @@ package middlewares
 import (
 	"context"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/config"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/identity"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/identity"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/shared/enums"
 	"github.com/gofiber/fiber/v2"

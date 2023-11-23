@@ -1,8 +1,8 @@
 package selectable
 
 import (
-	r "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/response"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/selectable"
+	r "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/response"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/selectable"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	selectableUseCase "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/useCase/selectable"
 	"github.com/gofiber/fiber/v2"

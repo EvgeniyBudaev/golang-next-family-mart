@@ -7,7 +7,7 @@ import (
 	registerHandler "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/api/handlers/register"
 	selectableHandler "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/api/handlers/selectable"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/config"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/identity"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/identity"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/middlewares"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres"
 	attributeStore "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres/attribute"

@@ -2,8 +2,8 @@ package response
 
 import (
 	"errors"
-	errorDomain "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/error"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/success"
+	errorDomain "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/error"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/success"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
 )

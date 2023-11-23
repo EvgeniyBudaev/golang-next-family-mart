@@ -5,6 +5,7 @@ import (
 	catalogHandler "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/api/handlers/catalog"
 	productHandler "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/api/handlers/product"
 	registerHandler "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/api/handlers/register"
+	selectableHandler "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/api/handlers/selectable"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/config"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/identity"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/middlewares"
@@ -12,9 +13,11 @@ import (
 	attributeStore "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres/attribute"
 	catalogStore "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres/catalog"
 	productStore "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres/product"
+	selectableStore "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres/selectable"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/useCase/attribute"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/useCase/catalog"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/useCase/product"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/useCase/selectable"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/useCase/user"
 	"github.com/gofiber/fiber/v2"
 )
@@ -57,6 +60,7 @@ func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.
 	attributeDataStore := attributeStore.NewDBAttributeStore(store)
 	catalogDataStore := catalogStore.NewDBCatalogStore(store)
 	productDataStore := productStore.NewDBProductStore(store)
+	selectableDataStore := selectableStore.NewDBSelectableStore(store)
 
 	// useCase
 	useCaseCreateAttribute := attribute.NewCreateAttributeUseCase(attributeDataStore)
@@ -64,6 +68,7 @@ func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.
 	useCaseDeleteCatalog := catalog.NewDeleteCatalogUseCase(catalogDataStore)
 	useCaseUpdateCatalog := catalog.NewUpdateCatalogUseCase(catalogDataStore)
 	useCaseCreateProduct := product.NewCreateProductUseCase(productDataStore)
+	useCaseCreateSelectable := selectable.NewCreateSelectableUseCase(selectableDataStore)
 
 	// handlers
 	grp.Post("/attribute/create", middlewares.NewRequiresRealmRole("admin"),
@@ -76,4 +81,6 @@ func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.
 		catalogHandler.UpdateCatalogHandler(useCaseUpdateCatalog))
 	grp.Post("/product/create", middlewares.NewRequiresRealmRole("admin"),
 		productHandler.CreateProductHandler(useCaseCreateProduct))
+	grp.Post("/selectable/create", middlewares.NewRequiresRealmRole("admin"),
+		selectableHandler.CreateSelectableHandler(useCaseCreateSelectable))
 }

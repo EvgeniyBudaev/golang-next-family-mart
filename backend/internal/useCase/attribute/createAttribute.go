@@ -2,7 +2,7 @@ package attribute
 
 import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/attribute"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/attribute/selectable"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/selectable"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -12,10 +12,10 @@ import (
 )
 
 type CreateAttributeRequest struct {
-	Alias      string                          `json:"alias"`
-	Name       string                          `json:"name"`
-	Selectable []*selectable.RequestSelectable `json:"selectable"`
-	Type       string                          `json:"type"`
+	Alias      string                                   `json:"alias"`
+	Name       string                                   `json:"name"`
+	Selectable []*selectable.RequestAttributeSelectable `json:"selectable"`
+	Type       string                                   `json:"type"`
 }
 
 type CreateAttributeUseCase struct {

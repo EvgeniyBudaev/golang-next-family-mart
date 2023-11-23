@@ -1,7 +1,6 @@
 package attribute
 
 import (
-	"fmt"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/attribute"
 	errorDomain "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/domain/error"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
@@ -11,7 +10,6 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"net/http"
-	"strings"
 )
 
 type PGAttributeStore struct {
@@ -24,7 +22,7 @@ func NewDBAttributeStore(store *postgres.Store) *PGAttributeStore {
 	}
 }
 
-func (pg *PGAttributeStore) Create(cf *fiber.Ctx, a *attribute.Attribute) (*attribute.Attribute, error) {
+func (pg *PGAttributeStore) Create(cf *fiber.Ctx, a *attribute.RequestAttribute) (*attribute.Attribute, error) {
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	ctx := cf.Context()
 	tx, err := pg.store.Db().Begin(ctx)
@@ -33,34 +31,27 @@ func (pg *PGAttributeStore) Create(cf *fiber.Ctx, a *attribute.Attribute) (*attr
 		return nil, err
 	}
 	defer tx.Rollback(ctx)
-
-	var selectableQueries []string
-	for _, s := range a.Selectable {
-		subQuery := sqlBuilder.Insert("selectables").
-			Columns("value").
-			Values(a.Id, s.Value).
-			Suffix("RETURNING id, attribute_id")
-		query, _, err := subQuery.ToSql()
-		if err != nil {
-			logger.Log.Debug("error while Create. Error building subQuery.ToSql", zap.Error(err))
-			return nil, err
-		}
-		selectableQueries = append(selectableQueries, query)
+	data := attribute.Attribute{
+		Alias:     a.Alias,
+		CreatedAt: a.CreatedAt,
+		Deleted:   a.Deleted,
+		Enabled:   a.Enabled,
+		Filtered:  a.Filtered,
+		Name:      a.Name,
+		Type:      a.Type,
+		UpdatedAt: a.UpdatedAt,
+		Uuid:      a.Uuid,
 	}
-
 	sqlSelect := sqlBuilder.Insert("attributes").
-		Columns("alias", "created_at", "deleted", "enabled", "filtered", "name", "type", "updated_at", "uuid",
-			"selectable").
-		Values(a.Alias, a.CreatedAt, a.Deleted, a.Enabled, a.Filtered, a.Name, a.Type, a.UpdatedAt, a.Uuid,
-			sq.Expr(strings.Join(selectableQueries, ","))).
+		Columns("alias", "created_at", "deleted", "enabled", "filtered", "name", "type", "updated_at", "uuid").
+		Values(&data.Alias, &data.CreatedAt, &data.Deleted, &data.Enabled, &data.Filtered, &data.Name, &data.Type,
+			&data.UpdatedAt, &data.Uuid).
 		Suffix("RETURNING id")
-
 	query, args, err := sqlSelect.ToSql()
-	fmt.Println("QUERY:", query)
 	if err != nil {
 		return nil, err
 	}
-	err = tx.QueryRow(ctx, query, args...).Scan(&a.Id)
+	err = tx.QueryRow(ctx, query, args...).Scan(&data.Id)
 	if err != nil {
 		logger.Log.Debug("error while Create. error in method QueryRow", zap.Error(err))
 		msg := errors.Wrap(err, "bad request")
@@ -68,5 +59,5 @@ func (pg *PGAttributeStore) Create(cf *fiber.Ctx, a *attribute.Attribute) (*attr
 		return nil, err
 	}
 	tx.Commit(ctx)
-	return a, nil
+	return &data, nil
 }

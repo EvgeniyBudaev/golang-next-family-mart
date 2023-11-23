@@ -13,7 +13,6 @@ import (
 
 type CreateAttributeRequest struct {
 	Alias      string                          `json:"alias"`
-	Filtered   bool                            `json:"filtered"`
 	Name       string                          `json:"name"`
 	Selectable []*selectable.RequestSelectable `json:"selectable"`
 	Type       string                          `json:"type"`
@@ -30,14 +29,7 @@ func NewCreateAttributeUseCase(ds IAttributeStore) *CreateAttributeUseCase {
 }
 
 func (uc *CreateAttributeUseCase) CreateAttribute(ctx *fiber.Ctx, r CreateAttributeRequest) (*attribute.Attribute, error) {
-	selectableRequest := make([]*selectable.Selectable, 0)
-	for _, selReq := range r.Selectable {
-		newSelectable := selectable.NewSelectable(&selectable.Selectable{
-			Value: selReq.Value,
-		})
-		selectableRequest = append(selectableRequest, newSelectable)
-	}
-	var request = &attribute.Attribute{
+	var request = &attribute.RequestAttribute{
 		Alias:      strings.ToLower(r.Alias),
 		CreatedAt:  time.Now(),
 		Deleted:    false,
@@ -47,7 +39,7 @@ func (uc *CreateAttributeUseCase) CreateAttribute(ctx *fiber.Ctx, r CreateAttrib
 		Type:       strings.ToLower(r.Type),
 		UpdatedAt:  time.Now(),
 		Uuid:       uuid.New(),
-		Selectable: selectableRequest,
+		Selectable: r.Selectable,
 	}
 	response, err := uc.dataStore.Create(ctx, request)
 	if err != nil {

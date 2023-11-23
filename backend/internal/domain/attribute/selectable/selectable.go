@@ -6,14 +6,6 @@ type Selectable struct {
 	Value       string `json:"value"`
 }
 
-func NewSelectable(s *Selectable) *Selectable {
-	return &Selectable{
-		Id:          s.Id,
-		AttributeId: s.AttributeId,
-		Value:       s.Value,
-	}
-}
-
 type RequestSelectable struct {
 	Value string `json:"value"`
 }

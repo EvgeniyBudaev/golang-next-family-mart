@@ -6,5 +6,5 @@ import (
 )
 
 type IAttributeStore interface {
-	Create(cf *fiber.Ctx, a *attribute.Attribute) (*attribute.Attribute, error)
+	Create(cf *fiber.Ctx, a *attribute.RequestAttribute) (*attribute.Attribute, error)
 }

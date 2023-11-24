@@ -2,6 +2,14 @@
   "pages": {
     "login": {
       "enter": "Login"
+    },
+    "admin": {
+      "title": "Admin panel"
+    }
+  },
+  "common": {
+    "actions": {
+      "create": "Создать"
     }
   }
 }

@@ -1,14 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { signup } from "@/app/api/signup";
-import { signupFormSchema } from "@/app/actions/signup/schemas";
+import { attributeAddFormSchema } from "@/app/actions/adminPanel/attributes/add/schemas";
 import { TCommonResponseError } from "@/app/shared/types/error";
 import { getResponseError, getErrorsResolver, normalizePhoneNumber } from "@/app/shared/utils";
-import { mapSignupToDto } from "@/app/api/signup/utils";
 
-export async function signupAction(prevState: any, formData: FormData) {
-  const resolver = signupFormSchema.safeParse(Object.fromEntries(formData.entries()));
+export async function attributeAddAction(prevState: any, formData: FormData) {
+  const resolver = attributeAddFormSchema.safeParse(Object.fromEntries(formData.entries()));
 
   if (!resolver.success) {
     const errors = getErrorsResolver(resolver);
@@ -21,15 +19,9 @@ export async function signupAction(prevState: any, formData: FormData) {
   try {
     const formattedParams = {
       ...resolver.data,
-      mobileNumber: normalizePhoneNumber(resolver.data?.mobileNumber),
     };
-    const mapperParams = mapSignupToDto(formattedParams);
-    // console.log("[mapperParams] ", mapperParams);
-    const response = await signup(mapperParams);
-    console.log("[response] ", response);
-    revalidatePath("/ru/signup");
-    console.log("[after revalidatePath]");
-    return { error: null, data: response, success: true };
+    console.log("formattedParams: ", formattedParams);
+    revalidatePath("/ru/admin/attributes/add");
   } catch (error) {
     const errorResponse = error as Response;
     const responseData: TCommonResponseError = await errorResponse.json();

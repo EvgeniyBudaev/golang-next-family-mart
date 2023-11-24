@@ -2,6 +2,14 @@
   "pages": {
     "login": {
       "enter": "Войти"
+    },
+    "admin": {
+      "title": "Панель администратора"
+    }
+  },
+  "common": {
+    "actions": {
+      "create": "Create"
     }
   }
 }

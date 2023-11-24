@@ -11,9 +11,9 @@ let language: string = "ru";
 /**
  *  Функция создания api- клиента
  *
- * @param config конфигурация {@link TApiConfig}
+ * @param config конфигурация {@buttonLink TApiConfig}
  *
- * Возвращает функцию для осуществления http запросов {@link TApiFunction}
+ * Возвращает функцию для осуществления http запросов {@buttonLink TApiFunction}
  */
 export function createApi(config: TApiConfig): {
   fetchApi: TApiFunction;

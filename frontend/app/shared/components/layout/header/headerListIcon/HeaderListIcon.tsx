@@ -26,8 +26,7 @@ async function keycloakSessionLogOut() {
 
 export const HeaderListIcon: FC = () => {
   const checkPermission = useCheckPermission();
-  const permissions = [EPermissions.Customer];
-  const isAdmin = checkPermission(permissions);
+  const isPermissions = checkPermission([EPermissions.Admin]);
   const { data: session, status } = useSessionNext();
   const { t } = useTranslation("index");
   const isSession = Boolean(session);
@@ -37,8 +36,6 @@ export const HeaderListIcon: FC = () => {
       signOut({ callbackUrl: "/" });
     }
   }, [session, status]);
-
-  const handleRedirectAdminPanel = () => {};
 
   const handleLogout = () => {
     keycloakSessionLogOut().then(() => signOut({ callbackUrl: "/" }));
@@ -54,11 +51,14 @@ export const HeaderListIcon: FC = () => {
                 <Avatar size={46} user={session?.user?.name} />
               </DropDown.Button>
               <DropDown.Panel classes={{ dropDownPanel: "HeaderListIcon-DropDownUser" }}>
-                <ul className="HeaderListIcon-AvatarDropDown_Menu">
-                  {isAdmin && (
-                    <li
+                <div className="HeaderListIcon-AvatarDropDown_Menu">
+                  {isPermissions && (
+                    <Link
                       className="HeaderListIcon-AvatarDropDown_MenuItem"
-                      onClick={handleRedirectAdminPanel}
+                      href={createPath({
+                        route: ERoutes.AdminPanel,
+                      })}
+                      // onClick={handleRedirectAdminPanel}
                     >
                       <Icon
                         className="HeaderListIcon-AvatarDropDown_MenuItemIcon"
@@ -70,9 +70,9 @@ export const HeaderListIcon: FC = () => {
                           variant={ETypographyVariant.TextB3Regular}
                         />
                       </div>
-                    </li>
+                    </Link>
                   )}
-                  <li className="HeaderListIcon-AvatarDropDown_MenuItem" onClick={handleLogout}>
+                  <div className="HeaderListIcon-AvatarDropDown_MenuItem" onClick={handleLogout}>
                     <Icon className="HeaderListIcon-AvatarDropDown_MenuItemIcon" type="Exit" />
                     <div className="HeaderListIcon-AvatarDropDown_MenuItemText">
                       <Typography
@@ -80,8 +80,8 @@ export const HeaderListIcon: FC = () => {
                         variant={ETypographyVariant.TextB3Regular}
                       />
                     </div>
-                  </li>
-                </ul>
+                  </div>
+                </div>
               </DropDown.Panel>
             </DropDown>
           </div>

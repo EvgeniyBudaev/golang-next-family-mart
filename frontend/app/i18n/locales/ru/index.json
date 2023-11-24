@@ -1,10 +1,14 @@
 {
-  "header": {
-    "adminPanel": "Панель администратора",
-    "exit": "Выход",
-    "enter": "Войти"
+  "errorBoundary": {
+    "common": {
+      "forbidden": "Недостаточно прав доступа",
+      "unexpectedError": "Произошла непредвиденная ошибка"
+    }
   },
   "pages": {
+    "admin": {
+      "title": "Панель администратора"
+    },
     "login": {
       "service": "Войти в сервис авторизации",
       "title": "Вход",
@@ -40,6 +44,11 @@
     "passwordConfirm": {
       "title": "Подтверждение пароля"
     }
+  },
+  "header": {
+    "adminPanel": "Панель администратора",
+    "exit": "Выход",
+    "enter": "Войти"
   },
   "common": {
     "validation": {

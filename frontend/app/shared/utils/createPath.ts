@@ -6,11 +6,13 @@ type TRoutes =
   | ERoutes.AdminCatalogAdd
   | ERoutes.AdminCatalogs
   | ERoutes.AdminOrders
+  | ERoutes.AdminPanel
   | ERoutes.AdminProductAdd
   | ERoutes.AdminProducts
   | ERoutes.Cart
   | ERoutes.Login
   | ERoutes.Order
+  | ERoutes.PermissionDenied
   | ERoutes.Recipient
   | ERoutes.ResourcesLanguage
   | ERoutes.ResourcesTheme

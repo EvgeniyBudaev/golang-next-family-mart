@@ -1,10 +1,14 @@
 {
-  "header": {
-    "adminPanel": "Admin panel",
-    "exit": "Exit",
-    "enter": "Enter"
+  "errorBoundary": {
+    "common": {
+      "forbidden": "No access to the report",
+      "unexpectedError": "Unexpected error"
+    }
   },
   "pages": {
+    "admin": {
+      "title": "Admin panel"
+    },
     "login": {
       "service": "Login to the authorization service",
       "title": "Entry",
@@ -40,6 +44,11 @@
     "passwordConfirm": {
       "title": "Password confirm"
     }
+  },
+  "header": {
+    "adminPanel": "Admin panel",
+    "exit": "Exit",
+    "enter": "Enter"
   },
   "common": {
     "validation": {

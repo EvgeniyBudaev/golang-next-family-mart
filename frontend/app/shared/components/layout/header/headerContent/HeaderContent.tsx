@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { FC } from "react";
-import { Container } from "@/app/components/layout/container";
-import { HeaderListIcon } from "@/app/components/layout/header/headerListIcon";
+import { Container } from "@/app/shared/components/layout/container";
+import { HeaderListIcon } from "@/app/shared/components/layout/header/headerListIcon";
 import { I18nProps } from "@/app/i18n/props";
 import { ERoutes } from "@/app/shared/enums";
 import { createPath } from "@/app/shared/utils";

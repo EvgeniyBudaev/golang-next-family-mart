@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { HeaderContent } from "@/app/components/layout/header/headerContent";
+import { HeaderContent } from "@/app/shared/components/layout/header/headerContent";
 import "./Header.scss";
 import { I18nProps } from "@/app/i18n/props";
 

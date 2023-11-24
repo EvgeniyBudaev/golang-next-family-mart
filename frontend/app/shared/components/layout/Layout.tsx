@@ -1,6 +1,6 @@
 import type { FC, PropsWithChildren } from "react";
-import { Footer } from "@/app/components/layout/footer";
-import { Header } from "@/app/components/layout/header";
+import { Footer } from "@/app/shared/components/layout/footer";
+import { Header } from "@/app/shared/components/layout/header";
 import "./Layout.scss";
 import { I18nProps } from "@/app/i18n/props";
 

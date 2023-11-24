@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { FC, PropsWithChildren } from "react";
-import { createPath } from "../../shared/utils";
+import { createPath } from "../../utils";
 
 type TProps = {
   activeClassName?: string;

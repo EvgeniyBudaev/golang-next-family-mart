@@ -1,9 +1,9 @@
 import type { FC } from "react";
 
-import { NavLink } from "@/app/components/navLink";
+import { NavLink } from "@/app/shared/components/navLink";
 import { Typography } from "@/app/uikit/components/typography";
 import { ETypographyVariant } from "@/app/uikit/components/typography/enum";
-import { ERoutes } from "../../../shared/enums";
+import { ERoutes } from "../../../enums";
 import "./Footer.scss";
 
 export const Footer: FC = () => {

@@ -2,11 +2,11 @@ import { dir } from "i18next";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import { Layout } from "@/app/components/layout";
+import { Layout } from "@/app/shared/components/layout";
 import { ToastContainer } from "@/app/uikit/components/toast/toastContainer";
 import { SessionProviderWrapper } from "@/app/shared/utils/auth";
-import { useTranslation } from "../i18n";
-import { I18nContextProvider } from "../i18n/context";
+import { useTranslation } from "../../i18n";
+import { I18nContextProvider } from "../../i18n/context";
 
 export const metadata: Metadata = {
   title: "FamilyMart",

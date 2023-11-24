@@ -1,3 +1,4 @@
-import { checkPermission } from "@/app/shared/utils/permissions";
+import { checkPermission } from "@/app/shared/utils/permissions/checkPermission";
+import { checkPermissionsByServer } from "@/app/shared/utils/permissions/checkPermissionsByServer";
 
-export { checkPermission };
+export { checkPermission, checkPermissionsByServer };

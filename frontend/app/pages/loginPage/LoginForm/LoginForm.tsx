@@ -4,11 +4,11 @@ import { signIn, useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
 import type { FC } from "react";
-import { ERoutes } from "../../../shared/enums";
 import { useTranslation } from "@/app/i18n/client";
+import { ERoutes } from "@/app/shared/enums";
+import { createPath } from "@/app/shared/utils";
 import { Button } from "@/app/uikit/components/button";
 import { notify } from "@/app/uikit/components/toast/utils";
-import { createPath } from "../../../shared/utils";
 import "./LoginForm.scss";
 
 export const LoginForm: FC = () => {

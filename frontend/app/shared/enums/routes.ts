@@ -6,6 +6,7 @@ export enum ERoutes {
   Delivery = "/delivery",
   Login = "/login",
   Signup = "/signup",
+  PermissionDenied = "/403",
 
   AdminAttributes = "/admin/attributes",
   AdminAttributeAdd = "/admin/attributes/add",

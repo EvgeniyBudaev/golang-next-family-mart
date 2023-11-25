@@ -1,6 +1,7 @@
 import clsx from "clsx";
+import isNil from "lodash/isNil";
 import xor from "lodash/xor";
-import { useSearchParams } from "next/navigation";
+import { useQueryParams } from "@/app/shared/hooks/useQueryParams";
 import { Fragment, useCallback } from "react";
 import type { ReactElement } from "react";
 import { Popover as UiPopover, Transition } from "@headlessui/react";
@@ -46,16 +47,13 @@ export const TableHeaderItem = <T extends object>({
     : (state as TSortingColumnStateWithReset);
   const isAlreadySorted = sortingState?.sortProperty === headerId;
   const hasColumnInArray = multiple && !!sortingState;
-  const [searchParams] = useSearchParams();
-  const searchParams2 = useSearchParams();
-  console.log("searchParams: ", searchParams);
-  console.log("searchParams2: ", searchParams2);
+  const { queryParams } = useQueryParams();
 
   const { attributes, popoverPosition, setPopperElement, setReferenceElement, styles, triggerRef } =
     usePopover();
 
   const checkSortingSearchParams = () => {
-    const sort = searchParams.get("sort");
+    const sort = !isNil(queryParams) ? queryParams.get("sort") : undefined;
     const listSearchParams = sort && sort.split(",");
     const formattedListSearchParams =
       listSearchParams &&
@@ -122,7 +120,7 @@ export const TableHeaderItem = <T extends object>({
   const renderIconIndicator = () => {
     if (
       isAlreadySorted
-        ? sortingState.sortDirection === ETableSortDirection.Asc
+        ? sortingState?.sortDirection === ETableSortDirection.Asc
         : checkSortingSearchParams() && checkSortingSearchParams() === ETableSortDirection.Asc
     ) {
       return (
@@ -132,7 +130,7 @@ export const TableHeaderItem = <T extends object>({
       );
     } else if (
       isAlreadySorted
-        ? sortingState.sortDirection === ETableSortDirection.Desc
+        ? sortingState?.sortDirection === ETableSortDirection.Desc
         : checkSortingSearchParams() && checkSortingSearchParams() === ETableSortDirection.Desc
     ) {
       return (
@@ -162,7 +160,7 @@ export const TableHeaderItem = <T extends object>({
             variant={ETypographyVariant.TextB3Medium}
           />
         </div>
-        {/*{hasSorting && renderIconIndicator()}*/}
+        {hasSorting && renderIconIndicator()}
       </div>
     );
   };

@@ -1,17 +1,18 @@
+"use client";
+
 import debounce from "lodash/debounce";
 import isEmpty from "lodash/isEmpty";
-import isNull from "lodash/isNull";
 import isNil from "lodash/isNil";
-import { useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
 import type { ChangeEvent, KeyboardEvent } from "react";
 
-import { TDeleteModalState } from "@/app/entities/attributes/list/types";
-import { TTableSortingColumnState } from "@/app/uikit/components/table/types";
-import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/app/shared/constants/pagination";
-import { TSearchParams } from "@/app/shared/components/search/types";
 import { mapTableSortingToDto } from "@/app/api/sorting";
+import { TDeleteModalState } from "@/app/entities/attributes/list/types";
+import { TSearchParams } from "@/app/shared/components/search/types";
+import { DEFAULT_PAGE, DEFAULT_PAGE_LIMIT } from "@/app/shared/constants/pagination";
 import { DEBOUNCE_TIMEOUT } from "@/app/shared/constants/transition";
+import { useQueryParams } from "@/app/shared/hooks/useQueryParams";
+import { TTableSortingColumnState } from "@/app/uikit/components/table/types";
 
 type TParams = {
   onDelete?: (alias: string) => void;
@@ -38,14 +39,14 @@ type TUseTable = (params: TParams) => {
 export const useTable: TUseTable = ({ onDelete, limitOption, pageOption }) => {
   const [deleteModal, setDeleteModal] = useState<TDeleteModalState>({ isOpen: false });
   const [isSearchActive, setIsSearchActive] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const search = searchParams.get("search");
-  const sort = searchParams.get("sort");
-  const defaultSearch: string = !isNull(search) ? search : "";
-  const defaultSort: string = !isNull(sort) ? sort : "";
+  const { queryParams, setQueryParams } = useQueryParams();
+  const search = !isNil(queryParams) ? queryParams.get("search") : null;
+  const sort = !isNil(queryParams) ? queryParams.get("sort") : null;
+  const defaultSearch: string = !isNil(search) ? search : "";
+  const defaultSort: string = !isNil(sort) ? sort : "";
 
-  const page = !isNil(pageOption) ? pageOption.toString() : DEFAULT_PAGE_SIZE.toString();
-  const limit = !isNil(limitOption) ? limitOption.toString() : DEFAULT_PAGE_SIZE.toString();
+  const page = !isNil(pageOption) ? pageOption.toString() : DEFAULT_PAGE.toString();
+  const limit = !isNil(limitOption) ? limitOption.toString() : DEFAULT_PAGE_LIMIT.toString();
 
   const getSearchParams = (params: Partial<TSearchParams>) => {
     const defaultSearchParams: TSearchParams = {
@@ -65,31 +66,31 @@ export const useTable: TUseTable = ({ onDelete, limitOption, pageOption }) => {
 
   const handleChangePage = useCallback(
     ({ selected }: { selected: number }) => {
-      setSearchParams(
+      setQueryParams(
         getSearchParams({
           page: (selected + 1).toString(),
         }),
       );
     },
-    [getSearchParams, setSearchParams],
+    [getSearchParams, setQueryParams],
   );
 
   const handleChangeLimit = useCallback(
     (limit: number) => {
-      setSearchParams(
+      setQueryParams(
         getSearchParams({
           limit: limit.toString(),
         }),
       );
     },
-    [getSearchParams, setSearchParams],
+    [getSearchParams, setQueryParams],
   );
 
   const handleSortTableByProperty = (
     params?: TTableSortingColumnState | TTableSortingColumnState[],
   ) => {
     const formattedParams = mapTableSortingToDto(params);
-    setSearchParams(
+    setQueryParams(
       getSearchParams({
         sort: formattedParams.sort,
         page: DEFAULT_PAGE.toString(),
@@ -100,14 +101,14 @@ export const useTable: TUseTable = ({ onDelete, limitOption, pageOption }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedFetcher = useCallback(
     debounce((query: string) => {
-      setSearchParams(
+      setQueryParams(
         getSearchParams({
           search: query,
           page: DEFAULT_PAGE.toString(),
         }),
       );
     }, DEBOUNCE_TIMEOUT),
-    [searchParams],
+    [queryParams],
   );
 
   const handleSearch = (event: ChangeEvent<HTMLFormElement>) => {

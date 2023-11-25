@@ -11,7 +11,8 @@
       "apply": "Apply",
       "delete": "Delete",
       "edit": "Edit",
-      "add": "Add"
+      "add": "Add",
+      "search": "Search"
     },
     "table": {
       "options": {

@@ -48,7 +48,7 @@ const TableComponent = forwardRef<HTMLDivElement, TProps>(
     const [hiddenColumns, setHiddenColumns] = useState<string[]>([]);
     const { theme } = useTheme();
 
-    const { content, countOfPage, countOfResult, currentPage, pageSize } = attributeList;
+    const { content, countPages, limit, page, totalItems } = attributeList;
 
     const settingsProps = useMemo(
       () => ({
@@ -98,21 +98,21 @@ const TableComponent = forwardRef<HTMLDivElement, TProps>(
       <div ref={ref}>
         <UiTable<TAttributeListItem>
           columns={columns}
-          currentPage={currentPage}
+          currentPage={page}
           data={content ?? []}
-          defaultPageSize={pageSize}
+          defaultPageSize={limit}
           getId={(row) => row.alias}
           isLoading={isLoading}
           messages={{ notFound: t("common.info.noData") }}
           onChangePageSize={onChangePageSize}
           onPageChange={onChangePage}
-          pagesCount={countOfPage}
+          pagesCount={countPages}
           rowActions={rowActions}
           settings={settingsProps}
           sorting={fieldsSortState}
           sticky={true}
           theme={theme}
-          totalItems={countOfResult}
+          totalItems={totalItems}
           totalItemsTitle={t("pages.adminPanel.attributeList.table.header") ?? "Total attributes"}
         />
       </div>

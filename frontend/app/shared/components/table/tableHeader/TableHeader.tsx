@@ -1,5 +1,5 @@
-import type { FC, ReactElement, ReactNode } from "react";
 import clsx from "clsx";
+import type { FC, ReactElement, ReactNode } from "react";
 import { ETablePlacement } from "@/app/uikit/components/table/enums";
 import { Tooltip, TPlacement } from "@/app/uikit/components/tooltip";
 import "./TableHeader.scss";

@@ -7,7 +7,7 @@ import type { ForwardedRef, ReactElement } from "react";
 import { getCoreRowModel, RowData, useReactTable } from "@tanstack/react-table";
 import type { VisibilityState } from "@tanstack/react-table";
 
-import { DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE_LIST } from "@/app/shared/constants/pagination";
+import { DEFAULT_PAGE_LIMIT, DEFAULT_PAGE_LIMIT_LIST } from "@/app/shared/constants/pagination";
 import { Icon } from "@/app/uikit/components/icon";
 import { Control } from "@/app/uikit/components/table/control";
 import { ETablePlacement } from "@/app/uikit/components/table/enums";
@@ -118,12 +118,12 @@ const TableComponent = <TColumn extends Record<string, any>>(
         <NavigationPanel
           className="Table-NavigationPanel__top"
           currentPage={currentPage}
-          defaultPageSize={!isNil(defaultPageSize) ? defaultPageSize : DEFAULT_PAGE_SIZE}
+          defaultPageSize={!isNil(defaultPageSize) ? defaultPageSize : DEFAULT_PAGE_LIMIT}
           dropdownPosition={ETablePlacement.Bottom}
           onChangePageSize={(pageSize: number) => onChangePageSize?.(pageSize)}
           onPageChange={onPageChange}
           pagesCount={pagesCount}
-          pageSizeOptions={!isNil(pageSizeOptions) ? pageSizeOptions : DEFAULT_PAGE_SIZE_LIST}
+          pageSizeOptions={!isNil(pageSizeOptions) ? pageSizeOptions : DEFAULT_PAGE_LIMIT_LIST}
           theme={theme}
         />
       )}
@@ -170,12 +170,12 @@ const TableComponent = <TColumn extends Record<string, any>>(
       {hasData && pagesCount && (
         <NavigationPanel
           currentPage={currentPage}
-          defaultPageSize={!isNil(defaultPageSize) ? defaultPageSize : DEFAULT_PAGE_SIZE}
+          defaultPageSize={!isNil(defaultPageSize) ? defaultPageSize : DEFAULT_PAGE_LIMIT}
           dropdownPosition={ETablePlacement.Top}
           onChangePageSize={(pageSize: number) => onChangePageSize?.(pageSize)}
           onPageChange={onPageChange}
           pagesCount={pagesCount}
-          pageSizeOptions={!isNil(pageSizeOptions) ? pageSizeOptions : DEFAULT_PAGE_SIZE_LIST}
+          pageSizeOptions={!isNil(pageSizeOptions) ? pageSizeOptions : DEFAULT_PAGE_LIMIT_LIST}
           theme={theme}
         />
       )}

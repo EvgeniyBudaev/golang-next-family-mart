@@ -1,6 +1,6 @@
 "use client";
 
-import { createElement, memo } from "react";
+import { createElement, memo, ReactNode } from "react";
 import type { FC, PropsWithChildren } from "react";
 import { EColorText } from "@/app/uikit/components/colors";
 import { TYPOGRAPHY_THEMES } from "@/app/uikit/components/typography/constants";
@@ -12,7 +12,7 @@ type TProps = {
   as?: string;
   color?: TTypographyColor;
   dataTestId?: string;
-  value: string | null;
+  value: ReactNode | JSX.Element | string | null;
   variant?: ETypographyVariant;
 } & PropsWithChildren;
 

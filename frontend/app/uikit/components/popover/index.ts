@@ -1,4 +1,5 @@
-import { POPOVER_POSITION_STYLES, POPOVER_WIDTH } from "./constants";
-import { type TPopoverPosition } from "./types";
+import { POPOVER_POSITION_STYLES, POPOVER_WIDTH } from "./HeadlessPopover/constants";
+import { HeadlessPopover } from "./HeadlessPopover";
+import { type TPopoverPosition } from "./HeadlessPopover/types";
 
-export { POPOVER_POSITION_STYLES, POPOVER_WIDTH, type TPopoverPosition };
+export { HeadlessPopover, POPOVER_POSITION_STYLES, POPOVER_WIDTH, type TPopoverPosition };

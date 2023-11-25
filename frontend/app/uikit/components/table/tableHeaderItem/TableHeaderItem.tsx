@@ -47,6 +47,9 @@ export const TableHeaderItem = <T extends object>({
   const isAlreadySorted = sortingState?.sortProperty === headerId;
   const hasColumnInArray = multiple && !!sortingState;
   const [searchParams] = useSearchParams();
+  const searchParams2 = useSearchParams();
+  console.log("searchParams: ", searchParams);
+  console.log("searchParams2: ", searchParams2);
 
   const { attributes, popoverPosition, setPopperElement, setReferenceElement, styles, triggerRef } =
     usePopover();
@@ -116,37 +119,35 @@ export const TableHeaderItem = <T extends object>({
     [header.column.id, hiddenColumns, setHiddenColumns],
   );
 
-  // const renderIconIndicator = () => {
-  //   if (
-  //     isAlreadySorted
-  //       ? sortingState.sortDirection === ETableSortDirection.Asc
-  //       : checkSortingSearchParams() && checkSortingSearchParams() === ETableSortDirection.Asc
-  //   ) {
-  //     return (
-  //       <div className="TableHeaderItem-IconIndicator">
-  //         <Icon type="SortUp" />
-  //       </div>
-  //     );
-  //   } else if (
-  //     isAlreadySorted
-  //       ? sortingState.sortDirection === ETableSortDirection.Desc
-  //       : checkSortingSearchParams() && checkSortingSearchParams() === ETableSortDirection.Desc
-  //   ) {
-  //     return (
-  //       <div className="TableHeaderItem-IconIndicator">
-  //         <Icon type="SortDown" />
-  //       </div>
-  //     );
-  //   } else {
-  //     return (
-  //       <div className="TableHeaderItem-IconIndicator">
-  //         <Icon type="Sorting" />
-  //       </div>
-  //     );
-  //   }
-  // };
-
-  console.log("header text: ", flexRender(header.column.columnDef.header, header.getContext()));
+  const renderIconIndicator = () => {
+    if (
+      isAlreadySorted
+        ? sortingState.sortDirection === ETableSortDirection.Asc
+        : checkSortingSearchParams() && checkSortingSearchParams() === ETableSortDirection.Asc
+    ) {
+      return (
+        <div className="TableHeaderItem-IconIndicator">
+          <Icon type="SortUp" />
+        </div>
+      );
+    } else if (
+      isAlreadySorted
+        ? sortingState.sortDirection === ETableSortDirection.Desc
+        : checkSortingSearchParams() && checkSortingSearchParams() === ETableSortDirection.Desc
+    ) {
+      return (
+        <div className="TableHeaderItem-IconIndicator">
+          <Icon type="SortDown" />
+        </div>
+      );
+    } else {
+      return (
+        <div className="TableHeaderItem-IconIndicator">
+          <Icon type="Sorting" />
+        </div>
+      );
+    }
+  };
 
   const renderPopoverTrigger = () => {
     return (
@@ -156,7 +157,7 @@ export const TableHeaderItem = <T extends object>({
             value={
               header.isPlaceholder
                 ? null
-                : flexRender(header.column.columnDef.header, header.getContext()).toString()
+                : flexRender(header.column.columnDef.header, header.getContext())
             }
             variant={ETypographyVariant.TextB3Medium}
           />

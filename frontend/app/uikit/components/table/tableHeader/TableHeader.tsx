@@ -27,6 +27,8 @@ export const TableHeader = <T extends object>({
   setHiddenColumns,
   sorting,
 }: TProps<T>) => {
+  console.log("headerGroups: ", headerGroups);
+
   const [sortingState, setSortingState] = useState<
     TSortingColumnStateWithReset | Array<TSortingColumnStateWithReset> | null
   >(getInitialSortingColumnState(sorting));

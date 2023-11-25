@@ -1,17 +1,17 @@
 import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
 import type { ColumnDef, ColumnHelper } from "@tanstack/react-table";
 
 import { TAttributeListItem } from "@/app/api/adminPanel/attributes/list/types";
 import { ETableColumns } from "@/app/entities/attributes/list/enums";
-import { TableHeader } from "@/app/uikit/components/table/tableHeader";
+import { useTranslation } from "@/app/i18n/client";
+import { TableHeader } from "@/app/shared/components/table/tableHeader";
 
 type TUseGetColumns = (
   columnHelper: ColumnHelper<TAttributeListItem>,
 ) => ColumnDef<TAttributeListItem>[];
 
 export const useGetColumns: TUseGetColumns = (columnHelper) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation("index");
 
   return useMemo(
     () =>

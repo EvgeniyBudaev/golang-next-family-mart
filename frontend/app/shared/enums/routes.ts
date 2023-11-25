@@ -8,7 +8,7 @@ export enum ERoutes {
   Signup = "/signup",
   PermissionDenied = "/403",
 
-  AdminAttributes = "/admin/attributes",
+  AdminAttributeList = "/admin/attributes",
   AdminAttributeAdd = "/admin/attributes/add",
   AdminAttributeEdit = "/admin/attributes/:alias/edit",
 

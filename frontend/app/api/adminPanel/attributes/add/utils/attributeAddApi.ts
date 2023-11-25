@@ -3,6 +3,7 @@ import { TAttributeAdd, TAttributeAddParams } from "@/app/api/adminPanel/attribu
 import { EFormMethods } from "@/app/shared/form";
 
 export const attributeAddApi: TApiFunction<TAttributeAddParams, TAttributeAdd> = (params) => {
+  console.log("api params: ", params);
   return fetchApi<TAttributeAdd>(`/api/v1/attribute/create`, {
     method: EFormMethods.Post,
     body: params,

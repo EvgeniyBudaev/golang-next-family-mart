@@ -1,0 +1,14 @@
+.AttributeListPage {
+  &-Header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+
+    &Controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+}

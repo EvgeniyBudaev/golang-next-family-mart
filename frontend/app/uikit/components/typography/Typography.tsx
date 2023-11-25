@@ -12,7 +12,7 @@ type TProps = {
   as?: string;
   color?: TTypographyColor;
   dataTestId?: string;
-  value: string;
+  value: string | null;
   variant?: ETypographyVariant;
 } & PropsWithChildren;
 

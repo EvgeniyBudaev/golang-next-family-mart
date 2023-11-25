@@ -16,10 +16,19 @@ export const AdminPage: FC<I18nProps> = ({ i18n }) => {
       <div>
         <ButtonLink
           href={createPath({
-            route: ERoutes.AdminAttributeAdd,
+            route: ERoutes.AdminAttributeList,
           })}
         >
           Атрибуты
+        </ButtonLink>
+      </div>
+      <div>
+        <ButtonLink
+          href={createPath({
+            route: ERoutes.AdminAttributeAdd,
+          })}
+        >
+          Добавление атрибута
         </ButtonLink>
       </div>
     </section>

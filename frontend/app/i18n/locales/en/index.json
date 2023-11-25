@@ -5,29 +5,28 @@
       "unexpectedError": "Unexpected error"
     }
   },
-  "pages": {
-    "adminPanel": {
-      "title": "Admin panel",
-      "attributeAdd": {
-        "title": "Adding an attribute"
-      }
-    },
-    "login": {
-      "service": "Login to the authorization service",
-      "title": "Entry",
-      "noAccount": "no account?",
-      "signup": "Register"
-    },
-    "signup": {
-      "register": "Register!",
-      "title": "Registration",
-      "haveAccount": "Have an account?",
-      "enter": "Enter"
-    }
-  },
   "common": {
     "actions": {
+      "cancel": "Cancel",
+      "apply": "Apply",
+      "delete": "Delete",
+      "edit": "Edit",
       "add": "Add"
+    },
+    "table": {
+      "options": {
+        "fields": "Table fields",
+        "modal": "Table properties",
+        "sorting": {
+          "asc": "Ascending",
+          "default": "Default",
+          "desc": "Descending",
+          "hide": "Hide column"
+        }
+      }
+    },
+    "info": {
+      "noData": "No data"
     },
     "validation": {
       "email": "Invalid email",
@@ -41,6 +40,44 @@
         "maxSize": "Maximum size 200mb",
         "maxAmount": "Maximum number of files 50"
       }
+    }
+  },
+  "pages": {
+    "adminPanel": {
+      "attributeList": {
+        "table": {
+          "header": "List of attributes"
+        },
+        "title": "List of attributes"
+      },
+      "title": "Admin panel",
+      "attributeAdd": {
+        "title": "Adding an attribute"
+      }
+    },
+    "admin": {
+      "attributes": {
+        "table": {
+          "columns": {
+            "info": {
+              "name": "Name",
+              "alias": "Alias"
+            }
+          }
+        }
+      }
+    },
+    "login": {
+      "service": "Login to the authorization service",
+      "title": "Entry",
+      "noAccount": "no account?",
+      "signup": "Register"
+    },
+    "signup": {
+      "register": "Register!",
+      "title": "Registration",
+      "haveAccount": "Have an account?",
+      "enter": "Enter"
     }
   },
   "form": {

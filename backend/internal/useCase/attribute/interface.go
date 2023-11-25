@@ -6,5 +6,6 @@ import (
 )
 
 type IAttributeStore interface {
-	Create(ctx *fiber.Ctx, a *attribute.RequestAttribute) (*attribute.Attribute, error)
+	Create(ctx *fiber.Ctx, a *attribute.Attribute) (*attribute.Attribute, error)
+	SelectList(ctx *fiber.Ctx, qp *attribute.QueryParamsAttributeList) (*attribute.ListAttributeResponse, error)
 }

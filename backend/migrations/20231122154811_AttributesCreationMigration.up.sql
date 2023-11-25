@@ -6,7 +6,7 @@ CREATE TABLE attributes (
                             enabled bool not null,
                             filtered bool not null,
                             name varchar not null unique,
-                            type varchar not null unique,
+                            type varchar not null,
                             updated_at timestamp not null,
                             uuid uuid not null unique
 );

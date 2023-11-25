@@ -29,17 +29,16 @@ func NewCreateAttributeUseCase(ds IAttributeStore) *CreateAttributeUseCase {
 }
 
 func (uc *CreateAttributeUseCase) CreateAttribute(ctx *fiber.Ctx, r CreateAttributeRequest) (*attribute.Attribute, error) {
-	var request = &attribute.RequestAttribute{
-		Alias:      strings.ToLower(r.Alias),
-		CreatedAt:  time.Now(),
-		Deleted:    false,
-		Enabled:    true,
-		Filtered:   true,
-		Name:       strings.ToLower(r.Name),
-		Type:       strings.ToLower(r.Type),
-		UpdatedAt:  time.Now(),
-		Uuid:       uuid.New(),
-		Selectable: r.Selectable,
+	var request = &attribute.Attribute{
+		Alias:     strings.ToLower(r.Alias),
+		CreatedAt: time.Now(),
+		Deleted:   false,
+		Enabled:   true,
+		Filtered:  true,
+		Name:      strings.ToLower(r.Name),
+		Type:      strings.ToLower(r.Type),
+		UpdatedAt: time.Now(),
+		Uuid:      uuid.New(),
 	}
 	response, err := uc.dataStore.Create(ctx, request)
 	if err != nil {

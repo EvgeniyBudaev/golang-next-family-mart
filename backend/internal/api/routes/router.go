@@ -30,12 +30,14 @@ func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Sto
 	grp := app.Group(prefix)
 
 	// store
+	attributeDataStore := attributeStore.NewDBAttributeStore(store)
 	catalogDataStore := catalogStore.NewDBCatalogStore(store)
 	productDataStore := productStore.NewDBProductStore(store)
 	identityManager := identity.NewIdentity(config)
 
 	// useCase
 	useCaseRegister := user.NewRegisterUseCase(identityManager)
+	useCaseGetAttributeList := attribute.NewGetAttributeListUseCase(attributeDataStore)
 	useCaseGetCatalogList := catalog.NewGetCatalogListUseCase(catalogDataStore)
 	useCaseGetCatalogByAlias := catalog.NewGetCatalogByAliasUseCase(catalogDataStore)
 	useCaseGetCatalogByUuid := catalog.NewGetCatalogByUuidUseCase(catalogDataStore)
@@ -45,6 +47,7 @@ func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Sto
 
 	// handlers
 	grp.Post("/user/register", registerHandler.PostRegisterHandler(useCaseRegister))
+	grp.Get("/attribute/list", attributeHandler.GetAttributeListHandler(useCaseGetAttributeList))
 	grp.Get("/catalog/list", catalogHandler.GetCatalogListHandler(useCaseGetCatalogList))
 	grp.Get("/catalog/alias/:alias", catalogHandler.GetCatalogByAliasHandler(useCaseGetCatalogByAlias))
 	grp.Get("/catalog/uuid/:uuid", catalogHandler.GetCatalogByUuidHandler(useCaseGetCatalogByUuid))

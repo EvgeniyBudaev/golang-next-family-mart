@@ -7,6 +7,8 @@ import { ETableColumns } from "@/app/entities/attributes/list/enums";
 import { useTranslation } from "@/app/i18n/client";
 import { ETypographyVariant, Typography } from "@/app/uikit/components/typography";
 import "./AttributeListPage.scss";
+import { useTable } from "@/app/shared/hooks";
+import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/app/shared/constants/pagination";
 
 type TProps = {
   attributeList: TAttributeList;
@@ -14,6 +16,30 @@ type TProps = {
 
 export const AttributeListPage: FC<TProps> = ({ attributeList }) => {
   const { t } = useTranslation("index");
+
+  const handleAttributeDelete = (alias: string) => {};
+
+  const handleAttributeEdit = (alias: string) => {};
+
+  // const {
+  //   defaultSearch,
+  //   deleteModal,
+  //   isSearchActive,
+  //   onChangePage,
+  //   onChangeSize,
+  //   onClickDeleteIcon,
+  //   onCloseDeleteModal,
+  //   onDeleteSubmit,
+  //   onSearch,
+  //   onSearchBlur,
+  //   onSearchFocus,
+  //   onSearchKeyDown,
+  //   onSortTableByProperty,
+  // } = useTable({
+  //   limitOption: attributeList?.limit ?? DEFAULT_PAGE_SIZE,
+  //   onDelete: handleAttributeDelete,
+  //   pageOption: attributeList?.currentPage ?? DEFAULT_PAGE,
+  // });
 
   return (
     <section className="AttributeListPage">

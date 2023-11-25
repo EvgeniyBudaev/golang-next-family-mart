@@ -20,19 +20,19 @@ type TParams = {
 };
 
 type TUseTable = (params: TParams) => {
-  // defaultSearch: string;
-  // deleteModal: { isOpen: boolean };
-  // isSearchActive: boolean;
-  // onChangePage: ({selected}: { selected: number }) => void;
-  // onChangeSize: (size: number) => void;
-  // onClickDeleteIcon: (alias: string) => void;
-  // onCloseDeleteModal: () => void;
-  // onDeleteSubmit: () => void;
-  // onSearch: (event: ChangeEvent<HTMLFormElement>) => void;
-  // onSearchBlur: () => void;
-  // onSearchFocus: () => void;
-  // onSearchKeyDown: (event: KeyboardEvent) => void;
-  // onSortTableByProperty: (params?: TTableSortingColumnState | TTableSortingColumnState[]) => void;
+  defaultSearch: string;
+  deleteModal: { isOpen: boolean };
+  isSearchActive: boolean;
+  onChangeLimit: (size: number) => void;
+  onChangePage: ({ selected }: { selected: number }) => void;
+  onClickDeleteIcon: (alias: string) => void;
+  onCloseDeleteModal: () => void;
+  onDeleteSubmit: () => void;
+  onSearch: (event: ChangeEvent<HTMLFormElement>) => void;
+  onSearchBlur: () => void;
+  onSearchFocus: () => void;
+  onSearchKeyDown: (event: KeyboardEvent) => void;
+  onSortTableByProperty: (params?: TTableSortingColumnState | TTableSortingColumnState[]) => void;
 };
 
 export const useTable: TUseTable = ({ onDelete, limitOption, pageOption }) => {
@@ -97,17 +97,71 @@ export const useTable: TUseTable = ({ onDelete, limitOption, pageOption }) => {
     );
   };
 
-  // const debouncedFetcher = useCallback(
-  //   debounce((query: string) => {
-  //     setSearchParams(
-  //       getSearchParams({
-  //         search: query,
-  //         page: DEFAULT_PAGE.toString(),
-  //       }),
-  //     );
-  //   }, DEBOUNCE_TIMEOUT),
-  //   [searchParams],
-  // );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedFetcher = useCallback(
+    debounce((query: string) => {
+      setSearchParams(
+        getSearchParams({
+          search: query,
+          page: DEFAULT_PAGE.toString(),
+        }),
+      );
+    }, DEBOUNCE_TIMEOUT),
+    [searchParams],
+  );
 
-  return {};
+  const handleSearch = (event: ChangeEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    debouncedFetcher(event.target.value);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setDeleteModal((prev) => ({ ...prev, isOpen: false }));
+  };
+
+  const handleClickDeleteIcon = useCallback(
+    (alias: string) => {
+      setDeleteModal({
+        isOpen: true,
+        alias,
+      });
+    },
+    [setDeleteModal],
+  );
+
+  const handleDeleteSubmit = () => {
+    if (deleteModal.alias) {
+      onDelete?.(deleteModal.alias);
+      handleCloseDeleteModal();
+    }
+  };
+
+  const handleSearchBlur = () => {
+    setIsSearchActive(false);
+  };
+  const handleSearchFocus = () => {
+    setIsSearchActive(true);
+  };
+
+  const handleSearchKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Escape") {
+      setIsSearchActive(false);
+    }
+  };
+
+  return {
+    defaultSearch,
+    deleteModal,
+    isSearchActive,
+    onChangeLimit: handleChangeLimit,
+    onChangePage: handleChangePage,
+    onClickDeleteIcon: handleClickDeleteIcon,
+    onCloseDeleteModal: handleCloseDeleteModal,
+    onDeleteSubmit: handleDeleteSubmit,
+    onSearch: handleSearch,
+    onSearchBlur: handleSearchBlur,
+    onSearchFocus: handleSearchFocus,
+    onSearchKeyDown: handleSearchKeyDown,
+    onSortTableByProperty: handleSortTableByProperty,
+  };
 };

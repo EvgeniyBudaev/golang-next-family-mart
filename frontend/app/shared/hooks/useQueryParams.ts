@@ -1,5 +1,7 @@
 "use client";
 
+import isEmpty from "lodash/isEmpty";
+import isNil from "lodash/isNil";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export function useQueryParams<T>() {
@@ -10,7 +12,7 @@ export function useQueryParams<T>() {
 
   function setQueryParams(params: Partial<T>) {
     Object.entries(params).forEach(([key, value]) => {
-      if (value === undefined || value === null) {
+      if (isNil(value) || isEmpty(value)) {
         urlSearchParams.delete(key);
       } else {
         urlSearchParams.set(key, String(value));

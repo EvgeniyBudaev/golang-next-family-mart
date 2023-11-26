@@ -52,6 +52,7 @@ export const useTable: TUseTable = ({ onDelete, limitOption, pageOption }) => {
     const defaultSearchParams: TSearchParams = {
       limit,
       page,
+      // ...(!isNil(search) ? {search: search} : {}),
       search: isEmpty(defaultSearch) ? undefined : defaultSearch,
       sort: isEmpty(defaultSort) ? undefined : defaultSort,
     };
@@ -60,7 +61,8 @@ export const useTable: TUseTable = ({ onDelete, limitOption, pageOption }) => {
       ...params,
     };
     return Object.fromEntries(
-      Object.entries(mergedParams).filter(([_key, value]) => !isEmpty(value)),
+      // Object.entries(mergedParams).filter(([_key, value]) => !isEmpty(value)),
+      Object.entries(mergedParams),
     );
   };
 
@@ -101,14 +103,13 @@ export const useTable: TUseTable = ({ onDelete, limitOption, pageOption }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedFetcher = useCallback(
     debounce((query: string) => {
-      setQueryParams(
-        getSearchParams({
-          search: query,
-          page: DEFAULT_PAGE.toString(),
-        }),
-      );
+      const newParams = getSearchParams({
+        search: query,
+        page: DEFAULT_PAGE.toString(),
+      });
+      setQueryParams(newParams);
     }, DEBOUNCE_TIMEOUT),
-    [queryParams],
+    [queryParams, setQueryParams],
   );
 
   const handleSearch = (event: ChangeEvent<HTMLFormElement>) => {

@@ -17,7 +17,6 @@ type TProps = {
 };
 
 export const AttributeListPage: FC<TProps> = ({ attributeList }) => {
-  console.log("attributeList: ", attributeList);
   const { t } = useTranslation("index");
 
   const handleAttributeDelete = (alias: string) => {};

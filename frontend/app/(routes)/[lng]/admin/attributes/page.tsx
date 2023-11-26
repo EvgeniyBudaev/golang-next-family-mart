@@ -10,9 +10,33 @@ import { createPath, getResponseError } from "@/app/shared/utils";
 import { getAttributeList } from "@/app/api/adminPanel/attributes/list";
 import { TCommonResponseError } from "@/app/shared/types/error";
 
-async function loader() {
+type TSearchParams = { [key: string]: string | string[] | undefined };
+
+type TProps = {
+  params: { lng: string };
+  searchParams: TSearchParams;
+};
+
+const mapParamsToDto = (searchParams: TSearchParams) => {
+  const limit = Number(searchParams?.limit) ?? DEFAULT_PAGE_LIMIT;
+  const page = Number(searchParams?.page) ?? DEFAULT_PAGE;
+  const search = searchParams?.search ?? undefined;
+
+  return {
+    limit,
+    page,
+    ...(search ? { search: searchParams?.search } : {}),
+  };
+};
+
+async function loader(searchParams: TSearchParams) {
+  console.log("[loader searchParams] ", searchParams);
+
+  const paramsToDto = mapParamsToDto(searchParams);
+  console.log("[loader paramsToDto] ", paramsToDto);
+
   try {
-    const response = await getAttributeList({ page: DEFAULT_PAGE, limit: DEFAULT_PAGE_LIMIT });
+    const response = await getAttributeList(paramsToDto);
     return response.data as TAttributeList;
   } catch (error) {
     const errorResponse = error as Response;
@@ -22,7 +46,12 @@ async function loader() {
   }
 }
 
-export default async function AttributeListRoute({ params: { lng } }: { params: { lng: string } }) {
+export default async function AttributeListRoute(props: TProps) {
+  const {
+    params: { lng },
+    searchParams,
+  } = props;
+
   const [{ t }, isPermissions] = await Promise.all([
     useTranslation(lng, "index"),
     checkPermissionsByServer([EPermissions.Admin]),
@@ -37,7 +66,7 @@ export default async function AttributeListRoute({ params: { lng } }: { params: 
   }
 
   try {
-    const attributeList = await loader();
+    const attributeList = await loader(searchParams);
     return <AttributeListPage attributeList={attributeList} />;
   } catch (error) {
     return <ErrorBoundary i18n={{ lng, t }} message={t(error.message)} />;

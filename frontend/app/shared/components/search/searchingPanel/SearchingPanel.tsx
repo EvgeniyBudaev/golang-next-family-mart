@@ -32,6 +32,7 @@ const Component: FC<TProps> = ({
   onSubmit,
 }) => {
   const { t } = useTranslation("index");
+  console.log("defaultSearch: ", defaultSearch);
 
   return (
     <div

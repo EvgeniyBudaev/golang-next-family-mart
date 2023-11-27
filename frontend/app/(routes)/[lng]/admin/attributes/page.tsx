@@ -18,8 +18,8 @@ type TProps = {
 };
 
 const mapParamsToDto = (searchParams: TSearchParams) => {
-  const limit = Number(searchParams?.limit) ?? DEFAULT_PAGE_LIMIT;
-  const page = Number(searchParams?.page) ?? DEFAULT_PAGE;
+  const limit = searchParams?.limit ?? DEFAULT_PAGE_LIMIT;
+  const page = searchParams?.page ?? DEFAULT_PAGE;
   const search = searchParams?.search ?? undefined;
 
   return {

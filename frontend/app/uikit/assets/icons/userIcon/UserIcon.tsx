@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import type { TIconProps } from "../types";
+import { TIconProps } from "@/app/uikit/assets/icons/types";
 
 export const UserIcon: FC<TIconProps> = ({ height = 24, width = 24, ...props }) => (
   <svg height={height} width={width} viewBox="0 0 24 24" {...props}>

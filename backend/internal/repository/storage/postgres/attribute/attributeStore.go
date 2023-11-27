@@ -72,8 +72,8 @@ func (pg *PGAttributeStore) SelectList(
 	}
 	// sorting
 	if qp.Sort == "" {
-		sqlSelect = sqlSelect.OrderBy("updated_at DESC")
-		countSelect = countSelect.OrderBy("updated_at DESC")
+		sqlSelect = sqlSelect.OrderBy("alias DESC", "name DESC", "updated_at DESC")
+		countSelect = countSelect.OrderBy("alias DESC", "name DESC", "updated_at DESC")
 	}
 	fieldMapping := map[string]string{}
 	sqlSelect = sorting.ApplySorting(sqlSelect, qp.Sort, fieldMapping)

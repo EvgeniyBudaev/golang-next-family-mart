@@ -1,3 +1,5 @@
+"use client";
+
 import { useMemo } from "react";
 import type { ColumnDef, ColumnHelper } from "@tanstack/react-table";
 
@@ -6,6 +8,7 @@ import { ETableColumns } from "@/app/entities/attributes/list/enums";
 import { useTranslation } from "@/app/i18n/client";
 import { TableHeader } from "@/app/shared/components/table/tableHeader";
 import { DateTime } from "@/app/uikit/components/dateTime";
+import { ClientOnly } from "@/app/uikit/components/clientOnly";
 
 type TUseGetColumns = (
   columnHelper: ColumnHelper<TAttributeListItem>,
@@ -48,7 +51,11 @@ export const useGetColumns: TUseGetColumns = (columnHelper) => {
           ),
           cell: (data) => {
             const value = data.getValue();
-            return <DateTime value={value} />;
+            return (
+              <ClientOnly>
+                <DateTime value={value} />
+              </ClientOnly>
+            );
           },
           minSize: 192,
         }),

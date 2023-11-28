@@ -1,3 +1,5 @@
+"use client";
+
 import dayjs from "dayjs";
 import "dayjs/locale/ru";
 import utc from "dayjs/plugin/utc";

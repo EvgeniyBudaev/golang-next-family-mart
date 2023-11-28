@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef } from "react";
 import { useTranslation } from "@/app/i18n/client";
 import dayjs from "dayjs";

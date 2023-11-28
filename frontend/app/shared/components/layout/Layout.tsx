@@ -1,10 +1,11 @@
 import type { FC, PropsWithChildren } from "react";
+import { I18nProps } from "@/app/i18n/props";
 import { Footer } from "@/app/shared/components/layout/footer";
 import { Header } from "@/app/shared/components/layout/header";
 import "./Layout.scss";
-import { I18nProps } from "@/app/i18n/props";
 
 type TProps = {} & PropsWithChildren & I18nProps;
+
 export const Layout: FC<TProps> = ({ children, i18n }) => {
   return (
     <div className="Layout">

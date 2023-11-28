@@ -5,6 +5,7 @@ import { internalError } from "@/app/shared/utils/internalError";
 import { processError } from "@/app/shared/utils/processError";
 import { processSuccessResponse } from "@/app/shared/utils/processSuccessResponse";
 import { setResponseTimeout } from "@/app/shared/utils/setResponseTimeout";
+import { getAccessToken } from "@/app/shared/utils/auth";
 
 let language: string = "ru";
 
@@ -23,7 +24,7 @@ export function createApi(config: TApiConfig): {
   const { basePath } = config;
 
   const fetchApi: TApiFunction = async (path, options) => {
-    //const accessToken = await jwtService.getAccessToken(request);
+    const accessToken = await getAccessToken();
     const url = basePath + path;
     let contentType: { "Content-Type"?: string } = { "Content-Type": "application/json" };
     let body;
@@ -41,9 +42,8 @@ export function createApi(config: TApiConfig): {
       ...options,
       headers: {
         ...contentType,
-        //Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
         "Accept-Language": language,
-        // traceparent: request.headers.get("traceparent") ?? "",
         ...options?.headers,
       },
       body,
@@ -60,21 +60,6 @@ export function createApi(config: TApiConfig): {
         if (response.ok) {
           return await processSuccessResponse(response);
         }
-        // if (response.status === 401) {
-        //     let headers: THeaders | undefined;
-        //     try {
-        //         const accessTokenData = await jwtService.refreshAccessToken(request);
-        //
-        //         headers = accessTokenData.headers;
-        //     } catch (error) {}
-        //
-        //     if (headers) {
-        //         throw redirect(request.url, {
-        //             headers,
-        //             status: 307, // Reuse original method and body. Needed for POST requests
-        //         });
-        //     }
-        // }
         errorResponse = { type: EErrorTypes.Server, response: response };
       } catch (e: any) {
         errorResponse = processError(e);
@@ -87,7 +72,7 @@ export function createApi(config: TApiConfig): {
       if (errorResponse.response) {
         const { response } = errorResponse;
         const errorMsg = await errorResponse.response.text();
-        throw new Response(errorMsg, { status: response.status });
+        throw new Response(errorMsg, { status: response?.status });
       }
       throw internalError("Unexpected error");
     }

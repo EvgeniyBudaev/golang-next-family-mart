@@ -71,7 +71,12 @@ export const AttributeListPage: FC<TProps> = ({ attributeList }) => {
       <AttributeListTable
         attributeList={attributeList}
         fieldsSortState={{
-          columns: [ETableColumns.Alias, ETableColumns.Name],
+          columns: [
+            ETableColumns.Alias,
+            ETableColumns.Name,
+            ETableColumns.Type,
+            ETableColumns.UpdatedAt,
+          ],
           multiple: false,
           onChangeSorting: onSortTableByProperty,
         }}

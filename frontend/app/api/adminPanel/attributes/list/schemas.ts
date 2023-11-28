@@ -17,6 +17,8 @@ export const attributeListItemSchema = z.object({
 export const attributeListParamsSchema = z.object({
   limit: z.number(),
   page: z.number(),
+  search: z.string().optional(),
+  sort: z.string().optional(),
 });
 
 export const attributeListSchema = paginationSchema.extend({

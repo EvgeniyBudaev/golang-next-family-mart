@@ -5,6 +5,7 @@ import { TAttributeListItem } from "@/app/api/adminPanel/attributes/list/types";
 import { ETableColumns } from "@/app/entities/attributes/list/enums";
 import { useTranslation } from "@/app/i18n/client";
 import { TableHeader } from "@/app/shared/components/table/tableHeader";
+import { DateTime } from "@/app/uikit/components/dateTime";
 
 type TUseGetColumns = (
   columnHelper: ColumnHelper<TAttributeListItem>,
@@ -29,6 +30,26 @@ export const useGetColumns: TUseGetColumns = (columnHelper) => {
           header: () => (
             <TableHeader>{t("pages.admin.attributes.table.columns.info.alias")}</TableHeader>
           ),
+          minSize: 192,
+        }),
+
+        columnHelper.accessor(ETableColumns.Type, {
+          id: ETableColumns.Type,
+          header: () => (
+            <TableHeader>{t("pages.admin.attributes.table.columns.info.type")}</TableHeader>
+          ),
+          minSize: 192,
+        }),
+
+        columnHelper.accessor(ETableColumns.UpdatedAt, {
+          id: ETableColumns.UpdatedAt,
+          header: () => (
+            <TableHeader>{t("pages.admin.attributes.table.columns.info.updatedAt")}</TableHeader>
+          ),
+          cell: (data) => {
+            const value = data.getValue();
+            return <DateTime value={value} />;
+          },
           minSize: 192,
         }),
       ].filter(Boolean) as ColumnDef<TAttributeListItem>[],

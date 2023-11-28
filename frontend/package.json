@@ -17,6 +17,7 @@
     "accept-language": "^3.0.18",
     "clsx": "^2.0.0",
     "cryptr": "^6.3.0",
+    "dayjs": "^1.11.10",
     "i18next": "^23.6.0",
     "i18next-browser-languagedetector": "^7.1.0",
     "i18next-parser": "^8.9.0",

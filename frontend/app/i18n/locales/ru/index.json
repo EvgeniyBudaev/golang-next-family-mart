@@ -62,7 +62,9 @@
           "columns": {
             "info": {
               "name": "Наименование",
-              "alias": "Псевдоним"
+              "alias": "Псевдоним",
+              "type": "Тип",
+              "updatedAt": "Дата обновления"
             }
           }
         }
@@ -106,6 +108,11 @@
     "passwordConfirm": {
       "title": "Подтверждение пароля"
     }
+  },
+  "footer": {
+    "about": "О нас",
+    "shipping": "Доставка",
+    "contacts": "Контакты"
   },
   "header": {
     "adminPanel": "Панель администратора",

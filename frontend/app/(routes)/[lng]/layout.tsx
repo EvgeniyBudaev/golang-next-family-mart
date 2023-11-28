@@ -7,6 +7,7 @@ import { ToastContainer } from "@/app/uikit/components/toast/toastContainer";
 import { SessionProviderWrapper } from "@/app/shared/utils/auth";
 import { useTranslation } from "../../i18n";
 import { I18nContextProvider } from "../../i18n/context";
+import { InitClient } from "@/app/shared/components/init";
 
 export const metadata: Metadata = {
   title: "FamilyMart",
@@ -27,6 +28,7 @@ export default async function RootLayout({
       <html lang={lng} dir={dir(lng)}>
         <body>
           <I18nContextProvider lng={lng}>
+            <InitClient />
             <Layout i18n={{ lng, t }}>{children}</Layout>
             <ToastContainer />
           </I18nContextProvider>

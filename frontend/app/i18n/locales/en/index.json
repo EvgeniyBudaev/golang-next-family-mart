@@ -62,7 +62,9 @@
           "columns": {
             "info": {
               "name": "Name",
-              "alias": "Alias"
+              "alias": "Alias",
+              "type": "Type",
+              "updatedAt": "Update date"
             }
           }
         }
@@ -106,6 +108,11 @@
     "passwordConfirm": {
       "title": "Password confirm"
     }
+  },
+  "footer": {
+    "about": "About",
+    "shipping": "Shipping",
+    "contacts": "Contacts"
   },
   "header": {
     "adminPanel": "Admin panel",

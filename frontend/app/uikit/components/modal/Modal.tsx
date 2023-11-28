@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { useState, useEffect } from "react";
 import type { ReactNode, FC } from "react";
 import { default as ReactModal } from "react-responsive-modal";
+import "react-responsive-modal/styles.css";
 import { Icon } from "@/app/uikit/components/icon";
 import "./Modal.scss";
 

@@ -1,3 +1,4 @@
+import isNil from "lodash/isNil";
 import { redirect } from "next/navigation";
 import { type TAttributeList } from "@/app/api/adminPanel/attributes/list";
 import { useTranslation } from "@/app/i18n";
@@ -17,23 +18,40 @@ type TProps = {
   searchParams: TSearchParams;
 };
 
+const getParamsField = (
+  field: string | string[] | undefined,
+  defaultValue: string | number | undefined,
+) => {
+  if (isNil(field) || Array.isArray(field)) {
+    return defaultValue;
+  }
+  return field;
+};
+
+const getLimit = (searchParams: TSearchParams) => {
+  return !isNil(getParamsField(searchParams?.limit, DEFAULT_PAGE_LIMIT))
+    ? Number(searchParams?.limit)
+    : DEFAULT_PAGE_LIMIT;
+};
+
 const mapParamsToDto = (searchParams: TSearchParams) => {
-  const limit = searchParams?.limit ?? DEFAULT_PAGE_LIMIT;
-  const page = searchParams?.page ?? DEFAULT_PAGE;
-  const search = searchParams?.search ?? undefined;
+  const limit = getParamsField(searchParams?.limit, DEFAULT_PAGE_LIMIT);
+  const page = getParamsField(searchParams?.page, DEFAULT_PAGE);
+  const search = !Array.isArray(searchParams?.search)
+    ? searchParams?.search ?? undefined
+    : undefined;
+  const sort = !Array.isArray(searchParams?.sort) ? searchParams?.sort ?? undefined : undefined;
 
   return {
     limit,
     page,
     ...(search ? { search: searchParams?.search } : {}),
+    ...(sort ? { sort: searchParams?.sort } : {}),
   };
 };
 
 async function loader(searchParams: TSearchParams) {
-  console.log("[loader searchParams] ", searchParams);
-
   const paramsToDto = mapParamsToDto(searchParams);
-  console.log("[loader paramsToDto] ", paramsToDto);
 
   try {
     const response = await getAttributeList(paramsToDto);
@@ -41,6 +59,7 @@ async function loader(searchParams: TSearchParams) {
   } catch (error) {
     const errorResponse = error as Response;
     const responseData: TCommonResponseError = await errorResponse.json();
+    console.log("responseData: ", responseData);
     const { message: formError, fieldErrors, success } = getResponseError(responseData) ?? {};
     throw new Error("errorBoundary.common.unexpectedError");
   }

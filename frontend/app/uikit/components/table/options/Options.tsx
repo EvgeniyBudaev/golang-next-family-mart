@@ -5,6 +5,7 @@ import { flexRender } from "@tanstack/react-table";
 import type { HeaderContext } from "@tanstack/react-table";
 
 import { Button } from "@/app/uikit/components/button";
+import { Icon } from "@/app/uikit/components/icon";
 import { Modal, useModalWindow } from "@/app/uikit/components/modal";
 import { TTableOptionsProps } from "@/app/uikit/components/table/options/types";
 import { ETypographyVariant, Typography } from "@/app/uikit/components/typography";
@@ -44,8 +45,7 @@ const Component = <T extends object>({
 
   return (
     <>
-      {/*<IconButton onClick={openModal} typeIcon="Settings"/>*/}
-      <div onClick={openModal}>Settings</div>
+      <Icon onClick={openModal} type="Settings" />
       <Modal isOpen={isOpenModal} onCloseModal={handleCloseModal}>
         <Modal.Header>
           <Typography value={optionsModalHeader ?? ""} variant={ETypographyVariant.TextH6Bold} />

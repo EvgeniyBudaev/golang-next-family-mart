@@ -1,6 +1,7 @@
 package attribute
 
 import (
+	"fmt"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/attribute"
 	errorDomain "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/error"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/pagination"
@@ -10,6 +11,7 @@ import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"net/http"
@@ -52,6 +54,70 @@ func (pg *PGAttributeStore) Create(cf *fiber.Ctx, a *attribute.Attribute) (*attr
 	}
 	tx.Commit(ctx)
 	return a, nil
+}
+
+func (pg *PGAttributeStore) Update(cf *fiber.Ctx, a *attribute.Attribute) (*attribute.Attribute, error) {
+	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	ctx := cf.Context()
+	tx, err := pg.store.Db().Begin(ctx)
+	if err != nil {
+		logger.Log.Debug("error while Update. error in method Begin", zap.Error(err))
+		return nil, err
+	}
+	defer tx.Rollback(ctx)
+	sqlSelect := sqlBuilder.Update("attributes").
+		Set("alias", a.Alias).
+		Set("created_at", a.CreatedAt).
+		Set("deleted", a.Deleted).
+		Set("enabled", a.Enabled).
+		Set("filtered", a.Enabled).
+		Set("name", a.Name).
+		Set("type", a.Type).
+		Set("updated_at", a.UpdatedAt).
+		Set("uuid", a.Uuid).
+		Where(sq.Eq{"uuid": a.Uuid})
+	query, args, err := sqlSelect.ToSql()
+	if err != nil {
+		logger.Log.Debug("error while Update. error in method ToSql", zap.Error(err))
+		return nil, err
+	}
+	_, err = tx.Exec(ctx, query, args...)
+	if err != nil {
+		logger.Log.Debug("error while Update. Error in Exec method", zap.Error(err))
+		return nil, err
+	}
+	tx.Commit(ctx)
+	return a, nil
+}
+
+func (pg *PGAttributeStore) FindByUuid(ctx *fiber.Ctx, uuid uuid.UUID) (*attribute.Attribute, error) {
+	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	sqlSelect := sqlBuilder.Select("*").From("attributes").Where(sq.Eq{"uuid": uuid})
+	data := attribute.Attribute{}
+	query, args, err := sqlSelect.ToSql()
+	if err != nil {
+		logger.Log.Debug("error while FindByUuid. error in method ToSql", zap.Error(err))
+		return nil, err
+	}
+	row := pg.store.Db().QueryRow(ctx.Context(), query, args...)
+	if err != nil {
+		logger.Log.Debug("error while FindByUuid. error in method Query", zap.Error(err))
+		return nil, err
+	}
+	err = row.Scan(&data.Id, &data.Alias, &data.CreatedAt, &data.Deleted,
+		&data.Enabled, &data.Filtered, &data.Name, &data.Type, &data.UpdatedAt, &data.Uuid)
+	if err != nil {
+		logger.Log.Debug("error while FindByUuid. error in method Scan", zap.Error(err))
+		msg := errors.Wrap(err, "catalog not found")
+		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
+		return nil, err
+	}
+	if data.Deleted == true {
+		msg := fmt.Errorf("catalog has already been deleted")
+		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
+		return nil, err
+	}
+	return &data, nil
 }
 
 func (pg *PGAttributeStore) SelectList(

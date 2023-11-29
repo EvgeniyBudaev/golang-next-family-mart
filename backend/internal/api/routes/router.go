@@ -38,6 +38,7 @@ func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Sto
 	// useCase
 	useCaseRegister := user.NewRegisterUseCase(identityManager)
 	useCaseGetAttributeList := attribute.NewGetAttributeListUseCase(attributeDataStore)
+	useCaseGetAttributeByUuid := attribute.NewGetAttributeByUuidUseCase(attributeDataStore)
 	useCaseGetCatalogList := catalog.NewGetCatalogListUseCase(catalogDataStore)
 	useCaseGetCatalogByAlias := catalog.NewGetCatalogByAliasUseCase(catalogDataStore)
 	useCaseGetCatalogByUuid := catalog.NewGetCatalogByUuidUseCase(catalogDataStore)
@@ -48,6 +49,7 @@ func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Sto
 	// handlers
 	grp.Post("/user/register", registerHandler.PostRegisterHandler(useCaseRegister))
 	grp.Get("/attribute/list", attributeHandler.GetAttributeListHandler(useCaseGetAttributeList))
+	grp.Get("/attribute/uuid/:uuid", attributeHandler.GetAttributeByUuidHandler(useCaseGetAttributeByUuid))
 	grp.Get("/catalog/list", catalogHandler.GetCatalogListHandler(useCaseGetCatalogList))
 	grp.Get("/catalog/alias/:alias", catalogHandler.GetCatalogByAliasHandler(useCaseGetCatalogByAlias))
 	grp.Get("/catalog/uuid/:uuid", catalogHandler.GetCatalogByUuidHandler(useCaseGetCatalogByUuid))
@@ -67,6 +69,7 @@ func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.
 
 	// useCase
 	useCaseCreateAttribute := attribute.NewCreateAttributeUseCase(attributeDataStore)
+	useCaseUpdateAttribute := attribute.NewUpdateAttributeUseCase(attributeDataStore)
 	useCaseCreateCatalog := catalog.NewCreateCatalogUseCase(catalogDataStore)
 	useCaseDeleteCatalog := catalog.NewDeleteCatalogUseCase(catalogDataStore)
 	useCaseUpdateCatalog := catalog.NewUpdateCatalogUseCase(catalogDataStore)
@@ -76,6 +79,8 @@ func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.
 	// handlers
 	grp.Post("/attribute/create", middlewares.NewRequiresRealmRole("admin"),
 		attributeHandler.CreateAttributeHandler(useCaseCreateAttribute))
+	grp.Put("/attribute/update", middlewares.NewRequiresRealmRole("admin"),
+		attributeHandler.UpdateAttributeHandler(useCaseUpdateAttribute))
 	grp.Post("/catalog/create", middlewares.NewRequiresRealmRole("admin"),
 		catalogHandler.CreateCatalogHandler(useCaseCreateCatalog))
 	grp.Delete("/catalog/delete/:uuid", middlewares.NewRequiresRealmRole("admin"),

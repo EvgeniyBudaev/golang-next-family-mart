@@ -32,6 +32,7 @@ const InputComponent = forwardRef<HTMLInputElement, IInputProps>(
       defaultValue,
       errors,
       hidden,
+      isDisabled,
       isFocused: isInputFocused,
       isRequired,
       label,
@@ -73,24 +74,29 @@ const InputComponent = forwardRef<HTMLInputElement, IInputProps>(
     return (
       <div
         className={clsx("InputField", className, {
-          InputField__active: isFocused,
+          InputField__disabled: isDisabled,
+          InputField__active: isFocused && !isDisabled,
         })}
         data-testid={dataTestId}
       >
         <div
           className={clsx("InputField-Inner", {
+            "InputField-Inner__disabled": isDisabled,
             "InputField-Inner__active": isFocused,
             "InputField-Inner__error": errors,
           })}
         >
           <input
             {...rest}
+            aria-disabled={isDisabled}
             autoComplete={autoComplete}
             className={clsx(className, "Input", {
-              Input__active: isFocused,
+              Input__disabled: isDisabled,
+              Input__active: isFocused && !isDisabled,
               Input__error: errors,
             })}
             defaultValue={defaultValue}
+            disabled={isDisabled}
             hidden={hidden}
             name={name}
             onBlur={onBlurCallback}

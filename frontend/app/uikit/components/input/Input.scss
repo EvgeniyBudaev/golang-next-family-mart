@@ -72,6 +72,44 @@ $transition: 150ms;
     }
   }
 
+  &__disabled {
+    width: 100%;
+
+    #{$this}-Label {
+      top: 0;
+      padding: 0;
+      color: $color-lighting;
+    }
+
+    #{$this}-Inner__disabled {
+      background-color: transparent;
+      border: 1px solid rgba(179, 179, 179, 1);
+      color: $color-text;
+
+      input:hover,
+      input {
+        background-color: $color-white;
+      }
+    }
+
+    input:-webkit-autofill.Input__disabled,
+    input:-webkit-autofill.Input__disabled:hover,
+    input:-webkit-autofill.Input__disabled:focus,
+    input:-webkit-autofill.Input__disabled:active {
+      -webkit-box-shadow: 0 0 0 30px white inset !important;
+    }
+
+    & textarea,
+    & textarea:hover {
+      background-color: $color-white;
+    }
+
+    #{$this}-Inner__disabled#{$this}-Inner__error {
+      border: 1px solid $color-red;
+      background-color: $color-white;
+    }
+  }
+
   /* -------------------- Fix autocomplete form -------------------- */
   #{$this}-Inner:-webkit-autofill {
     -webkit-background-clip: text;
@@ -112,6 +150,10 @@ $transition: 150ms;
   &:hover {
     background-color: $color-primary-light-hover;
     transition: background-color 0.25s ease;
+  }
+
+  &__disabled {
+    color: $color-disabled;
   }
 
   &#{$this}__error {

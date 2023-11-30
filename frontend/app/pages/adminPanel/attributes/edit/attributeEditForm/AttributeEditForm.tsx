@@ -58,6 +58,7 @@ export const AttributeEditForm: FC<TProps> = ({ attribute }) => {
       <Input
         defaultValue={attribute.alias}
         errors={state?.errors?.alias}
+        isDisabled={true}
         isRequired={true}
         label={t("form.alias") ?? "Alias"}
         name={EFormFields.Alias}

@@ -2,9 +2,9 @@
 
 import { forwardRef, memo, useMemo, useState } from "react";
 import { type TAttributeList } from "@/app/api/adminPanel/attributes/list";
-import { useGetColumns } from "@/app/entities/attributes/list/hooks";
+import { useGetColumns } from "@/app/entities/attributes/attributeListTable/hooks";
 import { TAttributeListItem } from "@/app/api/adminPanel/attributes/list/types";
-import { type TTableColumn } from "@/app/entities/attributes/list/types";
+import { type TTableColumn } from "@/app/entities/attributes/attributeListTable/types";
 import { useTranslation } from "@/app/i18n/client";
 import { EPermissions } from "@/app/shared/enums";
 import { useTheme } from "@/app/shared/hooks";

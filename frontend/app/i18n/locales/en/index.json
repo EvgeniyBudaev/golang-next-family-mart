@@ -54,6 +54,9 @@
       "title": "Admin panel",
       "attributeAdd": {
         "title": "Adding an attribute"
+      },
+      "attributeEdit": {
+        "title": "Editing an attribute"
       }
     },
     "admin": {

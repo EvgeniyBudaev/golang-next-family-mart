@@ -7,7 +7,7 @@ import { useCallback, useState } from "react";
 import type { ChangeEvent, KeyboardEvent } from "react";
 
 import { mapTableSortingToDto } from "@/app/api/sorting";
-import { TDeleteModalState } from "@/app/entities/attributes/list/types";
+import { TDeleteModalState } from "@/app/entities/attributes/attributeListTable/types";
 import { TSearchParams } from "@/app/shared/components/search/types";
 import { DEFAULT_PAGE, DEFAULT_PAGE_LIMIT } from "@/app/shared/constants/pagination";
 import { DEBOUNCE_TIMEOUT } from "@/app/shared/constants/transition";

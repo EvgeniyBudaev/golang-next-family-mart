@@ -14,6 +14,7 @@ export interface IInputProps
   dataTestId?: string;
   errors?: string[];
   hidden?: boolean;
+  isDisabled?: boolean;
   isFocused?: boolean;
   isRequired?: boolean;
   label?: string;
@@ -28,6 +29,7 @@ const InputComponent = forwardRef<HTMLInputElement, IInputProps>(
       autoComplete,
       className,
       dataTestId = "uikit__input",
+      defaultValue,
       errors,
       hidden,
       isFocused: isInputFocused,
@@ -42,7 +44,9 @@ const InputComponent = forwardRef<HTMLInputElement, IInputProps>(
     }: IInputProps,
     ref: ForwardedRef<HTMLInputElement>,
   ): JSX.Element => {
-    const [isFocused, setIsFocused] = useState<boolean | undefined>(isInputFocused);
+    const [isFocused, setIsFocused] = useState<boolean | undefined>(
+      isInputFocused || !!defaultValue,
+    );
 
     const onBlurCallback = (event: FocusEvent<HTMLInputElement>) => {
       if (event.target.value !== "") {
@@ -81,18 +85,19 @@ const InputComponent = forwardRef<HTMLInputElement, IInputProps>(
         >
           <input
             {...rest}
+            autoComplete={autoComplete}
             className={clsx(className, "Input", {
               Input__active: isFocused,
               Input__error: errors,
             })}
-            autoComplete={autoComplete}
+            defaultValue={defaultValue}
             hidden={hidden}
             name={name}
-            type={type}
-            ref={ref}
+            onBlur={onBlurCallback}
             onChange={onChange}
             onFocus={onFocusCallback}
-            onBlur={onBlurCallback}
+            ref={ref}
+            type={type}
           />
         </div>
 

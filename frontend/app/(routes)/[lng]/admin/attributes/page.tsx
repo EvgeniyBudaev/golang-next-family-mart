@@ -21,7 +21,7 @@ type TProps = {
 const getParamsField = (
   field: string | string[] | undefined,
   defaultValue: string | number | undefined,
-) => {
+): string | number | undefined => {
   if (isNil(field) || Array.isArray(field)) {
     return defaultValue;
   }
@@ -29,14 +29,18 @@ const getParamsField = (
 };
 
 const getLimit = (searchParams: TSearchParams) => {
-  return !isNil(getParamsField(searchParams?.limit, DEFAULT_PAGE_LIMIT))
-    ? Number(searchParams?.limit)
-    : DEFAULT_PAGE_LIMIT;
+  const paramField = getParamsField(searchParams?.limit, DEFAULT_PAGE_LIMIT);
+  return !isNil(paramField) ? Number(paramField) : DEFAULT_PAGE_LIMIT;
+};
+
+const getPage = (searchParams: TSearchParams) => {
+  const paramField = getParamsField(searchParams?.page, DEFAULT_PAGE);
+  return !isNil(paramField) ? Number(paramField) : DEFAULT_PAGE;
 };
 
 const mapParamsToDto = (searchParams: TSearchParams) => {
-  const limit = getParamsField(searchParams?.limit, DEFAULT_PAGE_LIMIT);
-  const page = getParamsField(searchParams?.page, DEFAULT_PAGE);
+  const limit = getLimit(searchParams);
+  const page = getPage(searchParams);
   const search = !Array.isArray(searchParams?.search)
     ? searchParams?.search ?? undefined
     : undefined;

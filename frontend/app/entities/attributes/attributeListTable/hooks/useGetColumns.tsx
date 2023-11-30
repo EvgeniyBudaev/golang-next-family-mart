@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import type { ColumnDef, ColumnHelper } from "@tanstack/react-table";
 
 import { TAttributeListItem } from "@/app/api/adminPanel/attributes/list/types";
-import { ETableColumns } from "@/app/entities/attributes/list/enums";
+import { ETableColumns } from "@/app/entities/attributes/attributeListTable/enums";
 import { useTranslation } from "@/app/i18n/client";
 import { TableHeader } from "@/app/shared/components/table/tableHeader";
 import { DateTime } from "@/app/uikit/components/dateTime";

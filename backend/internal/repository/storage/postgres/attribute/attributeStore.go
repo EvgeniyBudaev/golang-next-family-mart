@@ -90,6 +90,36 @@ func (pg *PGAttributeStore) Update(cf *fiber.Ctx, a *attribute.Attribute) (*attr
 	return a, nil
 }
 
+func (pg *PGAttributeStore) FindByAlias(ctx *fiber.Ctx, a string) (*attribute.Attribute, error) {
+	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	sqlSelect := sqlBuilder.Select("*").From("attributes").Where(sq.Eq{"alias": a})
+	data := attribute.Attribute{}
+	query, args, err := sqlSelect.ToSql()
+	if err != nil {
+		logger.Log.Debug("error while FindByAlias. error in method ToSql", zap.Error(err))
+		return nil, err
+	}
+	row := pg.store.Db().QueryRow(ctx.Context(), query, args...)
+	if err != nil {
+		logger.Log.Debug("error while FindByAlias. error in method Query", zap.Error(err))
+		return nil, err
+	}
+	err = row.Scan(&data.Id, &data.Alias, &data.CreatedAt, &data.Deleted,
+		&data.Enabled, &data.Filtered, &data.Name, &data.Type, &data.UpdatedAt, &data.Uuid)
+	if err != nil {
+		logger.Log.Debug("error while FindByAlias. error in method Scan", zap.Error(err))
+		msg := errors.Wrap(err, "attribute not found")
+		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
+		return nil, err
+	}
+	if data.Deleted == true {
+		msg := fmt.Errorf("attribute has already been deleted")
+		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
+		return nil, err
+	}
+	return &data, nil
+}
+
 func (pg *PGAttributeStore) FindByUuid(ctx *fiber.Ctx, uuid uuid.UUID) (*attribute.Attribute, error) {
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	sqlSelect := sqlBuilder.Select("*").From("attributes").Where(sq.Eq{"uuid": uuid})
@@ -108,12 +138,12 @@ func (pg *PGAttributeStore) FindByUuid(ctx *fiber.Ctx, uuid uuid.UUID) (*attribu
 		&data.Enabled, &data.Filtered, &data.Name, &data.Type, &data.UpdatedAt, &data.Uuid)
 	if err != nil {
 		logger.Log.Debug("error while FindByUuid. error in method Scan", zap.Error(err))
-		msg := errors.Wrap(err, "catalog not found")
+		msg := errors.Wrap(err, "attribute not found")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
 	if data.Deleted == true {
-		msg := fmt.Errorf("catalog has already been deleted")
+		msg := fmt.Errorf("attribute has already been deleted")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}

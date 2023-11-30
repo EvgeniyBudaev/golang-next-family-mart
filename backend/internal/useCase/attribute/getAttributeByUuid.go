@@ -27,7 +27,7 @@ func (uc *GetAttributeByUuidUseCase) GetAttributeByUuid(ctx *fiber.Ctx) (*attrib
 	}
 	response, err := uc.dataStore.FindByUuid(ctx, paramsStr)
 	if err != nil {
-		logger.Log.Debug("error while GetCatalogByUuid. error in method FindByUuid", zap.Error(err))
+		logger.Log.Debug("error while GetAttributeByUuid. error in method FindByUuid", zap.Error(err))
 		return nil, err
 	}
 	return response, nil

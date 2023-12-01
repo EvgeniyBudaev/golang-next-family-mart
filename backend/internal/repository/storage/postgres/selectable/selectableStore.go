@@ -55,11 +55,14 @@ func (pg *PGSelectableStore) Create(cf *fiber.Ctx, s *selectable.Selectable) (*s
 
 func (pg *PGSelectableStore) SelectList(
 	ctx *fiber.Ctx,
-	qp *selectable.QueryParamsSelectableList) (*selectable.ListSelectableResponse, error) {
+	qp *selectable.QueryParamsSelectableList,
+	attributeId int) (*selectable.ListSelectableResponse, error) {
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	sqlSelect := sqlBuilder.Select("id", "attribute_id", "created_at", "deleted", "enabled", "updated_at",
-		"uuid", "value").From("selectables").Where(sq.Eq{"deleted": false})
-	countSelect := sqlBuilder.Select("COUNT(*)").From("attributes").Where(sq.Eq{"deleted": false})
+		"uuid", "value").From("selectables").Where(sq.Eq{"deleted": false}).
+		Where(sq.Eq{"attribute_id": attributeId})
+	countSelect := sqlBuilder.Select("COUNT(*)").From("selectables").Where(sq.Eq{"deleted": false}).
+		Where(sq.Eq{"attribute_id": attributeId})
 	limit := qp.Limit
 	page := qp.Page
 	// search

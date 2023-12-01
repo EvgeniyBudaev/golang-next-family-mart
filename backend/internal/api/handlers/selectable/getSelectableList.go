@@ -15,7 +15,7 @@ type IGetSelectableListUseCase interface {
 
 func GetSelectableListHandler(uc IGetSelectableListUseCase) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
-		logger.Log.Info("get selectable list GET /api/v1/selectable/list")
+		logger.Log.Info("get selectable list GET /api/v1/selectable/:id/list")
 		response, err := uc.GetSelectableList(ctx)
 		if err != nil {
 			logger.Log.Debug("error while GetSelectableListHandler. Error in GetSelectableList", zap.Error(err))

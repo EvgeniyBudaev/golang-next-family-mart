@@ -5,6 +5,7 @@ import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
+	"strconv"
 )
 
 type GetSelectableListUseCase struct {
@@ -23,7 +24,13 @@ func (uc *GetSelectableListUseCase) GetSelectableList(ctx *fiber.Ctx) (*selectab
 		logger.Log.Debug("error while GetSelectableList. error in method QueryParser", zap.Error(err))
 		return nil, err
 	}
-	response, err := uc.dataStore.SelectList(ctx, &params)
+	id := ctx.Params("id")
+	attributeId, err := strconv.Atoi(id)
+	if err != nil {
+		logger.Log.Debug("error while GetSelectableList. error in method strconv.Atoi", zap.Error(err))
+		return nil, err
+	}
+	response, err := uc.dataStore.SelectList(ctx, &params, attributeId)
 	if err != nil {
 		logger.Log.Debug("error while GetSelectableList. error in method SelectAll", zap.Error(err))
 		return nil, err

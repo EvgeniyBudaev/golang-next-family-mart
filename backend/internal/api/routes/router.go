@@ -60,7 +60,7 @@ func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Sto
 	grp.Get("/product/list", productHandler.GetProductListHandler(useCaseGetProductList))
 	grp.Get("/product/alias/:alias", productHandler.GetProductByAliasHandler(useCaseGetProductByAlias))
 	grp.Get("/product/uuid/:uuid", productHandler.GetProductByUuidHandler(useCaseGetProductByUuid))
-	grp.Get("/selectable/list", selectableHandler.GetSelectableListHandler(useCaseGetSelectableList))
+	grp.Get("/selectable/:id/list", selectableHandler.GetSelectableListHandler(useCaseGetSelectableList))
 }
 
 func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.Store) {

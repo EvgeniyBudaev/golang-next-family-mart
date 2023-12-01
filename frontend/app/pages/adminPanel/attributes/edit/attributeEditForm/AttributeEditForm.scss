@@ -1,7 +1,13 @@
+@import "@/app/styles";
+
 .AttributeEditForm {
   &-Form {
     max-width: 590px;
     width: 100%;
+    margin-bottom: 30px;
+    border: 1px solid $color-border;
+    padding: 30px;
+    border-radius: $border-radius;
   }
 
   &-FormFieldGroup {

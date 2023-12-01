@@ -1,17 +1,21 @@
 "use client";
 
-import type { FC } from "react";
+import type { FC, MouseEvent } from "react";
 import { experimental_useFormStatus as useFormStatus } from "react-dom";
-import { useTranslation } from "@/app/i18n/client";
 import { Button } from "@/app/uikit/components/button";
 
-export const SubmitButton: FC = () => {
+type TProps = {
+  buttonText?: string;
+  className?: string;
+  onClick?: (event: MouseEvent) => void;
+};
+
+export const SubmitButton: FC<TProps> = ({ buttonText = "", className, onClick }) => {
   const { pending } = useFormStatus();
-  const { t } = useTranslation("index");
 
   return (
-    <Button className="AttributeEditForm-Button" type="submit" aria-disabled={pending}>
-      {t("common.actions.edit")}
+    <Button aria-disabled={pending} className={className} onClick={onClick} type="submit">
+      {buttonText}
     </Button>
   );
 };

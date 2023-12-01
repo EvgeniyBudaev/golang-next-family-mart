@@ -2,13 +2,12 @@
 
 import type { FC } from "react";
 import { experimental_useFormState as useFormState } from "react-dom";
-import { experimental_useFormStatus as useFormStatus } from "react-dom";
 import { attributeAddAction } from "@/app/actions/adminPanel/attributes/add/attributeAddAction";
 import { useTranslation } from "@/app/i18n/client";
-import { notify } from "@/app/uikit/components/toast/utils";
-import { Input } from "@/app/uikit/components/input";
 import { EFormFields } from "@/app/pages/adminPanel/attributes/add/enums";
-import { Button } from "@/app/uikit/components/button";
+import { SubmitButton } from "@/app/shared/form/submitButton";
+import { Input } from "@/app/uikit/components/input";
+import { notify } from "@/app/uikit/components/toast/utils";
 
 declare module "react-dom" {
   function experimental_useFormState<State>(
@@ -26,17 +25,6 @@ declare module "react-dom" {
 const initialState = {
   error: "",
   success: false,
-};
-
-const SubmitButton = () => {
-  const { pending } = useFormStatus();
-  const { t } = useTranslation("index");
-
-  return (
-    <Button className="AttributeAddForm-Button" type="submit" aria-disabled={pending}>
-      {t("common.actions.add")}
-    </Button>
-  );
 };
 
 export const AttributeAddForm: FC = () => {
@@ -72,7 +60,7 @@ export const AttributeAddForm: FC = () => {
       />
       <div className="AttributeAddForm-FormFieldGroup"></div>
       <div className="AttributeAddForm-FormControl">
-        <SubmitButton />
+        <SubmitButton buttonText={t("common.actions.add")} />
       </div>
     </form>
   );

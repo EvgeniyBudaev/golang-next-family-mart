@@ -8,6 +8,9 @@ import { createPath, getResponseError } from "@/app/shared/utils";
 import { ErrorBoundary } from "@/app/shared/components/errorBoundary";
 import { TCommonResponseError } from "@/app/shared/types/error";
 import { TAttributeDetail } from "@/app/api/adminPanel/attributes/detail/types";
+import { getSelectableList } from "@/app/api/adminPanel/selectables/list/domain";
+import { DEFAULT_PAGE, DEFAULT_PAGE_LIMIT } from "@/app/shared/constants/pagination";
+import { TSelectableList } from "@/app/api/adminPanel/selectables/list/types";
 
 type TLoader = {
   alias: string;
@@ -15,8 +18,15 @@ type TLoader = {
 
 async function loader(params: TLoader) {
   try {
-    const response = await getAttributeDetail(params);
-    return response.data as TAttributeDetail;
+    const attributeDetailResponse = await getAttributeDetail(params);
+    const selectableListResponse = await getSelectableList({
+      attributeId: Number(attributeDetailResponse.data.id),
+      limit: DEFAULT_PAGE_LIMIT,
+      page: DEFAULT_PAGE,
+    });
+    const attributeDetail = attributeDetailResponse.data as TAttributeDetail;
+    const selectableList = selectableListResponse.data as TSelectableList;
+    return { attributeDetail, selectableList };
   } catch (error) {
     const errorResponse = error as Response;
     const responseData: TCommonResponseError = await errorResponse.json();
@@ -33,7 +43,6 @@ type TProps = {
 export default async function AttributeEditRoute(props: TProps) {
   const { params } = props;
   const { alias, lng } = params;
-  console.log("params: ", params);
 
   const [{ t }, isPermissions] = await Promise.all([
     useTranslation(lng, "index"),
@@ -49,8 +58,14 @@ export default async function AttributeEditRoute(props: TProps) {
   }
 
   try {
-    const attribute = await loader({ alias });
-    return <AttributeEditPage attribute={attribute} i18n={{ lng, t }} />;
+    const { attributeDetail, selectableList } = await loader({ alias });
+    return (
+      <AttributeEditPage
+        attribute={attributeDetail}
+        i18n={{ lng, t }}
+        selectableList={selectableList}
+      />
+    );
   } catch (error) {
     return <ErrorBoundary i18n={{ lng, t }} message={t(error.message)} />;
   }

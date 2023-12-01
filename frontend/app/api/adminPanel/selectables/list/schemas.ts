@@ -2,9 +2,8 @@ import { z } from "zod";
 import { paginationSchema } from "@/app/api/pagination/schemas";
 
 export const selectableListItemSchema = z.object({
-  attribute_id: z.number(),
   id: z.number(),
-  alias: z.string(),
+  attribute_id: z.number(),
   created_at: z.string(),
   deleted: z.boolean(),
   enabled: z.boolean(),
@@ -14,6 +13,7 @@ export const selectableListItemSchema = z.object({
 });
 
 export const selectableListParamsSchema = z.object({
+  attributeId: z.number(),
   limit: z.number(),
   page: z.number(),
   search: z.string().optional(),

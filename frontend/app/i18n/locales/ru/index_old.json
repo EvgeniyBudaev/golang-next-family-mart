@@ -16,12 +16,40 @@
             }
           }
         }
+      },
+      "attributeEdit": {
+        "addModal": {
+          "title": "Добавь сюда перевод!!!"
+        }
       }
     }
   },
   "common": {
     "actions": {
       "create": "Create"
+    }
+  },
+  "form": {
+    "userName": {
+      "title": "Логин"
+    },
+    "firstName": {
+      "title": "Имя"
+    },
+    "lastName": {
+      "title": "Фамилия"
+    },
+    "mobileNumber": {
+      "title": "Мобильный номер"
+    },
+    "email": {
+      "title": "Электронная почта"
+    },
+    "password": {
+      "title": "Пароль"
+    },
+    "passwordConfirm": {
+      "title": "Подтверждение пароля"
     }
   }
 }

@@ -34,14 +34,12 @@ type TProps = {
 };
 
 export const AttributeEditForm: FC<TProps> = ({ attribute }) => {
-  console.log("attribute: ", attribute);
   const [state, formAction] = useFormState(attributeEditAction, initialState);
-  console.log("state: ", state);
+  console.log("AttributeEditForm state: ", state);
   const { t } = useTranslation("index");
   if (state?.error) {
     notify.error({ title: state?.error });
   }
-  const isSelectableType = true;
 
   return (
     <form action={formAction} className="AttributeEditForm-Form">
@@ -74,7 +72,7 @@ export const AttributeEditForm: FC<TProps> = ({ attribute }) => {
       <input defaultValue={attribute.uuid} name={EFormFields.Uuid} type="hidden" />
       <div className="AttributeEditForm-FormFieldGroup"></div>
       <div className="AttributeEditForm-FormControl">
-        <SubmitButton />
+        <SubmitButton buttonText={t("common.actions.edit")} />
       </div>
     </form>
   );

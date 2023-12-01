@@ -12,6 +12,7 @@
       "delete": "Delete",
       "edit": "Edit",
       "add": "Add",
+      "save": "Save",
       "search": "Search"
     },
     "table": {
@@ -89,6 +90,9 @@
             }
           }
         }
+      },
+      "attributeEdit": {
+        "addModal": "Adding a new value"
       }
     },
     "login": {
@@ -108,27 +112,14 @@
     "alias": "Alias",
     "name": "Name",
     "type": "Type",
-    "userName": {
-      "title": "Login"
-    },
-    "firstName": {
-      "title": "First name"
-    },
-    "lastName": {
-      "title": "Last name"
-    },
-    "mobileNumber": {
-      "title": "Mobile number"
-    },
-    "email": {
-      "title": "Email"
-    },
-    "password": {
-      "title": "Password"
-    },
-    "passwordConfirm": {
-      "title": "Password confirm"
-    }
+    "value": "Value",
+    "userName": "Login",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "mobileNumber": "Mobile number",
+    "email": "Email",
+    "password": "Password",
+    "passwordConfirm": "Password confirm"
   },
   "footer": {
     "about": "About",

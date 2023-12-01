@@ -12,6 +12,7 @@
       "delete": "Удалить",
       "edit": "Редактировать",
       "add": "Добавить",
+      "save": "Сохранить",
       "search": "Поиск"
     },
     "table": {
@@ -89,6 +90,9 @@
             }
           }
         }
+      },
+      "attributeEdit": {
+        "addModal": "Добавление нового значения"
       }
     },
     "login": {
@@ -108,27 +112,14 @@
     "alias": "Псевдоним",
     "name": "Название",
     "type": "Тип",
-    "userName": {
-      "title": "Логин"
-    },
-    "firstName": {
-      "title": "Имя"
-    },
-    "lastName": {
-      "title": "Фамилия"
-    },
-    "mobileNumber": {
-      "title": "Мобильный номер"
-    },
-    "email": {
-      "title": "Электронная почта"
-    },
-    "password": {
-      "title": "Пароль"
-    },
-    "passwordConfirm": {
-      "title": "Подтверждение пароля"
-    }
+    "value": "Значение",
+    "userName": "Логин",
+    "firstName": "Имя",
+    "lastName": "Фамилия",
+    "mobileNumber": "Мобильный номер",
+    "email": "Электронная почта",
+    "password": "Пароль",
+    "passwordConfirm": "Подтверждение пароля"
   },
   "footer": {
     "about": "О нас",

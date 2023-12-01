@@ -8,7 +8,10 @@ import { EFormMethods } from "@/app/shared/form";
 export const getSelectableListApi: TApiFunction<TSelectableListParams, TSelectableListResponse> = (
   params,
 ) => {
-  const url = `/api/v1/selectable/list?${new URLSearchParams(params)}`;
+  const { attributeId, ...queryParams } = params;
+  const url = `/api/v1/attribute/${attributeId}/selectable/list?${new URLSearchParams(
+    queryParams,
+  )}`;
   return fetchApi<TSelectableListResponse>(url, {
     method: EFormMethods.Get,
   });

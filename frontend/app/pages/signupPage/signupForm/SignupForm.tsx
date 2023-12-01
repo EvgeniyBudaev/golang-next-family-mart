@@ -2,12 +2,11 @@
 
 import type { FC } from "react";
 import { experimental_useFormState as useFormState } from "react-dom";
-import { experimental_useFormStatus as useFormStatus } from "react-dom";
 import { signupAction } from "@/app/actions/signup/signupAction";
 import { useTranslation } from "@/app/i18n/client";
 import { EFormFields } from "@/app/pages/signupPage/enums";
 import { PhoneInputMask } from "@/app/shared/form/phoneInputMask";
-import { Button } from "@/app/uikit/components/button";
+import { SubmitButton } from "@/app/shared/form/submitButton";
 import { Input } from "@/app/uikit/components/input";
 import { notify } from "@/app/uikit/components/toast/utils";
 import "./SignupForm.scss";
@@ -30,17 +29,6 @@ const initialState = {
   success: false,
 };
 
-const SubmitButton = () => {
-  const { pending } = useFormStatus();
-  const { t } = useTranslation("index");
-
-  return (
-    <Button className="SignupForm-Button" type="submit" aria-disabled={pending}>
-      {t("pages.signup.register")}
-    </Button>
-  );
-};
-
 export const SignupForm: FC = () => {
   const [state, formAction] = useFormState(signupAction, initialState);
   console.log("state: ", state);
@@ -55,54 +43,54 @@ export const SignupForm: FC = () => {
         <Input
           errors={state?.errors?.userName}
           isRequired={true}
-          label={t("form.userName.title") ?? "User name"}
+          label={t("form.userName") ?? "User name"}
           name={EFormFields.UserName}
           type="text"
         />
         <Input
           errors={state?.errors?.firstName}
           isRequired={true}
-          label={t("form.firstName.title") ?? "First Name"}
+          label={t("form.firstName") ?? "First Name"}
           name={EFormFields.FirstName}
           type="text"
         />
         <Input
           errors={state?.errors?.lastName}
           isRequired={true}
-          label={t("form.lastName.title") ?? "Last Name"}
+          label={t("form.lastName") ?? "Last Name"}
           name={EFormFields.LastName}
           type="text"
         />
         <PhoneInputMask
           errors={state?.errors?.mobileNumber}
           isRequired={true}
-          label={t("form.mobileNumber.title") ?? "Mobile phone"}
+          label={t("form.mobileNumber") ?? "Mobile phone"}
           name={EFormFields.MobileNumber}
         />
         <Input
           errors={state?.errors?.email}
           isRequired={true}
-          label={t("form.email.title") ?? "Email"}
+          label={t("form.email") ?? "Email"}
           name={EFormFields.Email}
           type="text"
         />
         <Input
           errors={state?.errors?.password}
           isRequired={true}
-          label={t("form.password.title") ?? "Password"}
+          label={t("form.password") ?? "Password"}
           name={EFormFields.Password}
           type="text"
         />
         <Input
           errors={state?.errors?.passwordConfirm}
           isRequired={true}
-          label={t("form.passwordConfirm.title") ?? "Password confirm"}
+          label={t("form.passwordConfirm") ?? "Password confirm"}
           name={EFormFields.PasswordConfirm}
           type="text"
         />
       </div>
       <div className="SignupForm-Control">
-        <SubmitButton />
+        <SubmitButton buttonText={t("pages.signup.register")} />
       </div>
     </form>
   );

@@ -51,6 +51,11 @@
         },
         "title": "Список атрибутов"
       },
+      "selectableList": {
+        "table": {
+          "header": "Список значений селекта"
+        }
+      },
       "title": "Панель администратора",
       "attributeAdd": {
         "title": "Добавление атрибута"
@@ -67,6 +72,19 @@
               "name": "Наименование",
               "alias": "Псевдоним",
               "type": "Тип",
+              "updatedAt": "Дата обновления"
+            }
+          }
+        }
+      },
+      "selectables": {
+        "table": {
+          "columns": {
+            "info": {
+              "id": "ID",
+              "attributeId": "ID атрибута",
+              "uuid": "UUID",
+              "value": "Значение",
               "updatedAt": "Дата обновления"
             }
           }

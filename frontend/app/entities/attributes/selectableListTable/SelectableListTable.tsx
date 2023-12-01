@@ -1,10 +1,10 @@
 "use client";
 
 import { forwardRef, memo, useMemo, useState } from "react";
-import type { TAttributeList } from "@/app/api/adminPanel/attributes/list";
-import { useGetColumns } from "@/app/entities/attributes/attributeListTable/hooks";
-import type { TAttributeListItem } from "@/app/api/adminPanel/attributes/list/types";
-import type { TTableColumn } from "@/app/entities/attributes/attributeListTable/types";
+import { type TSelectableList } from "@/app/api/adminPanel/selectables/list/types";
+import { useGetColumns } from "@/app/entities/attributes/selectableListTable/hooks";
+import type { TSelectableListItem } from "@/app/api/adminPanel/selectables/list/types";
+import type { TTableColumn } from "@/app/entities/attributes/selectableListTable/types";
 import { useTranslation } from "@/app/i18n/client";
 import { EPermissions } from "@/app/shared/enums";
 import { useTheme } from "@/app/shared/hooks";
@@ -16,39 +16,39 @@ import {
   type TTableSortingProps,
 } from "@/app/uikit/components/table";
 import type { TTableRowActions } from "@/app/uikit/components/table/types";
-import "./AttributeListTable.scss";
+import "./SelectableListTable.scss";
 
 type TProps = {
-  attributeList: TAttributeList;
   fieldsSortState: TTableSortingProps;
   isLoading?: boolean;
-  onAttributeDelete?: (alias: string) => void;
-  onAttributeEdit?: (alias: string) => void;
   onChangePage: ({ selected }: { selected: number }) => void;
   onChangePageSize: (pageSize: number) => void;
+  onSelectableDelete?: (alias: string) => void;
+  onSelectableEdit?: (alias: string) => void;
+  selectableList: TSelectableList;
 };
 
 const TableComponent = forwardRef<HTMLDivElement, TProps>(
   (
     {
-      attributeList,
       fieldsSortState,
       isLoading,
-      onAttributeDelete,
-      onAttributeEdit,
       onChangePage,
       onChangePageSize,
+      onSelectableDelete,
+      onSelectableEdit,
+      selectableList,
     },
     ref,
   ) => {
     const { t } = useTranslation("index");
     // const { user } = useUser();
-    const columnHelper = createColumnHelper<TAttributeListItem>();
+    const columnHelper = createColumnHelper<TSelectableListItem>();
     const columns = useGetColumns(columnHelper);
     const [hiddenColumns, setHiddenColumns] = useState<string[]>([]);
     const { theme } = useTheme();
 
-    const { content, countPages, limit, page, totalItems } = attributeList;
+    const { content, countPages, limit, page, totalItems } = selectableList;
 
     const settingsProps = useMemo(
       () => ({
@@ -70,25 +70,25 @@ const TableComponent = forwardRef<HTMLDivElement, TProps>(
       [hiddenColumns, t],
     );
 
-    const handleAttributeEdit = ({ alias }: TTableColumn) => {
-      onAttributeEdit?.(alias);
+    const handleSelectableEdit = ({ alias }: TTableColumn) => {
+      onSelectableEdit?.(alias);
     };
 
-    const handleAttributeDelete = ({ alias }: TTableColumn) => {
-      onAttributeDelete?.(alias);
+    const handleSelectableDelete = ({ alias }: TTableColumn) => {
+      onSelectableDelete?.(alias);
     };
 
     const rowActions: TTableRowActions<TTableColumn> = [
       {
         icon: <Icon type="Trash" />,
         title: t("common.actions.delete"),
-        onClick: handleAttributeDelete,
+        onClick: handleSelectableDelete,
         permission: [EPermissions.Admin],
       },
       {
         icon: <Icon type="Edit" />,
         title: t("common.actions.edit"),
-        onClick: handleAttributeEdit,
+        onClick: handleSelectableEdit,
         permission: [EPermissions.Admin],
       },
     ];
@@ -96,7 +96,7 @@ const TableComponent = forwardRef<HTMLDivElement, TProps>(
 
     return (
       <div ref={ref}>
-        <UiTable<TAttributeListItem>
+        <UiTable<TSelectableListItem>
           columns={columns}
           currentPage={page}
           data={content ?? []}
@@ -113,13 +113,13 @@ const TableComponent = forwardRef<HTMLDivElement, TProps>(
           sticky={true}
           theme={theme}
           totalItems={totalItems}
-          totalItemsTitle={t("pages.adminPanel.attributeList.table.header") ?? "Total attributes"}
+          totalItemsTitle={t("pages.adminPanel.selectableList.table.header") ?? "Total selectables"}
         />
       </div>
     );
   },
 );
 
-TableComponent.displayName = "AttributeListTableComponent";
+TableComponent.displayName = "SelectableListTableComponent";
 
-export const AttributeListTable = memo(TableComponent);
+export const SelectableListTable = memo(TableComponent);

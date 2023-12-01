@@ -51,6 +51,11 @@
         },
         "title": "List of attributes"
       },
+      "selectableList": {
+        "table": {
+          "header": "List of selectables"
+        }
+      },
       "title": "Admin panel",
       "attributeAdd": {
         "title": "Adding an attribute"
@@ -67,6 +72,19 @@
               "name": "Name",
               "alias": "Alias",
               "type": "Type",
+              "updatedAt": "Update date"
+            }
+          }
+        }
+      },
+      "selectables": {
+        "table": {
+          "columns": {
+            "info": {
+              "id": "ID",
+              "attributeId": "Attribute ID",
+              "uuid": "UUID",
+              "value": "Value",
               "updatedAt": "Update date"
             }
           }

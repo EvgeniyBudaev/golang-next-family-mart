@@ -4,7 +4,19 @@
       "enter": "Login"
     },
     "admin": {
-      "title": "Admin panel"
+      "title": "Admin panel",
+      "attributes": {
+        "table": {
+          "columns": {
+            "info": {
+              "id": "Добавь сюда перевод!!!",
+              "attributeId": "Добавь сюда перевод!!!",
+              "uuid": "Добавь сюда перевод!!!",
+              "value": "Добавь сюда перевод!!!"
+            }
+          }
+        }
+      }
     }
   },
   "common": {

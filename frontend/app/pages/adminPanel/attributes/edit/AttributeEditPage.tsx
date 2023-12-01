@@ -10,6 +10,8 @@ type TProps = {
 } & I18nProps;
 
 export const AttributeEditPage: FC<TProps> = ({ attribute, i18n }) => {
+  const isSelectableType = true;
+
   return (
     <section>
       <div className="AttributeEditPage-Title">

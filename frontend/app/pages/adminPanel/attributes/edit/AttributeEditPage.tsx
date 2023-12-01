@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import { TAttributeDetail } from "@/app/api/adminPanel/attributes/detail/types";
 import { I18nProps } from "@/app/i18n/props";
-import { AttributeEditForm } from "@/app/pages/adminPanel/attributes/edit/attributeEditForm/AttributeEditForm";
+import { AttributeEditForm } from "@/app/pages/adminPanel/attributes/edit/attributeEditForm";
 import { ETypographyVariant, Typography } from "@/app/uikit/components/typography";
 import "./AttributeEditPage.scss";
 

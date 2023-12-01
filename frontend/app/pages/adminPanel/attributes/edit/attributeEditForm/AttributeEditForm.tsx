@@ -2,14 +2,14 @@
 
 import type { FC } from "react";
 import { experimental_useFormState as useFormState } from "react-dom";
-import { experimental_useFormStatus as useFormStatus } from "react-dom";
 import { attributeEditAction } from "@/app/actions/adminPanel/attributes/edit/attributeEditAction";
 import { TAttributeDetail } from "@/app/api/adminPanel/attributes/detail/types";
 import { useTranslation } from "@/app/i18n/client";
 import { notify } from "@/app/uikit/components/toast/utils";
 import { Input } from "@/app/uikit/components/input";
-import { EFormFields } from "@/app/pages/adminPanel/attributes/edit/enums";
-import { Button } from "@/app/uikit/components/button";
+import { EFormFields } from "@/app/pages/adminPanel/attributes/edit/attributeEditForm/enums";
+import { SubmitButton } from "@/app/shared/form/submitButton";
+import "./AttributeEditForm.scss";
 
 declare module "react-dom" {
   function experimental_useFormState<State>(
@@ -29,17 +29,6 @@ const initialState = {
   success: false,
 };
 
-const SubmitButton = () => {
-  const { pending } = useFormStatus();
-  const { t } = useTranslation("index");
-
-  return (
-    <Button className="AttributeEditForm-Button" type="submit" aria-disabled={pending}>
-      {t("common.actions.edit")}
-    </Button>
-  );
-};
-
 type TProps = {
   attribute: TAttributeDetail;
 };
@@ -52,6 +41,7 @@ export const AttributeEditForm: FC<TProps> = ({ attribute }) => {
   if (state?.error) {
     notify.error({ title: state?.error });
   }
+  const isSelectableType = true;
 
   return (
     <form action={formAction} className="AttributeEditForm-Form">
@@ -75,6 +65,7 @@ export const AttributeEditForm: FC<TProps> = ({ attribute }) => {
       <Input
         defaultValue={attribute.type}
         errors={state?.errors?.type}
+        isDisabled={true}
         isRequired={true}
         label={t("form.type") ?? "Type"}
         name={EFormFields.Type}

@@ -48,6 +48,7 @@ func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Sto
 	useCaseGetProductByAlias := product.NewGetProductByAliasUseCase(productDataStore)
 	useCaseGetProductByUuid := product.NewGetProductByUuidUseCase(productDataStore)
 	useCaseGetSelectableList := selectable.NewGetSelectableListUseCase(selectableDataStore)
+	useCaseGetSelectableByUuid := selectable.NewGetSelectableByUuidUseCase(selectableDataStore)
 
 	// handlers
 	grp.Post("/user/register", registerHandler.PostRegisterHandler(useCaseRegister))
@@ -60,7 +61,8 @@ func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Sto
 	grp.Get("/product/list", productHandler.GetProductListHandler(useCaseGetProductList))
 	grp.Get("/product/alias/:alias", productHandler.GetProductByAliasHandler(useCaseGetProductByAlias))
 	grp.Get("/product/uuid/:uuid", productHandler.GetProductByUuidHandler(useCaseGetProductByUuid))
-	grp.Get("/selectable/:id/list", selectableHandler.GetSelectableListHandler(useCaseGetSelectableList))
+	grp.Get("/attribute/:id/selectable/list", selectableHandler.GetSelectableListHandler(useCaseGetSelectableList))
+	grp.Get("/selectable/uuid/:uuid", selectableHandler.GetSelectableByUuidHandler(useCaseGetSelectableByUuid))
 }
 
 func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.Store) {
@@ -80,6 +82,8 @@ func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.
 	useCaseUpdateCatalog := catalog.NewUpdateCatalogUseCase(catalogDataStore)
 	useCaseCreateProduct := product.NewCreateProductUseCase(productDataStore)
 	useCaseCreateSelectable := selectable.NewCreateSelectableUseCase(selectableDataStore)
+	useCaseDeleteSelectable := selectable.NewDeleteSelectableUseCase(selectableDataStore)
+	useCaseUpdateSelectable := selectable.NewUpdateSelectableUseCase(selectableDataStore)
 
 	// handlers
 	grp.Post("/attribute/create", middlewares.NewRequiresRealmRole("admin"),
@@ -96,4 +100,8 @@ func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.
 		productHandler.CreateProductHandler(useCaseCreateProduct))
 	grp.Post("/selectable/create", middlewares.NewRequiresRealmRole("admin"),
 		selectableHandler.CreateSelectableHandler(useCaseCreateSelectable))
+	grp.Delete("/selectable/delete", middlewares.NewRequiresRealmRole("admin"),
+		selectableHandler.DeleteSelectableHandler(useCaseDeleteSelectable))
+	grp.Put("/selectable/update", middlewares.NewRequiresRealmRole("admin"),
+		selectableHandler.UpdateSelectableHandler(useCaseUpdateSelectable))
 }

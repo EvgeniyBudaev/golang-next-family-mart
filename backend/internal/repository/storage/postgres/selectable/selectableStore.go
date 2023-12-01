@@ -1,6 +1,7 @@
 package selectable
 
 import (
+	"fmt"
 	errorDomain "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/error"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/pagination"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/searching"
@@ -10,6 +11,7 @@ import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"net/http"
@@ -51,6 +53,92 @@ func (pg *PGSelectableStore) Create(cf *fiber.Ctx, s *selectable.Selectable) (*s
 	}
 	tx.Commit(ctx)
 	return s, nil
+}
+
+func (pg *PGSelectableStore) Delete(cf *fiber.Ctx, s *selectable.Selectable) (*selectable.Selectable, error) {
+	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	ctx := cf.Context()
+	tx, err := pg.store.Db().Begin(ctx)
+	if err != nil {
+		logger.Log.Debug("error while Delete. error in method Begin", zap.Error(err))
+		return nil, err
+	}
+	defer tx.Rollback(ctx)
+	sqlSelect := sqlBuilder.Update("selectables").
+		Set("deleted", s.Deleted).
+		Where(sq.Eq{"uuid": s.Uuid})
+	query, args, err := sqlSelect.ToSql()
+	if err != nil {
+		logger.Log.Debug("error while Delete. error in method ToSql", zap.Error(err))
+		return nil, err
+	}
+	_, err = tx.Exec(ctx, query, args...)
+	if err != nil {
+		logger.Log.Debug("error while Delete. Error in Exec method", zap.Error(err))
+		return nil, err
+	}
+	tx.Commit(ctx)
+	return s, nil
+}
+
+func (pg *PGSelectableStore) Update(cf *fiber.Ctx, s *selectable.Selectable) (*selectable.Selectable, error) {
+	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	ctx := cf.Context()
+	tx, err := pg.store.Db().Begin(ctx)
+	if err != nil {
+		logger.Log.Debug("error while Update. error in method Begin", zap.Error(err))
+		return nil, err
+	}
+	defer tx.Rollback(ctx)
+	sqlSelect := sqlBuilder.Update("selectables").
+		Set("deleted", s.Deleted).
+		Set("enabled", s.Enabled).
+		Set("updated_at", s.UpdatedAt).
+		Set("value", s.Value).
+		Where(sq.Eq{"uuid": s.Uuid})
+	query, args, err := sqlSelect.ToSql()
+	if err != nil {
+		logger.Log.Debug("error while Update. error in method ToSql", zap.Error(err))
+		return nil, err
+	}
+	_, err = tx.Exec(ctx, query, args...)
+	if err != nil {
+		logger.Log.Debug("error while Update. Error in Exec method", zap.Error(err))
+		return nil, err
+	}
+	tx.Commit(ctx)
+	return s, nil
+}
+
+func (pg *PGSelectableStore) FindByUuid(ctx *fiber.Ctx, uuid uuid.UUID) (*selectable.Selectable, error) {
+	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	sqlSelect := sqlBuilder.Select("id", "attribute_id", "created_at", "deleted", "enabled", "updated_at",
+		"uuid", "value").From("selectables").Where(sq.Eq{"uuid": uuid})
+	data := selectable.Selectable{}
+	query, args, err := sqlSelect.ToSql()
+	if err != nil {
+		logger.Log.Debug("error while FindByUuid. error in method ToSql", zap.Error(err))
+		return nil, err
+	}
+	row := pg.store.Db().QueryRow(ctx.Context(), query, args...)
+	if err != nil {
+		logger.Log.Debug("error while FindByUuid. error in method Query", zap.Error(err))
+		return nil, err
+	}
+	err = row.Scan(&data.Id, &data.AttributeId, &data.CreatedAt, &data.Deleted,
+		&data.Enabled, &data.UpdatedAt, &data.Uuid, &data.Value)
+	if err != nil {
+		logger.Log.Debug("error while FindByUuid. error in method Scan", zap.Error(err))
+		msg := errors.Wrap(err, "attribute not found")
+		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
+		return nil, err
+	}
+	if data.Deleted == true {
+		msg := fmt.Errorf("attribute has already been deleted")
+		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
+		return nil, err
+	}
+	return &data, nil
 }
 
 func (pg *PGSelectableStore) SelectList(

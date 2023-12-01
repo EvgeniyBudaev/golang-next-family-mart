@@ -16,7 +16,7 @@ type IUpdateAttributeUseCase interface {
 
 func UpdateAttributeHandler(uc IUpdateAttributeUseCase) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
-		logger.Log.Info("post to catalog create POST /api/v1/attribute/update")
+		logger.Log.Info("put to attribute update PUTT /api/v1/attribute/update")
 		var request = attributeUseCase.UpdateAttributeRequest{}
 		err := ctx.BodyParser(&request)
 		if err != nil {

@@ -33,6 +33,7 @@ func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Sto
 	attributeDataStore := attributeStore.NewDBAttributeStore(store)
 	catalogDataStore := catalogStore.NewDBCatalogStore(store)
 	productDataStore := productStore.NewDBProductStore(store)
+	selectableDataStore := selectableStore.NewDBSelectableStore(store)
 	identityManager := identity.NewIdentity(config)
 
 	// useCase
@@ -46,6 +47,7 @@ func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Sto
 	useCaseGetProductList := product.NewGetProductListUseCase(productDataStore)
 	useCaseGetProductByAlias := product.NewGetProductByAliasUseCase(productDataStore)
 	useCaseGetProductByUuid := product.NewGetProductByUuidUseCase(productDataStore)
+	useCaseGetSelectableList := selectable.NewGetSelectableListUseCase(selectableDataStore)
 
 	// handlers
 	grp.Post("/user/register", registerHandler.PostRegisterHandler(useCaseRegister))
@@ -58,6 +60,7 @@ func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Sto
 	grp.Get("/product/list", productHandler.GetProductListHandler(useCaseGetProductList))
 	grp.Get("/product/alias/:alias", productHandler.GetProductByAliasHandler(useCaseGetProductByAlias))
 	grp.Get("/product/uuid/:uuid", productHandler.GetProductByUuidHandler(useCaseGetProductByUuid))
+	grp.Get("/selectable/list", selectableHandler.GetSelectableListHandler(useCaseGetSelectableList))
 }
 
 func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.Store) {

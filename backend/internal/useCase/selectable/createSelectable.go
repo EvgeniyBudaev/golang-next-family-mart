@@ -4,7 +4,9 @@ import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/selectable"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
+	"time"
 )
 
 type CreateSelectableRequest struct {
@@ -25,6 +27,11 @@ func NewCreateSelectableUseCase(ds ISelectableStore) *CreateSelectableUseCase {
 func (uc *CreateSelectableUseCase) CreateSelectable(ctx *fiber.Ctx, r CreateSelectableRequest) (*selectable.Selectable, error) {
 	var request = &selectable.Selectable{
 		AttributeId: r.AttributeId,
+		CreatedAt:   time.Now(),
+		Deleted:     false,
+		Enabled:     true,
+		UpdatedAt:   time.Now(),
+		Uuid:        uuid.New(),
 		Value:       r.Value,
 	}
 	response, err := uc.dataStore.Create(ctx, request)

@@ -7,4 +7,5 @@ import (
 
 type ISelectableStore interface {
 	Create(ctx *fiber.Ctx, s *selectable.Selectable) (*selectable.Selectable, error)
+	SelectList(ctx *fiber.Ctx, qp *selectable.QueryParamsSelectableList) (*selectable.ListSelectableResponse, error)
 }

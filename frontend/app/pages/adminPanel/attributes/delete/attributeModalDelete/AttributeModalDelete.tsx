@@ -36,8 +36,13 @@ type TProps = {
   onClose: () => void;
 };
 
-export const AttributeModalDelete: FC<TProps> = ({ attributeUuid, isOpen, onClose }) => {
+export const AttributeModalDelete: FC<TProps> = ({
+                                                   attributeUuid,
+                                                    isOpen,
+                                                    onClose,
+                                                  }) => {
   const { t } = useTranslation("index");
+  const [state, formAction] = useFormState(attributeDeleteAction, initialState);
 
   if (state?.error) {
     notify.error({ title: state?.error });

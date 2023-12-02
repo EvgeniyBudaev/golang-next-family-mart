@@ -92,7 +92,8 @@
         }
       },
       "attributeEdit": {
-        "addModal": "Adding a new value"
+        "addModal": "Adding a new value",
+        "editModal": "Editing a value"
       }
     },
     "login": {

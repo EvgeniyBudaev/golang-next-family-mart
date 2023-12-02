@@ -1,5 +1,5 @@
 export enum EFormFields {
   AttributeAlias = "attributeAlias",
-  AttributeId = "attributeId",
+  Uuid = "uuid",
   Value = "value",
 }

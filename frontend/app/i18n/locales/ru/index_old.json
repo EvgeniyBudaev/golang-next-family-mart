@@ -26,7 +26,8 @@
   },
   "common": {
     "actions": {
-      "create": "Create"
+      "create": "Create",
+      "update": "Обновить"
     }
   },
   "form": {

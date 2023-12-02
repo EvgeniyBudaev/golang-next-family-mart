@@ -2,7 +2,6 @@
 
 import { useMemo } from "react";
 import type { ColumnDef, ColumnHelper } from "@tanstack/react-table";
-
 import { TSelectableListItem } from "@/app/api/adminPanel/selectables/list/types";
 import { ETableColumns } from "@/app/entities/attributes/selectableListTable/enums";
 import { useTranslation } from "@/app/i18n/client";

@@ -1,58 +1,15 @@
-import isNil from "lodash/isNil";
 import { redirect } from "next/navigation";
 import { type TAttributeList } from "@/app/api/adminPanel/attributes/list";
+import type { TSearchParams } from "@/app/api/common";
+import { mapParamsToDto } from "@/app/api/common/utils";
 import { useTranslation } from "@/app/i18n";
 import { AttributeListPage } from "@/app/pages/adminPanel/attributes/list";
 import { ErrorBoundary } from "@/app/shared/components/errorBoundary";
-import { DEFAULT_PAGE, DEFAULT_PAGE_LIMIT } from "@/app/shared/constants/pagination";
 import { EPermissions, ERoutes } from "@/app/shared/enums";
 import { checkPermissionsByServer } from "@/app/shared/utils/permissions";
 import { createPath, getResponseError } from "@/app/shared/utils";
 import { getAttributeList } from "@/app/api/adminPanel/attributes/list";
 import { TCommonResponseError } from "@/app/shared/types/error";
-
-type TSearchParams = { [key: string]: string | string[] | undefined };
-
-type TProps = {
-  params: { lng: string };
-  searchParams: TSearchParams;
-};
-
-const getParamsField = (
-  field: string | string[] | undefined,
-  defaultValue: string | number | undefined,
-): string | number | undefined => {
-  if (isNil(field) || Array.isArray(field)) {
-    return defaultValue;
-  }
-  return field;
-};
-
-const getLimit = (searchParams: TSearchParams) => {
-  const paramField = getParamsField(searchParams?.limit, DEFAULT_PAGE_LIMIT);
-  return !isNil(paramField) ? Number(paramField) : DEFAULT_PAGE_LIMIT;
-};
-
-const getPage = (searchParams: TSearchParams) => {
-  const paramField = getParamsField(searchParams?.page, DEFAULT_PAGE);
-  return !isNil(paramField) ? Number(paramField) : DEFAULT_PAGE;
-};
-
-const mapParamsToDto = (searchParams: TSearchParams) => {
-  const limit = getLimit(searchParams);
-  const page = getPage(searchParams);
-  const search = !Array.isArray(searchParams?.search)
-    ? searchParams?.search ?? undefined
-    : undefined;
-  const sort = !Array.isArray(searchParams?.sort) ? searchParams?.sort ?? undefined : undefined;
-
-  return {
-    limit,
-    page,
-    ...(search ? { search: searchParams?.search } : {}),
-    ...(sort ? { sort: searchParams?.sort } : {}),
-  };
-};
 
 async function loader(searchParams: TSearchParams) {
   const paramsToDto = mapParamsToDto(searchParams);
@@ -68,6 +25,11 @@ async function loader(searchParams: TSearchParams) {
     throw new Error("errorBoundary.common.unexpectedError");
   }
 }
+
+type TProps = {
+  params: { lng: string };
+  searchParams: TSearchParams;
+};
 
 export default async function AttributeListRoute(props: TProps) {
   const {

@@ -23,8 +23,8 @@ type TProps = {
   isLoading?: boolean;
   onChangePage: ({ selected }: { selected: number }) => void;
   onChangePageSize: (pageSize: number) => void;
-  onSelectableDelete?: (alias: string) => void;
-  onSelectableEdit?: (alias: string) => void;
+  onSelectableDelete?: (uuid: string) => void;
+  onSelectableEdit?: (uuid: string) => void;
   selectableList: TSelectableList;
 };
 
@@ -70,12 +70,12 @@ const TableComponent = forwardRef<HTMLDivElement, TProps>(
       [hiddenColumns, t],
     );
 
-    const handleSelectableEdit = ({ alias }: TTableColumn) => {
-      onSelectableEdit?.(alias);
+    const handleSelectableEdit = ({ uuid }: TTableColumn) => {
+      onSelectableEdit?.(uuid);
     };
 
-    const handleSelectableDelete = ({ alias }: TTableColumn) => {
-      onSelectableDelete?.(alias);
+    const handleSelectableDelete = ({ uuid }: TTableColumn) => {
+      onSelectableDelete?.(uuid);
     };
 
     const rowActions: TTableRowActions<TTableColumn> = [
@@ -101,7 +101,7 @@ const TableComponent = forwardRef<HTMLDivElement, TProps>(
           currentPage={page}
           data={content ?? []}
           defaultPageSize={limit}
-          getId={(row) => row.alias}
+          getId={(row) => row.uuid}
           isLoading={isLoading}
           messages={{ notFound: t("common.info.noData") }}
           onChangePageSize={onChangePageSize}

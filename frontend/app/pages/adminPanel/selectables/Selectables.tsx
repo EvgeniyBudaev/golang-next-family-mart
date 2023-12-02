@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { FC } from "react";
 import { TSelectableList } from "@/app/api/adminPanel/selectables/list/types";
 import { useTranslation } from "@/app/i18n/client";
@@ -16,6 +16,7 @@ import { Button } from "@/app/uikit/components/button";
 import { Tooltip } from "@/app/uikit/components/tooltip";
 import { SelectableModalAdd } from "./add/selectableModalAdd";
 import { TAttributeDetail } from "@/app/api/adminPanel/attributes/detail";
+import { SelectableModalEdit } from "@/app/pages/adminPanel/selectables/edit/selectableModalEdit";
 
 type TProps = {
   attribute: TAttributeDetail;
@@ -24,16 +25,32 @@ type TProps = {
 
 export const Selectables: FC<TProps> = ({ attribute, selectableList }) => {
   const { t } = useTranslation("index");
-  const [isOpenModal, setIsOpenModal] = useState(false);
+  const [isOpenModalAdd, setIsOpenModalAdd] = useState(false);
+  const [isOpenModalEdit, setIsOpenModalEdit] = useState(false);
+  const [selectableUuid, setSelectableUuid] = useState("");
 
-  const handleSelectableDelete = (alias: string) => {};
+  const selectableValue = useMemo(() => {
+    return (selectableList.content ?? []).find((item) => item.uuid === selectableUuid)?.value;
+  }, [selectableUuid]);
 
-  const handleSelectableEdit = (alias: string) => {
-    // const path = createPath({
-    //   route: ERoutes.AdminAttributeEdit,
-    //   params: { alias },
-    // });
-    // router.push(path);
+  const handleCloseModal = () => {
+    setIsOpenModalAdd(false);
+    setIsOpenModalEdit(false);
+  };
+
+  const handleOpenModalAdd = () => {
+    setIsOpenModalAdd(true);
+  };
+
+  const handleOpenModalEdit = () => {
+    setIsOpenModalEdit(true);
+  };
+
+  const handleSelectableDelete = (uuid: string) => {};
+
+  const handleSelectableEdit = (uuid: string) => {
+    setSelectableUuid(uuid);
+    handleOpenModalEdit();
   };
 
   const {
@@ -56,28 +73,13 @@ export const Selectables: FC<TProps> = ({ attribute, selectableList }) => {
     pageOption: selectableList?.page ?? DEFAULT_PAGE,
   });
 
-  const handleCloseModal = () => {
-    setIsOpenModal(false);
-  };
-
-  const handleOpenModal = () => {
-    setIsOpenModal(true);
-  };
-
-  const handleSubmitModal = ({ value }: { value: string }) => {
-    // if (value) {
-    //   handleAdd(value);
-    //   handleCloseAddModal();
-    // }
-  };
-
   return (
     <div className="Selectables">
       <div className="Selectables-Button">
         <Tooltip message={t("common.actions.add")}>
           <Button
             // isDisabled={attribute?.type === EAttributeType.Double}
-            onClick={handleOpenModal}
+            onClick={handleOpenModalAdd}
           >
             {t("common.actions.add")}
           </Button>
@@ -98,15 +100,21 @@ export const Selectables: FC<TProps> = ({ attribute, selectableList }) => {
         onChangePage={onChangePage}
         onChangePageSize={onChangeLimit}
         onSelectableDelete={onClickDeleteIcon}
-        onSelectableeEdit={handleSelectableEdit}
+        onSelectableEdit={handleSelectableEdit}
         selectableList={selectableList}
       />
       <SelectableModalAdd
         attributeAlias={attribute.alias}
         attributeId={attribute.id}
-        isOpen={isOpenModal}
+        isOpen={isOpenModalAdd}
         onClose={handleCloseModal}
-        onSubmit={handleSubmitModal}
+      />
+      <SelectableModalEdit
+        defaultValue={selectableValue}
+        attributeAlias={attribute.alias}
+        isOpen={isOpenModalEdit}
+        onClose={handleCloseModal}
+        selectableUuid={selectableUuid}
       />
     </div>
   );

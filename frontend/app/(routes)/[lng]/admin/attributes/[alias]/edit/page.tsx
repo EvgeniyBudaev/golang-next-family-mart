@@ -9,20 +9,24 @@ import { ErrorBoundary } from "@/app/shared/components/errorBoundary";
 import { TCommonResponseError } from "@/app/shared/types/error";
 import { TAttributeDetail } from "@/app/api/adminPanel/attributes/detail/types";
 import { getSelectableList } from "@/app/api/adminPanel/selectables/list/domain";
-import { DEFAULT_PAGE, DEFAULT_PAGE_LIMIT } from "@/app/shared/constants/pagination";
 import { TSelectableList } from "@/app/api/adminPanel/selectables/list/types";
+import { TSearchParams } from "@/app/api/common";
+import { mapParamsToDto } from "@/app/api/common/utils";
 
 type TLoader = {
   alias: string;
+  searchParams: TSearchParams;
 };
 
 async function loader(params: TLoader) {
+  const { alias, searchParams } = params;
+  const paramsToDto = mapParamsToDto(searchParams);
+
   try {
-    const attributeDetailResponse = await getAttributeDetail(params);
+    const attributeDetailResponse = await getAttributeDetail({ alias });
     const selectableListResponse = await getSelectableList({
       attributeId: Number(attributeDetailResponse.data.id),
-      limit: DEFAULT_PAGE_LIMIT,
-      page: DEFAULT_PAGE,
+      ...paramsToDto,
     });
     const attributeDetail = attributeDetailResponse.data as TAttributeDetail;
     const selectableList = selectableListResponse.data as TSelectableList;
@@ -38,10 +42,11 @@ async function loader(params: TLoader) {
 
 type TProps = {
   params: { lng: string };
+  searchParams: TSearchParams;
 };
 
 export default async function AttributeEditRoute(props: TProps) {
-  const { params } = props;
+  const { params, searchParams } = props;
   const { alias, lng } = params;
 
   const [{ t }, isPermissions] = await Promise.all([
@@ -58,7 +63,7 @@ export default async function AttributeEditRoute(props: TProps) {
   }
 
   try {
-    const { attributeDetail, selectableList } = await loader({ alias });
+    const { attributeDetail, selectableList } = await loader({ alias, searchParams });
     return (
       <AttributeEditPage
         attribute={attributeDetail}

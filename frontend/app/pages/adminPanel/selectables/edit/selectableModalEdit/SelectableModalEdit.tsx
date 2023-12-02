@@ -2,9 +2,9 @@
 
 import type { FC } from "react";
 import { experimental_useFormState as useFormState } from "react-dom";
-import { selectableAddAction } from "@/app/actions/adminPanel/selectables/add/selectableAddAction";
+import { selectableEditAction } from "@/app/actions/adminPanel/selectables/edit/selectableEditAction";
 import { useTranslation } from "@/app/i18n/client";
-import { EFormFields } from "@/app/pages/adminPanel/selectables/add/enums";
+import { EFormFields } from "@/app/pages/adminPanel/selectables/edit/enums";
 import { SubmitButton } from "@/app/shared/form/submitButton";
 import { Input } from "@/app/uikit/components/input";
 import { Modal } from "@/app/uikit/components/modal";
@@ -31,47 +31,51 @@ const initialState = {
 
 type TProps = {
   attributeAlias: string;
-  attributeId: number;
+  defaultValue: string | undefined;
   isOpen: boolean;
   onClose: () => void;
+  selectableUuid: string;
 };
 
-export const SelectableModalAdd: FC<TProps> = ({
+export const SelectableModalEdit: FC<TProps> = ({
   attributeAlias,
-  attributeId,
+  defaultValue,
   isOpen,
   onClose,
+  selectableUuid,
 }) => {
   const { t } = useTranslation("index");
-  const [state, formAction] = useFormState(selectableAddAction, initialState);
-  console.log("SelectableModalAdd state: ", state);
+  const [state, formAction] = useFormState(selectableEditAction, initialState);
+  console.log("SelectableModalEdit state: ", state);
   if (state?.error) {
     notify.error({ title: state?.error });
   }
+  console.log("selectableUuid: ", selectableUuid);
 
   return (
     <Modal isOpen={isOpen} onCloseModal={onClose}>
       <form action={formAction}>
         <Modal.Header>
           <Typography
-            value={t("pages.admin.attributeEdit.addModal")}
+            value={t("pages.admin.attributeEdit.editModal")}
             variant={ETypographyVariant.TextB2Bold}
           />
         </Modal.Header>
         <Modal.Content>
           <div>
             <Input
+              defaultValue={defaultValue}
               errors={state?.errors?.value}
               label={t("form.value") ?? "Value"}
               name={EFormFields.Value}
               type="text"
             />
             <input defaultValue={attributeAlias} name={EFormFields.AttributeAlias} type="hidden" />
-            <input defaultValue={attributeId} name={EFormFields.AttributeId} type="hidden" />
+            <input defaultValue={selectableUuid} name={EFormFields.Uuid} type="hidden" />
           </div>
         </Modal.Content>
         <Modal.Footer>
-          <SubmitButton buttonText={t("common.actions.add")} onClick={onClose} />
+          <SubmitButton buttonText={t("common.actions.save")} onClick={onClose} />
         </Modal.Footer>
       </form>
     </Modal>

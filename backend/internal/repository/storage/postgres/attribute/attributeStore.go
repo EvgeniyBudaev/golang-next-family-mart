@@ -56,6 +56,32 @@ func (pg *PGAttributeStore) Create(cf *fiber.Ctx, a *attribute.Attribute) (*attr
 	return a, nil
 }
 
+func (pg *PGAttributeStore) Delete(cf *fiber.Ctx, a *attribute.Attribute) (*attribute.Attribute, error) {
+	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	ctx := cf.Context()
+	tx, err := pg.store.Db().Begin(ctx)
+	if err != nil {
+		logger.Log.Debug("error while Delete. error in method Begin", zap.Error(err))
+		return nil, err
+	}
+	defer tx.Rollback(ctx)
+	sqlSelect := sqlBuilder.Update("attributes").
+		Set("deleted", a.Deleted).
+		Where(sq.Eq{"uuid": a.Uuid})
+	query, args, err := sqlSelect.ToSql()
+	if err != nil {
+		logger.Log.Debug("error while Delete. error in method ToSql", zap.Error(err))
+		return nil, err
+	}
+	_, err = tx.Exec(ctx, query, args...)
+	if err != nil {
+		logger.Log.Debug("error while Delete. Error in Exec method", zap.Error(err))
+		return nil, err
+	}
+	tx.Commit(ctx)
+	return a, nil
+}
+
 func (pg *PGAttributeStore) Update(cf *fiber.Ctx, a *attribute.Attribute) (*attribute.Attribute, error) {
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	ctx := cf.Context()

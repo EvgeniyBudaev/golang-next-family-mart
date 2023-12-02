@@ -16,7 +16,7 @@ type IUpdateSelectableUseCase interface {
 
 func UpdateSelectableHandler(uc IUpdateSelectableUseCase) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
-		logger.Log.Info("put to Selectable update PUT /api/v1/selectable/update")
+		logger.Log.Info("update to Selectable PUT /api/v1/selectable/update")
 		var request = selectableUseCase.UpdateSelectableRequest{}
 		err := ctx.BodyParser(&request)
 		if err != nil {

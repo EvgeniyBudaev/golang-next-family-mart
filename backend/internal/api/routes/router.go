@@ -76,6 +76,7 @@ func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.
 
 	// useCase
 	useCaseCreateAttribute := attribute.NewCreateAttributeUseCase(attributeDataStore)
+	useCaseDeleteAttribute := attribute.NewDeleteAttributeUseCase(attributeDataStore)
 	useCaseUpdateAttribute := attribute.NewUpdateAttributeUseCase(attributeDataStore)
 	useCaseCreateCatalog := catalog.NewCreateCatalogUseCase(catalogDataStore)
 	useCaseDeleteCatalog := catalog.NewDeleteCatalogUseCase(catalogDataStore)
@@ -88,6 +89,8 @@ func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.
 	// handlers
 	grp.Post("/attribute/create", middlewares.NewRequiresRealmRole("admin"),
 		attributeHandler.CreateAttributeHandler(useCaseCreateAttribute))
+	grp.Delete("/attribute/delete", middlewares.NewRequiresRealmRole("admin"),
+		attributeHandler.DeleteAttributeHandler(useCaseDeleteAttribute))
 	grp.Put("/attribute/update", middlewares.NewRequiresRealmRole("admin"),
 		attributeHandler.UpdateAttributeHandler(useCaseUpdateAttribute))
 	grp.Post("/catalog/create", middlewares.NewRequiresRealmRole("admin"),

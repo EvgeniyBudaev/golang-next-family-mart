@@ -10,22 +10,22 @@ import (
 	"net/http"
 )
 
-type IUpdateAttributeUseCase interface {
-	UpdateAttribute(ctx *fiber.Ctx, request attributeUseCase.UpdateAttributeRequest) (*attribute.Attribute, error)
+type IDeleteAttributeUseCase interface {
+	DeleteAttribute(ctx *fiber.Ctx, request attributeUseCase.DeleteAttributeRequest) (*attribute.Attribute, error)
 }
 
-func UpdateAttributeHandler(uc IUpdateAttributeUseCase) fiber.Handler {
+func DeleteAttributeHandler(uc IDeleteAttributeUseCase) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
-		logger.Log.Info("update to attribute PUT /api/v1/attribute/update")
-		var request = attributeUseCase.UpdateAttributeRequest{}
+		logger.Log.Info("delete to attribute DELETE /api/v1/attribute/delete")
+		var request = attributeUseCase.DeleteAttributeRequest{}
 		err := ctx.BodyParser(&request)
 		if err != nil {
-			logger.Log.Debug("error while UpdateAttributeHandler. Error in BodyParser", zap.Error(err))
+			logger.Log.Debug("error while DeleteAttributeHandler. Error in BodyParser", zap.Error(err))
 			return r.WrapError(ctx, err, http.StatusBadRequest)
 		}
-		response, err := uc.UpdateAttribute(ctx, request)
+		response, err := uc.DeleteAttribute(ctx, request)
 		if err != nil {
-			logger.Log.Debug("error while UpdateAttributeHandler. Error in UpdateAttribute", zap.Error(err))
+			logger.Log.Debug("error while DeleteAttributeHandler. Error in DeleteAttribute", zap.Error(err))
 			return r.WrapError(ctx, err, http.StatusBadRequest)
 		}
 		return r.WrapCreated(ctx, response)

@@ -14,6 +14,8 @@ import { createPath } from "@/app/shared/utils";
 import { ButtonLink } from "@/app/uikit/components/button/buttonLink";
 import { ETypographyVariant, Typography } from "@/app/uikit/components/typography";
 import "./AttributeListPage.scss";
+import { AttributeModalDelete } from "@/app/pages/adminPanel/attributes/delete/attributeModalDelete";
+import { useMemo, useState } from "react";
 
 type TProps = {
   attributeList: TAttributeList;
@@ -21,10 +23,18 @@ type TProps = {
 
 export const AttributeListPage: FC<TProps> = ({ attributeList }) => {
   const router = useRouter();
-
   const { t } = useTranslation("index");
+  const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
+  const [attributeAlias, setAttributeAlias] = useState("");
 
-  const handleAttributeDelete = (alias: string) => {};
+  const attributeUuid = useMemo(() => {
+    return (attributeList.content ?? []).find((item) => item.alias === attributeAlias)?.uuid ?? "";
+  }, [attributeAlias]);
+
+  const handleAttributeDelete = (alias: string) => {
+    setAttributeAlias(alias);
+    setIsOpenModalDelete(true);
+  };
 
   const handleAttributeEdit = (alias: string) => {
     const path = createPath({
@@ -34,15 +44,15 @@ export const AttributeListPage: FC<TProps> = ({ attributeList }) => {
     router.push(path);
   };
 
+  const handleCloseModal = () => {
+    setIsOpenModalDelete(false);
+  };
+
   const {
     defaultSearch,
-    deleteModal,
     isSearchActive,
     onChangeLimit,
     onChangePage,
-    onClickDeleteIcon,
-    onCloseDeleteModal,
-    onDeleteSubmit,
     onSearch,
     onSearchBlur,
     onSearchFocus,
@@ -50,7 +60,6 @@ export const AttributeListPage: FC<TProps> = ({ attributeList }) => {
     onSortTableByProperty,
   } = useTable({
     limitOption: attributeList?.limit ?? DEFAULT_PAGE_LIMIT,
-    onDelete: handleAttributeDelete,
     pageOption: attributeList?.page ?? DEFAULT_PAGE,
   });
 
@@ -92,10 +101,15 @@ export const AttributeListPage: FC<TProps> = ({ attributeList }) => {
           onChangeSorting: onSortTableByProperty,
         }}
         isLoading={false}
-        onAttributeDelete={onClickDeleteIcon}
+        onAttributeDelete={handleAttributeDelete}
         onAttributeEdit={handleAttributeEdit}
         onChangePage={onChangePage}
         onChangePageSize={onChangeLimit}
+      />
+      <AttributeModalDelete
+        attributeUuid={attributeUuid}
+        isOpen={isOpenModalDelete}
+        onClose={handleCloseModal}
       />
     </section>
   );

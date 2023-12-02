@@ -46,11 +46,10 @@ export const SelectableModalEdit: FC<TProps> = ({
 }) => {
   const { t } = useTranslation("index");
   const [state, formAction] = useFormState(selectableEditAction, initialState);
-  console.log("SelectableModalEdit state: ", state);
+
   if (state?.error) {
     notify.error({ title: state?.error });
   }
-  console.log("selectableUuid: ", selectableUuid);
 
   return (
     <Modal isOpen={isOpen} onCloseModal={onClose}>

@@ -17,6 +17,7 @@ import { Tooltip } from "@/app/uikit/components/tooltip";
 import { SelectableModalAdd } from "./add/selectableModalAdd";
 import { TAttributeDetail } from "@/app/api/adminPanel/attributes/detail";
 import { SelectableModalEdit } from "@/app/pages/adminPanel/selectables/edit/selectableModalEdit";
+import { SelectableModalDelete } from "@/app/pages/adminPanel/selectables/delete/selectableModalDelete";
 
 type TProps = {
   attribute: TAttributeDetail;
@@ -26,6 +27,7 @@ type TProps = {
 export const Selectables: FC<TProps> = ({ attribute, selectableList }) => {
   const { t } = useTranslation("index");
   const [isOpenModalAdd, setIsOpenModalAdd] = useState(false);
+  const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
   const [isOpenModalEdit, setIsOpenModalEdit] = useState(false);
   const [selectableUuid, setSelectableUuid] = useState("");
 
@@ -35,6 +37,7 @@ export const Selectables: FC<TProps> = ({ attribute, selectableList }) => {
 
   const handleCloseModal = () => {
     setIsOpenModalAdd(false);
+    setIsOpenModalDelete(false);
     setIsOpenModalEdit(false);
   };
 
@@ -42,32 +45,25 @@ export const Selectables: FC<TProps> = ({ attribute, selectableList }) => {
     setIsOpenModalAdd(true);
   };
 
+  const handleOpenModalDelete = () => {
+    setIsOpenModalDelete(true);
+  };
+
   const handleOpenModalEdit = () => {
     setIsOpenModalEdit(true);
   };
 
-  const handleSelectableDelete = (uuid: string) => {};
+  const handleSelectableDelete = (uuid: string) => {
+    setSelectableUuid(uuid);
+    handleOpenModalDelete();
+  };
 
   const handleSelectableEdit = (uuid: string) => {
     setSelectableUuid(uuid);
     handleOpenModalEdit();
   };
 
-  const {
-    defaultSearch,
-    deleteModal,
-    isSearchActive,
-    onChangeLimit,
-    onChangePage,
-    onClickDeleteIcon,
-    onCloseDeleteModal,
-    onDeleteSubmit,
-    onSearch,
-    onSearchBlur,
-    onSearchFocus,
-    onSearchKeyDown,
-    onSortTableByProperty,
-  } = useTable({
+  const { onChangeLimit, onChangePage, onSortTableByProperty } = useTable({
     limitOption: selectableList?.limit ?? DEFAULT_PAGE_LIMIT,
     onDelete: handleSelectableDelete,
     pageOption: selectableList?.page ?? DEFAULT_PAGE,
@@ -99,7 +95,7 @@ export const Selectables: FC<TProps> = ({ attribute, selectableList }) => {
         isLoading={false}
         onChangePage={onChangePage}
         onChangePageSize={onChangeLimit}
-        onSelectableDelete={onClickDeleteIcon}
+        onSelectableDelete={handleSelectableDelete}
         onSelectableEdit={handleSelectableEdit}
         selectableList={selectableList}
       />
@@ -113,6 +109,12 @@ export const Selectables: FC<TProps> = ({ attribute, selectableList }) => {
         defaultValue={selectableValue}
         attributeAlias={attribute.alias}
         isOpen={isOpenModalEdit}
+        onClose={handleCloseModal}
+        selectableUuid={selectableUuid}
+      />
+      <SelectableModalDelete
+        attributeAlias={attribute.alias}
+        isOpen={isOpenModalDelete}
         onClose={handleCloseModal}
         selectableUuid={selectableUuid}
       />

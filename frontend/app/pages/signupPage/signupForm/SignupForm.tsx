@@ -31,7 +31,7 @@ const initialState = {
 
 export const SignupForm: FC = () => {
   const [state, formAction] = useFormState(signupAction, initialState);
-  console.log("state: ", state);
+
   const { t } = useTranslation("index");
   if (state?.error) {
     notify.error({ title: state?.error });

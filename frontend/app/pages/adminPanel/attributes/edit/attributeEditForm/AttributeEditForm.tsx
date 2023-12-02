@@ -35,7 +35,7 @@ type TProps = {
 
 export const AttributeEditForm: FC<TProps> = ({ attribute }) => {
   const [state, formAction] = useFormState(attributeEditAction, initialState);
-  console.log("AttributeEditForm state: ", state);
+
   const { t } = useTranslation("index");
   if (state?.error) {
     notify.error({ title: state?.error });

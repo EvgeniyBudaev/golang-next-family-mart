@@ -6,7 +6,6 @@ import {
 import { EFormMethods } from "@/app/shared/form";
 
 export const selectableEditApi: TApiFunction<TSelectableEditParams, TSelectableEdit> = (params) => {
-  console.log("api params: ", params);
   return fetchApi<TSelectableEdit>(`/api/v1/selectable/update`, {
     method: EFormMethods.Put,
     body: params,

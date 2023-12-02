@@ -30,6 +30,9 @@
     "info": {
       "noData": "No data"
     },
+    "modal": {
+      "deleteQuestion": "Are you sure you want to delete?"
+    },
     "validation": {
       "email": "Invalid email",
       "cyrillicEmail": "Only Latin characters",

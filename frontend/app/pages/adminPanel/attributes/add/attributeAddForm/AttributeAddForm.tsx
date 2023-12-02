@@ -29,7 +29,7 @@ const initialState = {
 
 export const AttributeAddForm: FC = () => {
   const [state, formAction] = useFormState(attributeAddAction, initialState);
-  console.log("state: ", state);
+
   const { t } = useTranslation("index");
   if (state?.error) {
     notify.error({ title: state?.error });

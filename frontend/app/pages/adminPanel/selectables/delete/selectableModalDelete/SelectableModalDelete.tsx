@@ -2,14 +2,15 @@
 
 import type { FC } from "react";
 import { experimental_useFormState as useFormState } from "react-dom";
-import { selectableAddAction } from "@/app/actions/adminPanel/selectables/add/selectableAddAction";
+import { selectableDeleteAction } from "@/app/actions/adminPanel/selectables/delete/selectableDeleteAction";
 import { useTranslation } from "@/app/i18n/client";
-import { EFormFields } from "@/app/pages/adminPanel/selectables/add/enums";
+import { EFormFields } from "@/app/pages/adminPanel/selectables/delete/enums";
 import { SubmitButton } from "@/app/shared/form/submitButton";
-import { Input } from "@/app/uikit/components/input";
+import { Button } from "@/app/uikit/components/button";
 import { Modal } from "@/app/uikit/components/modal";
 import { notify } from "@/app/uikit/components/toast/utils";
 import { ETypographyVariant, Typography } from "@/app/uikit/components/typography";
+import "./SelectableModalDelete.scss";
 
 declare module "react-dom" {
   function experimental_useFormState<State>(
@@ -31,19 +32,19 @@ const initialState = {
 
 type TProps = {
   attributeAlias: string;
-  attributeId: number;
   isOpen: boolean;
   onClose: () => void;
+  selectableUuid: string;
 };
 
-export const SelectableModalAdd: FC<TProps> = ({
+export const SelectableModalDelete: FC<TProps> = ({
   attributeAlias,
-  attributeId,
   isOpen,
   onClose,
+  selectableUuid,
 }) => {
   const { t } = useTranslation("index");
-  const [state, formAction] = useFormState(selectableAddAction, initialState);
+  const [state, formAction] = useFormState(selectableDeleteAction, initialState);
 
   if (state?.error) {
     notify.error({ title: state?.error });
@@ -54,24 +55,21 @@ export const SelectableModalAdd: FC<TProps> = ({
       <form action={formAction}>
         <Modal.Header>
           <Typography
-            value={t("pages.admin.attributeEdit.addModal")}
+            value={t("common.modal.deleteQuestion")}
             variant={ETypographyVariant.TextB2Bold}
           />
         </Modal.Header>
         <Modal.Content>
-          <div>
-            <Input
-              errors={state?.errors?.value}
-              label={t("form.value") ?? "Value"}
-              name={EFormFields.Value}
-              type="text"
-            />
-            <input defaultValue={attributeAlias} name={EFormFields.AttributeAlias} type="hidden" />
-            <input defaultValue={attributeId} name={EFormFields.AttributeId} type="hidden" />
-          </div>
+          <input defaultValue={attributeAlias} name={EFormFields.AttributeAlias} type="hidden" />
+          <input defaultValue={selectableUuid} name={EFormFields.Uuid} type="hidden" />
         </Modal.Content>
         <Modal.Footer>
-          <SubmitButton buttonText={t("common.actions.add")} onClick={onClose} />
+          <div className="SelectableModalDelete-Footer">
+            <Button className="SelectableModalDelete-Cancel" onClick={onClose}>
+              {t("common.actions.cancel")}
+            </Button>
+            <SubmitButton buttonText={t("common.actions.delete")} onClick={onClose} />
+          </div>
         </Modal.Footer>
       </form>
     </Modal>

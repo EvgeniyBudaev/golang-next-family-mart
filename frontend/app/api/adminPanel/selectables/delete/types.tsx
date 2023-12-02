@@ -1,8 +1,8 @@
 import type { z } from "zod";
 import {
-  selectableDeleteSchema,
+  selectableDeleteResponseSchema,
   selectableDeleteParamsSchema,
 } from "@/app/api/adminPanel/selectables/delete/schemas";
 
 export type TSelectableDeleteParams = z.infer<typeof selectableDeleteParamsSchema>;
-export type TSelectableDelete = z.infer<typeof selectableDeleteSchema>;
+export type TSelectableDeleteResponse = z.infer<typeof selectableDeleteResponseSchema>;

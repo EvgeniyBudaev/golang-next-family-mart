@@ -1,8 +1,8 @@
 import type { z } from "zod";
 import {
-  attributeDetailSchema,
+  attributeDetailResponseSchema,
   attributeDetailParamsSchema,
 } from "@/app/api/adminPanel/attributes/detail/schemas";
 
 export type TAttributeDetailParams = z.infer<typeof attributeDetailParamsSchema>;
-export type TAttributeDetail = z.infer<typeof attributeDetailSchema>;
+export type TAttributeDetailResponse = z.infer<typeof attributeDetailResponseSchema>;

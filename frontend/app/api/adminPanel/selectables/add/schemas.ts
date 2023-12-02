@@ -6,4 +6,9 @@ export const selectableAddParamsSchema = z.object({
   value: z.string(),
 });
 
-export const selectableAddSchema = selectableListItemSchema;
+export const selectableAddResponseSchema = z.object({
+  data: selectableListItemSchema.optional(),
+  message: z.string().optional(),
+  statusCode: z.number(),
+  success: z.boolean(),
+});

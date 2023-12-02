@@ -5,6 +5,7 @@ import { attributeAddFormSchema } from "@/app/actions/adminPanel/attributes/add/
 import { TCommonResponseError } from "@/app/shared/types/error";
 import { getResponseError, getErrorsResolver } from "@/app/shared/utils";
 import { attributeAdd } from "@/app/api/adminPanel/attributes/add/domain";
+import { redirect } from "next/navigation";
 
 export async function attributeAddAction(prevState: any, formData: FormData) {
   const resolver = attributeAddFormSchema.safeParse(Object.fromEntries(formData.entries()));
@@ -24,8 +25,10 @@ export async function attributeAddAction(prevState: any, formData: FormData) {
     console.log("formattedParams: ", formattedParams);
     const response = await attributeAdd(formattedParams);
     console.log("response: ", response);
-    revalidatePath("/ru/admin/attributes/add");
-    return { error: null, data: response, success: true };
+    const path = `/ru/admin/attributes/${response.data?.alias}/edit`;
+    return redirect(path);
+    // revalidatePath("/ru/admin/attributes/add");
+    // return { error: null, data: response, success: true };
   } catch (error) {
     const errorResponse = error as Response;
     const responseData: TCommonResponseError = await errorResponse.json();

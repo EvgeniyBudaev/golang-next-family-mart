@@ -5,4 +5,9 @@ export const selectableDeleteParamsSchema = z.object({
   uuid: z.string(),
 });
 
-export const selectableDeleteSchema = selectableListItemSchema;
+export const selectableDeleteResponseSchema = z.object({
+  data: selectableListItemSchema.optional(),
+  message: z.string().optional(),
+  statusCode: z.number(),
+  success: z.boolean(),
+});

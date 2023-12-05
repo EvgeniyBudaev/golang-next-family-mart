@@ -61,6 +61,13 @@ go get -u github.com/jackc/pgx/v5/pgxpool
 
 Миграции
 https://github.com/golang-migrate/migrate/blob/master/cmd/migrate/README.md
+```
+curl -L https://packagecloud.io/golang-migrate/migrate/gpgkey | apt-key add -
+sudo sh -c 'echo "deb https://packagecloud.io/golang-migrate/migrate/ubuntu/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/migrate.list'
+sudo apt-get update
+sudo apt-get install -y golang-migrate
+```
+
 Создание миграционного репозитория
 
 ```

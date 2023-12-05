@@ -3,13 +3,13 @@ module github.com/EvgeniyBudaev/golang-next-family-mart/backend
 go 1.21.0
 
 require (
+	github.com/Masterminds/squirrel v1.5.4
 	github.com/Nerzal/gocloak/v13 v13.8.0
 	github.com/gofiber/contrib/jwt v1.0.7
 	github.com/gofiber/fiber/v2 v2.50.0
 	github.com/golang-jwt/jwt/v5 v5.1.0
 	github.com/google/uuid v1.4.0
 	github.com/gookit/goutil v0.6.14
-	github.com/gorilla/mux v1.8.0
 	github.com/jackc/pgx/v5 v5.4.3
 	github.com/joho/godotenv v1.5.1
 	github.com/kelseyhightower/envconfig v1.4.0
@@ -19,7 +19,6 @@ require (
 )
 
 require (
-	github.com/Masterminds/squirrel v1.5.4 // indirect
 	github.com/MicahParks/keyfunc/v2 v2.1.0 // indirect
 	github.com/andybalholm/brotli v1.0.6 // indirect
 	github.com/go-resty/resty/v2 v2.10.0 // indirect

@@ -1,6 +1,10 @@
 @import "@/app/styles";
 
 .Options {
+  &-Icon {
+    cursor: pointer;
+  }
+
   &-FieldHeader {
     margin-bottom: 8px;
   }

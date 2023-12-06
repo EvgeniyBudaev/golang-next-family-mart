@@ -28,7 +28,7 @@ export async function selectableAddAction(prevState: any, formData: FormData) {
     console.log("response: ", response);
     const path = `/ru/admin/attributes/${attributeAlias}/edit`;
     revalidatePath(path);
-    return { error: null, data: response, success: true };
+    return { error: null, data: response.data, success: true };
   } catch (error) {
     const errorResponse = error as Response;
     const responseData: TCommonResponseError = await errorResponse.json();

@@ -16,6 +16,7 @@ export interface IInputProps
   hidden?: boolean;
   isDisabled?: boolean;
   isFocused?: boolean;
+  isReadOnly?: boolean;
   isRequired?: boolean;
   label?: string;
   name?: string;
@@ -34,6 +35,7 @@ const InputComponent = forwardRef<HTMLInputElement, IInputProps>(
       hidden,
       isDisabled,
       isFocused: isInputFocused,
+      isReadOnly,
       isRequired,
       label,
       name,
@@ -74,25 +76,25 @@ const InputComponent = forwardRef<HTMLInputElement, IInputProps>(
     return (
       <div
         className={clsx("InputField", className, {
-          InputField__disabled: isDisabled,
-          InputField__active: isFocused && !isDisabled,
+          InputField__disabled: isReadOnly || isDisabled,
+          InputField__active: isFocused && !isReadOnly && !isDisabled,
         })}
         data-testid={dataTestId}
       >
         <div
           className={clsx("InputField-Inner", {
-            "InputField-Inner__disabled": isDisabled,
+            "InputField-Inner__disabled": isReadOnly || isDisabled,
             "InputField-Inner__active": isFocused,
             "InputField-Inner__error": errors,
           })}
         >
           <input
             {...rest}
-            aria-disabled={isDisabled}
+            aria-disabled={isReadOnly}
             autoComplete={autoComplete}
             className={clsx(className, "Input", {
-              Input__disabled: isDisabled,
-              Input__active: isFocused && !isDisabled,
+              Input__disabled: isReadOnly || isDisabled,
+              Input__active: isFocused && !isReadOnly && !isDisabled,
               Input__error: errors,
             })}
             defaultValue={defaultValue}
@@ -102,6 +104,7 @@ const InputComponent = forwardRef<HTMLInputElement, IInputProps>(
             onBlur={onBlurCallback}
             onChange={onChange}
             onFocus={onFocusCallback}
+            readOnly={isReadOnly}
             ref={ref}
             type={type}
           />

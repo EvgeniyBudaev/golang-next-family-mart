@@ -73,6 +73,7 @@ $transition: 150ms;
   }
 
   &__disabled {
+    cursor: default;
     width: 100%;
 
     #{$this}-Label {

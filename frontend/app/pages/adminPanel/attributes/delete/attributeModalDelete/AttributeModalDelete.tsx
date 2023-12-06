@@ -1,6 +1,7 @@
 "use client";
 
-import type { FC } from "react";
+import isNil from "lodash/isNil";
+import { useEffect, type FC } from "react";
 import { experimental_useFormState as useFormState } from "react-dom";
 import { attributeDeleteAction } from "@/app/actions/adminPanel/attributes/delete/attributeDeleteAction";
 import { useTranslation } from "@/app/i18n/client";
@@ -26,7 +27,7 @@ declare module "react-dom" {
 }
 
 const initialState = {
-  error: "",
+  error: null,
   success: false,
 };
 
@@ -40,9 +41,14 @@ export const AttributeModalDelete: FC<TProps> = ({ attributeUuid, isOpen, onClos
   const { t } = useTranslation("index");
   const [state, formAction] = useFormState(attributeDeleteAction, initialState);
 
-  if (state?.error) {
-    notify.error({ title: state?.error });
-  }
+  useEffect(() => {
+    if (state?.error) {
+      notify.error({ title: state?.error });
+    }
+    if (!isNil(state.data) && state.success && !state?.error) {
+      notify.success({ title: "Ok" });
+    }
+  }, [state]);
 
   return (
     <Modal isOpen={isOpen} onCloseModal={onClose}>

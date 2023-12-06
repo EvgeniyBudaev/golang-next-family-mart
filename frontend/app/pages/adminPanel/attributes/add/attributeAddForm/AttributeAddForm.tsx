@@ -1,6 +1,8 @@
 "use client";
 
-import type { FC } from "react";
+import isNil from "lodash/isNil";
+import { redirect } from "next/navigation";
+import { useEffect, type FC } from "react";
 import { experimental_useFormState as useFormState } from "react-dom";
 import { attributeAddAction } from "@/app/actions/adminPanel/attributes/add/attributeAddAction";
 import { useTranslation } from "@/app/i18n/client";
@@ -23,17 +25,23 @@ declare module "react-dom" {
 }
 
 const initialState = {
-  error: "",
+  error: null,
   success: false,
 };
 
 export const AttributeAddForm: FC = () => {
   const [state, formAction] = useFormState(attributeAddAction, initialState);
-
   const { t } = useTranslation("index");
-  if (state?.error) {
-    notify.error({ title: state?.error });
-  }
+
+  useEffect(() => {
+    if (state?.error) {
+      notify.error({ title: state?.error });
+    }
+    if (!isNil(state.data) && state.success && !state?.error) {
+      const path = `/ru/admin/attributes/${state.data?.alias}/edit`;
+      redirect(path);
+    }
+  }, [state]);
 
   return (
     <form action={formAction} className="AttributeAddForm-Form">

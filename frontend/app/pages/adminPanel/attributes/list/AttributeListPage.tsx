@@ -1,11 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 import type { FC } from "react";
 import { type TAttributeList } from "@/app/api/adminPanel/attributes/list";
 import { AttributeListTable } from "@/app/entities/attributes/attributeListTable";
 import { ETableColumns } from "@/app/entities/attributes/attributeListTable/enums";
 import { useTranslation } from "@/app/i18n/client";
+import { AttributeModalDelete } from "@/app/pages/adminPanel/attributes/delete/attributeModalDelete";
 import { SearchingPanel } from "@/app/shared/components/search/searchingPanel";
 import { DEFAULT_PAGE, DEFAULT_PAGE_LIMIT } from "@/app/shared/constants/pagination";
 import { ERoutes } from "@/app/shared/enums";
@@ -14,8 +16,6 @@ import { createPath } from "@/app/shared/utils";
 import { ButtonLink } from "@/app/uikit/components/button/buttonLink";
 import { ETypographyVariant, Typography } from "@/app/uikit/components/typography";
 import "./AttributeListPage.scss";
-import { AttributeModalDelete } from "@/app/pages/adminPanel/attributes/delete/attributeModalDelete";
-import { useMemo, useState } from "react";
 
 type TProps = {
   attributeList: TAttributeList;

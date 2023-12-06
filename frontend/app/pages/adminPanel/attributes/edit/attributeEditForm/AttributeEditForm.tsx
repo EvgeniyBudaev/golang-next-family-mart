@@ -1,6 +1,7 @@
 "use client";
 
-import type { FC } from "react";
+import isNil from "lodash/isNil";
+import { useEffect, type FC } from "react";
 import { experimental_useFormState as useFormState } from "react-dom";
 import { attributeEditAction } from "@/app/actions/adminPanel/attributes/edit/attributeEditAction";
 import { TAttributeDetail } from "@/app/api/adminPanel/attributes/detail/types";
@@ -35,18 +36,23 @@ type TProps = {
 
 export const AttributeEditForm: FC<TProps> = ({ attribute }) => {
   const [state, formAction] = useFormState(attributeEditAction, initialState);
-
   const { t } = useTranslation("index");
-  if (state?.error) {
-    notify.error({ title: state?.error });
-  }
+
+  useEffect(() => {
+    if (state?.error) {
+      notify.error({ title: state?.error });
+    }
+    if (!isNil(state.data) && state.success && !state?.error) {
+      notify.success({ title: "Ok" });
+    }
+  }, [state]);
 
   return (
     <form action={formAction} className="AttributeEditForm-Form">
       <Input
         defaultValue={attribute.alias}
         errors={state?.errors?.alias}
-        isDisabled={true}
+        isReadOnly={true}
         isRequired={true}
         label={t("form.alias") ?? "Alias"}
         name={EFormFields.Alias}
@@ -63,7 +69,7 @@ export const AttributeEditForm: FC<TProps> = ({ attribute }) => {
       <Input
         defaultValue={attribute.type}
         errors={state?.errors?.type}
-        isDisabled={true}
+        isReadOnly={true}
         isRequired={true}
         label={t("form.type") ?? "Type"}
         name={EFormFields.Type}

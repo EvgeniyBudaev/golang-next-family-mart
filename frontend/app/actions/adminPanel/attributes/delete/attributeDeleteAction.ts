@@ -25,7 +25,7 @@ export async function attributeDeleteAction(prevState: any, formData: FormData) 
     const response = await attributeDelete(formattedParams);
     console.log("response: ", response);
     revalidatePath("/ru/admin/attributes");
-    return { error: null, data: response, success: true };
+    return { error: null, data: response.data, success: true };
   } catch (error) {
     const errorResponse = error as Response;
     const responseData: TCommonResponseError = await errorResponse.json();

@@ -45,7 +45,7 @@ const Component = <T extends object>({
 
   return (
     <>
-      <Icon onClick={openModal} type="Settings" />
+      <Icon className="Options-Icon" onClick={openModal} type="Settings" />
       <Modal isOpen={isOpenModal} onCloseModal={handleCloseModal}>
         <Modal.Header>
           <Typography value={optionsModalHeader ?? ""} variant={ETypographyVariant.TextH6Bold} />

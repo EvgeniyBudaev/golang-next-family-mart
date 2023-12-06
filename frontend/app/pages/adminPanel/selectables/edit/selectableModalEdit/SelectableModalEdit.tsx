@@ -1,6 +1,7 @@
 "use client";
 
-import type { FC } from "react";
+import isNil from "lodash/isNil";
+import { useEffect, type FC } from "react";
 import { experimental_useFormState as useFormState } from "react-dom";
 import { selectableEditAction } from "@/app/actions/adminPanel/selectables/edit/selectableEditAction";
 import { useTranslation } from "@/app/i18n/client";
@@ -25,7 +26,7 @@ declare module "react-dom" {
 }
 
 const initialState = {
-  error: "",
+  error: null,
   success: false,
 };
 
@@ -47,9 +48,14 @@ export const SelectableModalEdit: FC<TProps> = ({
   const { t } = useTranslation("index");
   const [state, formAction] = useFormState(selectableEditAction, initialState);
 
-  if (state?.error) {
-    notify.error({ title: state?.error });
-  }
+  useEffect(() => {
+    if (state?.error) {
+      notify.error({ title: state?.error });
+    }
+    if (!isNil(state.data) && state.success && !state?.error) {
+      notify.success({ title: "Ok" });
+    }
+  }, [state]);
 
   return (
     <Modal isOpen={isOpen} onCloseModal={onClose}>

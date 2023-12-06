@@ -61,11 +61,21 @@ go get -u github.com/jackc/pgx/v5/pgxpool
 
 Миграции
 https://github.com/golang-migrate/migrate/blob/master/cmd/migrate/README.md
+https://www.appsloveworld.com/go/83/golang-migrate-installation-failing-on-ubuntu-22-04-with-the-following-gpg-error
 ```
 curl -L https://packagecloud.io/golang-migrate/migrate/gpgkey | apt-key add -
 sudo sh -c 'echo "deb https://packagecloud.io/golang-migrate/migrate/ubuntu/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/migrate.list'
 sudo apt-get update
 sudo apt-get install -y golang-migrate
+```
+
+Если ошибка E: Указаны конфликтующие значения параметра Signed-By из источника
+https://packagecloud.io/golang-migrate/migrate/ubuntu/
+jammy: /etc/apt/keyrings/golang-migrate_migrate-archive-keyring.gpg !=
+```
+cd /etc/apt/sources.list.d
+ls
+sudo rm migrate.list
 ```
 
 Создание миграционного репозитория

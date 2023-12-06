@@ -66,6 +66,9 @@
       },
       "attributeEdit": {
         "title": "Editing an attribute"
+      },
+      "catalogAdd": {
+        "title": "Adding a catalog"
       }
     },
     "admin": {

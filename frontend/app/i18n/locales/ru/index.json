@@ -66,6 +66,9 @@
       },
       "attributeEdit": {
         "title": "Редактирование атрибута"
+      },
+      "catalogAdd": {
+        "title": "Добавление каталога"
       }
     },
     "admin": {

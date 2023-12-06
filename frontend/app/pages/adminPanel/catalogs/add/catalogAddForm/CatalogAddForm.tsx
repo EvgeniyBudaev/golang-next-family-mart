@@ -4,13 +4,13 @@ import isNil from "lodash/isNil";
 import { redirect } from "next/navigation";
 import { useEffect, type FC } from "react";
 import { experimental_useFormState as useFormState } from "react-dom";
-import { attributeAddAction } from "@/app/actions/adminPanel/attributes/add/attributeAddAction";
+import { catalogAddAction } from "@/app/actions/adminPanel/catalogs/add/catalogAddAction";
 import { useTranslation } from "@/app/i18n/client";
-import { EFormFields } from "@/app/pages/adminPanel/attributes/add/enums";
+import { EFormFields } from "@/app/pages/adminPanel/catalogs/add/enums";
 import { SubmitButton } from "@/app/shared/form/submitButton";
 import { Input } from "@/app/uikit/components/input";
 import { notify } from "@/app/uikit/components/toast/utils";
-import "./AttributeAddForm.scss";
+import "./CatalogAddForm.scss";
 
 declare module "react-dom" {
   function experimental_useFormState<State>(
@@ -30,8 +30,8 @@ const initialState = {
   success: false,
 };
 
-export const AttributeAddForm: FC = () => {
-  const [state, formAction] = useFormState(attributeAddAction, initialState);
+export const CatalogAddForm: FC = () => {
+  const [state, formAction] = useFormState(catalogAddAction, initialState);
   const { t } = useTranslation("index");
 
   useEffect(() => {
@@ -39,13 +39,13 @@ export const AttributeAddForm: FC = () => {
       notify.error({ title: state?.error });
     }
     if (!isNil(state.data) && state.success && !state?.error) {
-      const path = `/ru/admin/attributes/${state.data?.alias}/edit`;
-      redirect(path);
+      // const path = `/ru/admin/catalog/${state.data?.alias}/edit`;
+      // redirect(path);
     }
   }, [state]);
 
   return (
-    <form action={formAction} className="AttributeAddForm-Form">
+    <form action={formAction} className="CatalogAddForm-Form">
       <Input
         errors={state?.errors?.alias}
         isRequired={true}
@@ -60,15 +60,8 @@ export const AttributeAddForm: FC = () => {
         name={EFormFields.Name}
         type="text"
       />
-      <Input
-        errors={state?.errors?.type}
-        isRequired={true}
-        label={t("form.type") ?? "Type"}
-        name={EFormFields.Type}
-        type="text"
-      />
-      <div className="AttributeAddForm-FormFieldGroup"></div>
-      <div className="AttributeAddForm-FormControl">
+      <div className="CatalogAddForm-FormFieldGroup"></div>
+      <div className="CatalogAddForm-FormControl">
         <SubmitButton buttonText={t("common.actions.add")} />
       </div>
     </form>

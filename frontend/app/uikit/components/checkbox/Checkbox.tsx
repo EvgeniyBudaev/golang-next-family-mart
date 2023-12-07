@@ -16,6 +16,7 @@ export type TCheckboxProps = {
   name: string;
   nameGroup: string;
   onChange?: (event: ChangeEvent<HTMLInputElement>, id: string, nameGroup: string) => void;
+  value?: string | readonly string[] | number | undefined;
 };
 
 const CheckboxComponent: FC<TCheckboxProps> = ({
@@ -29,6 +30,8 @@ const CheckboxComponent: FC<TCheckboxProps> = ({
   name,
   nameGroup,
   onChange,
+  value,
+  ...props
 }) => {
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     onChange?.(event, id, nameGroup);
@@ -42,9 +45,10 @@ const CheckboxComponent: FC<TCheckboxProps> = ({
         id={id}
         type="checkbox"
         name={name}
-        value={id}
+        value={value}
         checked={checked}
         onChange={handleChange}
+        {...props}
       />
       {label && (
         <label className="Checkbox-Label" htmlFor={id}>

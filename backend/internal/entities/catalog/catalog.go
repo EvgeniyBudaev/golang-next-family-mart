@@ -22,7 +22,7 @@ type Catalog struct {
 
 type ListCatalogResponse struct {
 	*pagination.Pagination
-	Content []*Catalog
+	Content []*Catalog `json:"content"`
 }
 
 type QueryParamsCatalogList struct {

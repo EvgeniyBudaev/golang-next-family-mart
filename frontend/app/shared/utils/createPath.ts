@@ -1,4 +1,4 @@
-import { ERoutes } from "../enums";
+import { ERoutes } from "@/app/shared/enums";
 
 type TRoutes =
   | ERoutes.AdminAttributeAdd

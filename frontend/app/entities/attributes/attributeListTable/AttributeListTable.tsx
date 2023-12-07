@@ -19,28 +19,17 @@ import type { TTableRowActions } from "@/app/uikit/components/table/types";
 import "./AttributeListTable.scss";
 
 type TProps = {
-  attributeList: TAttributeList;
   fieldsSortState: TTableSortingProps;
   isLoading?: boolean;
-  onAttributeDelete?: (alias: string) => void;
-  onAttributeEdit?: (alias: string) => void;
+  list: TAttributeList;
+  onDelete?: (alias: string) => void;
+  onEdit?: (alias: string) => void;
   onChangePage: ({ selected }: { selected: number }) => void;
   onChangePageSize: (pageSize: number) => void;
 };
 
 const TableComponent = forwardRef<HTMLDivElement, TProps>(
-  (
-    {
-      attributeList,
-      fieldsSortState,
-      isLoading,
-      onAttributeDelete,
-      onAttributeEdit,
-      onChangePage,
-      onChangePageSize,
-    },
-    ref,
-  ) => {
+  ({ fieldsSortState, isLoading, list, onDelete, onEdit, onChangePage, onChangePageSize }, ref) => {
     const { t } = useTranslation("index");
     // const { user } = useUser();
     const columnHelper = createColumnHelper<TAttributeListItem>();
@@ -48,7 +37,7 @@ const TableComponent = forwardRef<HTMLDivElement, TProps>(
     const [hiddenColumns, setHiddenColumns] = useState<string[]>([]);
     const { theme } = useTheme();
 
-    const { content, countPages, limit, page, totalItems } = attributeList;
+    const { content, countPages, limit, page, totalItems } = list;
 
     const settingsProps = useMemo(
       () => ({
@@ -71,11 +60,11 @@ const TableComponent = forwardRef<HTMLDivElement, TProps>(
     );
 
     const handleAttributeEdit = ({ alias }: TTableColumn) => {
-      onAttributeEdit?.(alias);
+      onEdit?.(alias);
     };
 
     const handleAttributeDelete = ({ alias }: TTableColumn) => {
-      onAttributeDelete?.(alias);
+      onDelete?.(alias);
     };
 
     const rowActions: TTableRowActions<TTableColumn> = [
@@ -92,7 +81,6 @@ const TableComponent = forwardRef<HTMLDivElement, TProps>(
         permission: [EPermissions.Admin],
       },
     ];
-    // .filter(({ permission }) => checkPermission(user?.permissions ?? null, permission));
 
     return (
       <div ref={ref}>

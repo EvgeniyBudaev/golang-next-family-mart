@@ -9,10 +9,14 @@
         "table": {
           "columns": {
             "info": {
-              "id": "Добавь сюда перевод!!!",
-              "attributeId": "Добавь сюда перевод!!!",
-              "uuid": "Добавь сюда перевод!!!",
-              "value": "Добавь сюда перевод!!!"
+              "id": "ID",
+              "attributeId": "Attribute ID",
+              "uuid": "UUID",
+              "value": "Value",
+              "name": "Name",
+              "alias": "Alias",
+              "type": "Type",
+              "updatedAt": "Update date"
             }
           }
         }

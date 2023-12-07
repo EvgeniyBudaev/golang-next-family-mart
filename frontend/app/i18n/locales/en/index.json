@@ -60,6 +60,12 @@
           "header": "List of selectables"
         }
       },
+      "catalogList": {
+        "table": {
+          "header": "List of catalogs"
+        },
+        "title": "Добавь сюда перевод!!!"
+      },
       "title": "Admin panel",
       "attributeAdd": {
         "title": "Adding an attribute"
@@ -69,21 +75,12 @@
       },
       "catalogAdd": {
         "title": "Adding a catalog"
+      },
+      "catalogEdit": {
+        "title": "Добавь сюда перевод!!!"
       }
     },
     "admin": {
-      "attributes": {
-        "table": {
-          "columns": {
-            "info": {
-              "name": "Name",
-              "alias": "Alias",
-              "type": "Type",
-              "updatedAt": "Update date"
-            }
-          }
-        }
-      },
       "selectables": {
         "table": {
           "columns": {
@@ -115,10 +112,19 @@
       "enter": "Enter"
     }
   },
+  "table": {
+    "columns": {
+      "name": "Name",
+      "alias": "Alias",
+      "type": "Type",
+      "updatedAt": "Update date"
+    }
+  },
   "form": {
     "alias": "Alias",
     "name": "Name",
     "type": "Type",
+    "image": "Добавь сюда перевод!!!",
     "value": "Value",
     "userName": "Login",
     "firstName": "First name",

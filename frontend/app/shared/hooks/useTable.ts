@@ -7,7 +7,6 @@ import { useCallback, useState } from "react";
 import type { ChangeEvent, KeyboardEvent } from "react";
 
 import { mapTableSortingToDto } from "@/app/api/sorting";
-import { TDeleteModalState } from "@/app/entities/attributes/attributeListTable/types";
 import { TSearchParams } from "@/app/shared/components/search/types";
 import { DEFAULT_PAGE, DEFAULT_PAGE_LIMIT } from "@/app/shared/constants/pagination";
 import { DEBOUNCE_TIMEOUT } from "@/app/shared/constants/transition";
@@ -15,20 +14,15 @@ import { useQueryParams } from "@/app/shared/hooks/useQueryParams";
 import { TTableSortingColumnState } from "@/app/uikit/components/table/types";
 
 type TParams = {
-  onDelete?: (alias: string) => void;
   pageOption?: number;
   limitOption?: number;
 };
 
 type TUseTable = (params: TParams) => {
   defaultSearch: string;
-  deleteModal: { isOpen: boolean };
   isSearchActive: boolean;
   onChangeLimit: (size: number) => void;
   onChangePage: ({ selected }: { selected: number }) => void;
-  onClickDeleteIcon: (alias: string) => void;
-  onCloseDeleteModal: () => void;
-  onDeleteSubmit: () => void;
   onSearch: (event: ChangeEvent<HTMLFormElement>) => void;
   onSearchBlur: () => void;
   onSearchFocus: () => void;
@@ -36,8 +30,7 @@ type TUseTable = (params: TParams) => {
   onSortTableByProperty: (params?: TTableSortingColumnState | TTableSortingColumnState[]) => void;
 };
 
-export const useTable: TUseTable = ({ onDelete, limitOption, pageOption }) => {
-  const [deleteModal, setDeleteModal] = useState<TDeleteModalState>({ isOpen: false });
+export const useTable: TUseTable = ({ limitOption, pageOption }) => {
   const [isSearchActive, setIsSearchActive] = useState(false);
   const { queryParams, setQueryParams } = useQueryParams();
   const search = !isNil(queryParams) ? queryParams.get("search") : null;
@@ -117,27 +110,6 @@ export const useTable: TUseTable = ({ onDelete, limitOption, pageOption }) => {
     debouncedFetcher(event.target.value);
   };
 
-  const handleCloseDeleteModal = () => {
-    setDeleteModal((prev) => ({ ...prev, isOpen: false }));
-  };
-
-  const handleClickDeleteIcon = useCallback(
-    (alias: string) => {
-      setDeleteModal({
-        isOpen: true,
-        alias,
-      });
-    },
-    [setDeleteModal],
-  );
-
-  const handleDeleteSubmit = () => {
-    if (deleteModal.alias) {
-      onDelete?.(deleteModal.alias);
-      handleCloseDeleteModal();
-    }
-  };
-
   const handleSearchBlur = () => {
     setIsSearchActive(false);
   };
@@ -153,13 +125,9 @@ export const useTable: TUseTable = ({ onDelete, limitOption, pageOption }) => {
 
   return {
     defaultSearch,
-    deleteModal,
     isSearchActive,
     onChangeLimit: handleChangeLimit,
     onChangePage: handleChangePage,
-    onClickDeleteIcon: handleClickDeleteIcon,
-    onCloseDeleteModal: handleCloseDeleteModal,
-    onDeleteSubmit: handleDeleteSubmit,
     onSearch: handleSearch,
     onSearchBlur: handleSearchBlur,
     onSearchFocus: handleSearchFocus,

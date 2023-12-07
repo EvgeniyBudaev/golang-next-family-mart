@@ -1,11 +1,11 @@
 import { attributeDelete } from "./domain";
-import { attributeDeleteSchema, attributeDeleteParamsSchema } from "./schemas";
-import { type TAttributeDelete, type TAttributeDeleteParams } from "./types";
+import { attributeDeleteResponseSchema, attributeDeleteParamsSchema } from "./schemas";
+import { type TAttributeDeleteResponse, type TAttributeDeleteParams } from "./types";
 
 export {
   attributeDelete,
-  attributeDeleteSchema,
+  attributeDeleteResponseSchema,
   attributeDeleteParamsSchema,
-  type TAttributeDelete,
+  type TAttributeDeleteResponse,
   type TAttributeDeleteParams,
 };

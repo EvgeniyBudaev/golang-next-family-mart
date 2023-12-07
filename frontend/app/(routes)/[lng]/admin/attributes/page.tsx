@@ -55,7 +55,7 @@ export default async function AttributeListRoute(props: TProps) {
       <>
         {/*https://github.com/vercel/next.js/issues/42991*/}
         {/*<SetDynamicRoute></SetDynamicRoute>*/}
-        <AttributeListPage attributeList={attributeList} />
+        <AttributeListPage list={attributeList} />
       </>
     );
   } catch (error) {

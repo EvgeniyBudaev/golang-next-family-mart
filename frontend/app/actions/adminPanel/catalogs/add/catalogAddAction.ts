@@ -2,9 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { catalogAddFormSchema } from "@/app/actions/adminPanel/catalogs/add/schemas";
-import { TCommonResponseError } from "@/app/shared/types/error";
-import { getResponseError, getErrorsResolver } from "@/app/shared/utils";
 import { catalogAdd } from "@/app/api/adminPanel/catalogs/add/domain";
+import { ERoutes } from "@/app/shared/enums";
+import { TCommonResponseError } from "@/app/shared/types/error";
+import { getResponseError, getErrorsResolver, createPath } from "@/app/shared/utils";
 
 export async function catalogAddAction(prevState: any, formData: FormData) {
   const resolver = catalogAddFormSchema.safeParse(Object.fromEntries(formData.entries()));
@@ -24,7 +25,10 @@ export async function catalogAddAction(prevState: any, formData: FormData) {
     console.log("formattedParams: ", formattedParams);
     const response = await catalogAdd(formattedParams);
     console.log("response: ", response);
-    revalidatePath("/ru/admin/catalogs/add");
+    const path = createPath({
+      route: ERoutes.AdminCatalogAdd,
+    });
+    revalidatePath(path);
     return { error: null, data: response.data, success: true };
   } catch (error) {
     const errorResponse = error as Response;

@@ -22,33 +22,25 @@ export const useGetColumns: TUseGetColumns = (columnHelper) => {
       [
         columnHelper.accessor(ETableColumns.Name, {
           id: ETableColumns.Name,
-          header: () => (
-            <TableHeader>{t("pages.admin.attributes.table.columns.info.name")}</TableHeader>
-          ),
+          header: () => <TableHeader>{t("table.columns.name")}</TableHeader>,
           minSize: 192,
         }),
 
         columnHelper.accessor(ETableColumns.Alias, {
           id: ETableColumns.Alias,
-          header: () => (
-            <TableHeader>{t("pages.admin.attributes.table.columns.info.alias")}</TableHeader>
-          ),
+          header: () => <TableHeader>{t("table.columns.alias")}</TableHeader>,
           minSize: 192,
         }),
 
         columnHelper.accessor(ETableColumns.Type, {
           id: ETableColumns.Type,
-          header: () => (
-            <TableHeader>{t("pages.admin.attributes.table.columns.info.type")}</TableHeader>
-          ),
+          header: () => <TableHeader>{t("table.columns.type")}</TableHeader>,
           minSize: 192,
         }),
 
         columnHelper.accessor(ETableColumns.UpdatedAt, {
           id: ETableColumns.UpdatedAt,
-          header: () => (
-            <TableHeader>{t("pages.admin.attributes.table.columns.info.updatedAt")}</TableHeader>
-          ),
+          header: () => <TableHeader>{t("table.columns.updatedAt")}</TableHeader>,
           cell: (data) => {
             const value = data.getValue();
             return (

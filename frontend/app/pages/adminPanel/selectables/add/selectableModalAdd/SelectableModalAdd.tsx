@@ -1,7 +1,7 @@
 "use client";
 
 import isNil from "lodash/isNil";
-import { useEffect, type FC } from "react";
+import { useEffect, type FC, useState } from "react";
 import { experimental_useFormState as useFormState } from "react-dom";
 import { selectableAddAction } from "@/app/actions/adminPanel/selectables/add/selectableAddAction";
 import { useTranslation } from "@/app/i18n/client";
@@ -44,7 +44,14 @@ export const SelectableModalAdd: FC<TProps> = ({
   onClose,
 }) => {
   const { t } = useTranslation("index");
+  const [isFormSubmitting, setFormSubmitting] = useState(false);
   const [state, formAction] = useFormState(selectableAddAction, initialState);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setFormSubmitting(false);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (state?.error) {
@@ -55,9 +62,16 @@ export const SelectableModalAdd: FC<TProps> = ({
     }
   }, [state]);
 
+  const handleSubmit = (event) => {
+    if (!isFormSubmitting) {
+      setFormSubmitting(true);
+      onClose();
+    }
+  };
+
   return (
     <Modal isOpen={isOpen} onCloseModal={onClose}>
-      <form action={formAction}>
+      <form action={formAction} onSubmit={handleSubmit}>
         <Modal.Header>
           <Typography
             value={t("pages.admin.attributeEdit.addModal")}
@@ -77,7 +91,7 @@ export const SelectableModalAdd: FC<TProps> = ({
           </div>
         </Modal.Content>
         <Modal.Footer>
-          <SubmitButton buttonText={t("common.actions.add")} onClick={onClose} />
+          <SubmitButton buttonText={t("common.actions.add")} />
         </Modal.Footer>
       </form>
     </Modal>

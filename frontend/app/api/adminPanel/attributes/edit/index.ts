@@ -1,11 +1,11 @@
 import { attributeEdit } from "./domain";
-import { attributeEditParamsSchema, attributeEditSchema } from "./schemas";
-import type { TAttributeEdit, TAttributeEditParams } from "./types";
+import { attributeEditParamsSchema, attributeEditResponseSchema } from "./schemas";
+import type { TAttributeEditResponse, TAttributeEditParams } from "./types";
 
 export {
   attributeEdit,
   attributeEditParamsSchema,
-  attributeEditSchema,
-  type TAttributeEdit,
+  attributeEditResponseSchema,
+  type TAttributeEditResponse,
   type TAttributeEditParams,
 };

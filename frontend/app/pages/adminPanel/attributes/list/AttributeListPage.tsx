@@ -18,25 +18,25 @@ import { ETypographyVariant, Typography } from "@/app/uikit/components/typograph
 import "./AttributeListPage.scss";
 
 type TProps = {
-  attributeList: TAttributeList;
+  list: TAttributeList;
 };
 
-export const AttributeListPage: FC<TProps> = ({ attributeList }) => {
+export const AttributeListPage: FC<TProps> = ({ list }) => {
   const router = useRouter();
   const { t } = useTranslation("index");
   const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
-  const [attributeAlias, setAttributeAlias] = useState("");
+  const [alias, setAlias] = useState("");
 
-  const attributeUuid = useMemo(() => {
-    return (attributeList.content ?? []).find((item) => item.alias === attributeAlias)?.uuid ?? "";
-  }, [attributeAlias]);
+  const uuid = useMemo(() => {
+    return (list.content ?? []).find((item) => item.alias === alias)?.uuid ?? "";
+  }, [alias]);
 
-  const handleAttributeDelete = (alias: string) => {
-    setAttributeAlias(alias);
+  const handleDelete = (alias: string) => {
+    setAlias(alias);
     setIsOpenModalDelete(true);
   };
 
-  const handleAttributeEdit = (alias: string) => {
+  const handleEdit = (alias: string) => {
     const path = createPath({
       route: ERoutes.AdminAttributeEdit,
       params: { alias },
@@ -59,8 +59,8 @@ export const AttributeListPage: FC<TProps> = ({ attributeList }) => {
     onSearchKeyDown,
     onSortTableByProperty,
   } = useTable({
-    limitOption: attributeList?.limit ?? DEFAULT_PAGE_LIMIT,
-    pageOption: attributeList?.page ?? DEFAULT_PAGE,
+    limitOption: list?.limit ?? DEFAULT_PAGE_LIMIT,
+    pageOption: list?.page ?? DEFAULT_PAGE,
   });
 
   return (
@@ -89,7 +89,6 @@ export const AttributeListPage: FC<TProps> = ({ attributeList }) => {
         </div>
       </div>
       <AttributeListTable
-        attributeList={attributeList}
         fieldsSortState={{
           columns: [
             ETableColumns.Alias,
@@ -101,13 +100,14 @@ export const AttributeListPage: FC<TProps> = ({ attributeList }) => {
           onChangeSorting: onSortTableByProperty,
         }}
         isLoading={false}
-        onAttributeDelete={handleAttributeDelete}
-        onAttributeEdit={handleAttributeEdit}
+        list={list}
+        onDelete={handleDelete}
+        onEdit={handleEdit}
         onChangePage={onChangePage}
         onChangePageSize={onChangeLimit}
       />
       <AttributeModalDelete
-        attributeUuid={attributeUuid}
+        attributeUuid={uuid}
         isOpen={isOpenModalDelete}
         onClose={handleCloseModal}
       />

@@ -23,9 +23,9 @@ export async function selectableAddAction(prevState: any, formData: FormData) {
       attribute_id: Number(resolver.data.attributeId),
       value: resolver.data.value,
     };
-    console.log("formattedParams: ", formattedParams);
+    console.log("[selectableAddAction formattedParams] ", formattedParams);
     const response = await selectableAdd(formattedParams);
-    console.log("response: ", response);
+    console.log("[selectableAddAction response] ", response);
     const path = `/ru/admin/attributes/${attributeAlias}/edit`;
     revalidatePath(path);
     return { error: null, data: response.data, success: true };
@@ -33,8 +33,8 @@ export async function selectableAddAction(prevState: any, formData: FormData) {
     const errorResponse = error as Response;
     const responseData: TCommonResponseError = await errorResponse.json();
     const { message: formError, fieldErrors, success } = getResponseError(responseData) ?? {};
-    console.log("[formError] ", formError);
-    console.log("[fieldErrors] ", fieldErrors);
+    console.log("[selectableAddAction formError] ", formError);
+    console.log("[selectableAddAction fieldErrors] ", fieldErrors);
     return { error: formError, success: false };
   }
 }

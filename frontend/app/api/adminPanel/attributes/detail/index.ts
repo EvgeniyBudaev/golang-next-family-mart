@@ -1,11 +1,12 @@
 import { getAttributeDetail } from "./domain";
-import { attributeDetailParamsSchema, attributeDetailSchema } from "./schemas";
-import type { TAttributeDetail, TAttributeDetailParams } from "./types";
+import { attributeDetailParamsSchema, attributeDetailResponseSchema } from "./schemas";
+import type { TAttributeDetail, TAttributeDetailParams, TAttributeDetailResponse } from "./types";
 
 export {
   getAttributeDetail,
   attributeDetailParamsSchema,
-  attributeDetailSchema,
+  attributeDetailResponseSchema,
   type TAttributeDetail,
   type TAttributeDetailParams,
+  type TAttributeDetailResponse,
 };

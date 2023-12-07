@@ -1,5 +1,10 @@
 import { redirect } from "next/navigation";
 import { getAttributeDetail } from "@/app/api/adminPanel/attributes/detail/domain";
+import { TAttributeDetail } from "@/app/api/adminPanel/attributes/detail/types";
+import { getSelectableList } from "@/app/api/adminPanel/selectables/list/domain";
+import { TSelectableList } from "@/app/api/adminPanel/selectables/list/types";
+import { TSearchParams } from "@/app/api/common";
+import { mapParamsToDto } from "@/app/api/common/utils";
 import { useTranslation } from "@/app/i18n";
 import { AttributeEditPage } from "@/app/pages/adminPanel/attributes/edit";
 import { EPermissions, ERoutes } from "@/app/shared/enums";
@@ -7,11 +12,6 @@ import { checkPermissionsByServer } from "@/app/shared/utils/permissions";
 import { createPath, getResponseError } from "@/app/shared/utils";
 import { ErrorBoundary } from "@/app/shared/components/errorBoundary";
 import { TCommonResponseError } from "@/app/shared/types/error";
-import { TAttributeDetail } from "@/app/api/adminPanel/attributes/detail/types";
-import { getSelectableList } from "@/app/api/adminPanel/selectables/list/domain";
-import { TSelectableList } from "@/app/api/adminPanel/selectables/list/types";
-import { TSearchParams } from "@/app/api/common";
-import { mapParamsToDto } from "@/app/api/common/utils";
 
 type TLoader = {
   alias: string;
@@ -25,7 +25,7 @@ async function loader(params: TLoader) {
   try {
     const attributeDetailResponse = await getAttributeDetail({ alias });
     const selectableListResponse = await getSelectableList({
-      attributeId: Number(attributeDetailResponse.data.id),
+      attributeId: Number(attributeDetailResponse.data?.id),
       ...paramsToDto,
     });
     const attributeDetail = attributeDetailResponse.data as TAttributeDetail;

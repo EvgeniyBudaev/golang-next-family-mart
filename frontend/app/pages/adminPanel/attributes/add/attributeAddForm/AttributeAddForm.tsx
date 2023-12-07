@@ -7,7 +7,9 @@ import { experimental_useFormState as useFormState } from "react-dom";
 import { attributeAddAction } from "@/app/actions/adminPanel/attributes/add/attributeAddAction";
 import { useTranslation } from "@/app/i18n/client";
 import { EFormFields } from "@/app/pages/adminPanel/attributes/add/enums";
+import { ERoutes } from "@/app/shared/enums";
 import { SubmitButton } from "@/app/shared/form/submitButton";
+import { createPath } from "@/app/shared/utils";
 import { Input } from "@/app/uikit/components/input";
 import { notify } from "@/app/uikit/components/toast/utils";
 import "./AttributeAddForm.scss";
@@ -39,7 +41,10 @@ export const AttributeAddForm: FC = () => {
       notify.error({ title: state?.error });
     }
     if (!isNil(state.data) && state.success && !state?.error) {
-      const path = `/ru/admin/attributes/${state.data?.alias}/edit`;
+      const path = createPath({
+        route: ERoutes.AdminAttributeEdit,
+        params: { alias: state.data?.alias },
+      });
       redirect(path);
     }
   }, [state]);

@@ -1,7 +1,7 @@
 "use client";
 
 import isNil from "lodash/isNil";
-import { useEffect, type FC } from "react";
+import { useEffect, type FC, useState } from "react";
 import { experimental_useFormState as useFormState } from "react-dom";
 import { attributeDeleteAction } from "@/app/actions/adminPanel/attributes/delete/attributeDeleteAction";
 import { useTranslation } from "@/app/i18n/client";
@@ -32,13 +32,14 @@ const initialState = {
 };
 
 type TProps = {
-  attributeUuid: string;
   isOpen: boolean;
   onClose: () => void;
+  uuid: string;
 };
 
-export const AttributeModalDelete: FC<TProps> = ({ attributeUuid, isOpen, onClose }) => {
+export const AttributeModalDelete: FC<TProps> = ({ uuid, isOpen, onClose }) => {
   const { t } = useTranslation("index");
+  const [isFormSubmitting, setFormSubmitting] = useState(false);
   const [state, formAction] = useFormState(attributeDeleteAction, initialState);
 
   useEffect(() => {
@@ -50,6 +51,13 @@ export const AttributeModalDelete: FC<TProps> = ({ attributeUuid, isOpen, onClos
     }
   }, [state]);
 
+  const handleSubmit = () => {
+    if (!isFormSubmitting) {
+      setFormSubmitting(true);
+      onClose();
+    }
+  };
+
   return (
     <Modal isOpen={isOpen} onCloseModal={onClose}>
       <form action={formAction}>
@@ -60,14 +68,14 @@ export const AttributeModalDelete: FC<TProps> = ({ attributeUuid, isOpen, onClos
           />
         </Modal.Header>
         <Modal.Content>
-          <input defaultValue={attributeUuid} name={EFormFields.Uuid} type="hidden" />
+          <input defaultValue={uuid} name={EFormFields.Uuid} type="hidden" />
         </Modal.Content>
         <Modal.Footer>
           <div className="AttributeModalDelete-Footer">
             <Button className="AttributeModalDelete-Cancel" onClick={onClose}>
               {t("common.actions.cancel")}
             </Button>
-            <SubmitButton buttonText={t("common.actions.delete")} onClick={onClose} />
+            <SubmitButton buttonText={t("common.actions.delete")} onClick={handleSubmit} />
           </div>
         </Modal.Footer>
       </form>

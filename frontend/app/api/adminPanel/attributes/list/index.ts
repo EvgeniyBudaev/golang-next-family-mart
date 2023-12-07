@@ -1,11 +1,17 @@
 import { getAttributeList } from "./domain";
-import { attributeListSchema, attributeListParamsSchema } from "./schemas";
-import { type TAttributeList, type TAttributeListParams } from "./types";
+import {
+  attributeListSchema,
+  attributeListParamsSchema,
+  attributeListResponseSchema,
+} from "./schemas";
+import type { TAttributeList, TAttributeListParams, TAttributeListResponse } from "./types";
 
 export {
   getAttributeList,
   attributeListSchema,
   attributeListParamsSchema,
+  attributeListResponseSchema,
   type TAttributeList,
   type TAttributeListParams,
+  type TAttributeListResponse,
 };

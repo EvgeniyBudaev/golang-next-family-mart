@@ -7,7 +7,9 @@ import { experimental_useFormState as useFormState } from "react-dom";
 import { catalogAddAction } from "@/app/actions/adminPanel/catalogs/add/catalogAddAction";
 import { useTranslation } from "@/app/i18n/client";
 import { EFormFields } from "@/app/pages/adminPanel/catalogs/add/enums";
+import { ERoutes } from "@/app/shared/enums";
 import { SubmitButton } from "@/app/shared/form/submitButton";
+import { createPath } from "@/app/shared/utils";
 import { Input } from "@/app/uikit/components/input";
 import { notify } from "@/app/uikit/components/toast/utils";
 import "./CatalogAddForm.scss";
@@ -39,8 +41,11 @@ export const CatalogAddForm: FC = () => {
       notify.error({ title: state?.error });
     }
     if (!isNil(state.data) && state.success && !state?.error) {
-      // const path = `/ru/admin/catalog/${state.data?.alias}/edit`;
-      // redirect(path);
+      const path = createPath({
+        route: ERoutes.AdminCatalogEdit,
+        params: { alias: state.data?.alias },
+      });
+      redirect(path);
     }
   }, [state]);
 

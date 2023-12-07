@@ -34,6 +34,15 @@ export const AdminPage: FC<I18nProps> = ({ i18n }) => {
       <div>
         <ButtonLink
           href={createPath({
+            route: ERoutes.AdminCatalogs,
+          })}
+        >
+          Каталоги
+        </ButtonLink>
+      </div>
+      <div>
+        <ButtonLink
+          href={createPath({
             route: ERoutes.AdminCatalogAdd,
           })}
         >

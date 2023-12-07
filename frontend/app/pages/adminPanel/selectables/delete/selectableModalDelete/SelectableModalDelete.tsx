@@ -1,7 +1,7 @@
 "use client";
 
 import isNil from "lodash/isNil";
-import { useEffect, type FC } from "react";
+import { useEffect, type FC, useState } from "react";
 import { experimental_useFormState as useFormState } from "react-dom";
 import { selectableDeleteAction } from "@/app/actions/adminPanel/selectables/delete/selectableDeleteAction";
 import { useTranslation } from "@/app/i18n/client";
@@ -45,6 +45,7 @@ export const SelectableModalDelete: FC<TProps> = ({
   selectableUuid,
 }) => {
   const { t } = useTranslation("index");
+  const [isFormSubmitting, setFormSubmitting] = useState(false);
   const [state, formAction] = useFormState(selectableDeleteAction, initialState);
 
   useEffect(() => {
@@ -55,6 +56,13 @@ export const SelectableModalDelete: FC<TProps> = ({
       notify.success({ title: "Ok" });
     }
   }, [state]);
+
+  const handleSubmit = () => {
+    if (!isFormSubmitting) {
+      setFormSubmitting(true);
+      onClose();
+    }
+  };
 
   return (
     <Modal isOpen={isOpen} onCloseModal={onClose}>
@@ -74,7 +82,7 @@ export const SelectableModalDelete: FC<TProps> = ({
             <Button className="SelectableModalDelete-Cancel" onClick={onClose}>
               {t("common.actions.cancel")}
             </Button>
-            <SubmitButton buttonText={t("common.actions.delete")} onClick={onClose} />
+            <SubmitButton buttonText={t("common.actions.delete")} onClick={handleSubmit} />
           </div>
         </Modal.Footer>
       </form>

@@ -35,9 +35,15 @@ export const Selectables: FC<TProps> = ({ attribute, selectableList }) => {
     return (selectableList.content ?? []).find((item) => item.uuid === selectableUuid)?.value;
   }, [selectableUuid]);
 
-  const handleCloseModal = () => {
+  const handleCloseModalAdd = () => {
     setIsOpenModalAdd(false);
+  };
+
+  const handleCloseModalDelete = () => {
     setIsOpenModalDelete(false);
+  };
+
+  const handleCloseModalEdit = () => {
     setIsOpenModalEdit(false);
   };
 
@@ -65,7 +71,6 @@ export const Selectables: FC<TProps> = ({ attribute, selectableList }) => {
 
   const { onChangeLimit, onChangePage, onSortTableByProperty } = useTable({
     limitOption: selectableList?.limit ?? DEFAULT_PAGE_LIMIT,
-    onDelete: handleSelectableDelete,
     pageOption: selectableList?.page ?? DEFAULT_PAGE,
   });
 
@@ -103,19 +108,19 @@ export const Selectables: FC<TProps> = ({ attribute, selectableList }) => {
         attributeAlias={attribute.alias}
         attributeId={attribute.id}
         isOpen={isOpenModalAdd}
-        onClose={handleCloseModal}
+        onClose={handleCloseModalAdd}
       />
       <SelectableModalEdit
         defaultValue={selectableValue}
         attributeAlias={attribute.alias}
         isOpen={isOpenModalEdit}
-        onClose={handleCloseModal}
+        onClose={handleCloseModalEdit}
         selectableUuid={selectableUuid}
       />
       <SelectableModalDelete
         attributeAlias={attribute.alias}
         isOpen={isOpenModalDelete}
-        onClose={handleCloseModal}
+        onClose={handleCloseModalDelete}
         selectableUuid={selectableUuid}
       />
     </div>

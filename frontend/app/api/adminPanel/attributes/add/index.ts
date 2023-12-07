@@ -1,11 +1,11 @@
 import { attributeAdd } from "./domain";
-import { attributeAddSchema, attributeAddParamsSchema } from "./schemas";
-import { type TAttributeAdd, type TAttributeAddParams } from "./types";
+import { attributeAddResponseSchema, attributeAddParamsSchema } from "./schemas";
+import { type TAttributeAddResponse, type TAttributeAddParams } from "./types";
 
 export {
   attributeAdd,
-  attributeAddSchema,
+  attributeAddResponseSchema,
   attributeAddParamsSchema,
-  type TAttributeAdd,
+  type TAttributeAddResponse,
   type TAttributeAddParams,
 };

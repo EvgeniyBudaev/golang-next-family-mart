@@ -1,7 +1,7 @@
 "use client";
 
 import isNil from "lodash/isNil";
-import { useEffect, type FC } from "react";
+import { useEffect, type FC, useState } from "react";
 import { experimental_useFormState as useFormState } from "react-dom";
 import { selectableEditAction } from "@/app/actions/adminPanel/selectables/edit/selectableEditAction";
 import { useTranslation } from "@/app/i18n/client";
@@ -46,6 +46,7 @@ export const SelectableModalEdit: FC<TProps> = ({
   selectableUuid,
 }) => {
   const { t } = useTranslation("index");
+  const [isFormSubmitting, setFormSubmitting] = useState(false);
   const [state, formAction] = useFormState(selectableEditAction, initialState);
 
   useEffect(() => {
@@ -56,6 +57,13 @@ export const SelectableModalEdit: FC<TProps> = ({
       notify.success({ title: "Ok" });
     }
   }, [state]);
+
+  const handleSubmit = () => {
+    if (!isFormSubmitting) {
+      setFormSubmitting(true);
+      onClose();
+    }
+  };
 
   return (
     <Modal isOpen={isOpen} onCloseModal={onClose}>
@@ -80,7 +88,7 @@ export const SelectableModalEdit: FC<TProps> = ({
           </div>
         </Modal.Content>
         <Modal.Footer>
-          <SubmitButton buttonText={t("common.actions.save")} onClick={onClose} />
+          <SubmitButton buttonText={t("common.actions.save")} onClick={handleSubmit} />
         </Modal.Footer>
       </form>
     </Modal>

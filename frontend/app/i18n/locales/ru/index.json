@@ -60,6 +60,12 @@
           "header": "Список значений селекта"
         }
       },
+      "catalogList": {
+        "table": {
+          "header": "Список каталогов"
+        },
+        "title": "Добавь сюда перевод!!!"
+      },
       "title": "Панель администратора",
       "attributeAdd": {
         "title": "Добавление атрибута"
@@ -69,21 +75,12 @@
       },
       "catalogAdd": {
         "title": "Добавление каталога"
+      },
+      "catalogEdit": {
+        "title": "Добавь сюда перевод!!!"
       }
     },
     "admin": {
-      "attributes": {
-        "table": {
-          "columns": {
-            "info": {
-              "name": "Наименование",
-              "alias": "Псевдоним",
-              "type": "Тип",
-              "updatedAt": "Дата обновления"
-            }
-          }
-        }
-      },
       "selectables": {
         "table": {
           "columns": {
@@ -115,10 +112,19 @@
       "enter": "Войти"
     }
   },
+  "table": {
+    "columns": {
+      "name": "Наименование",
+      "alias": "Псевдоним",
+      "type": "Тип",
+      "updatedAt": "Дата обновления"
+    }
+  },
   "form": {
     "alias": "Псевдоним",
     "name": "Название",
     "type": "Тип",
+    "image": "Добавь сюда перевод!!!",
     "value": "Значение",
     "userName": "Логин",
     "firstName": "Имя",

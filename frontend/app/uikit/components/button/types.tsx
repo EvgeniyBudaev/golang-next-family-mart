@@ -1,1 +1,1 @@
-export type TButton = "button" | "reset" | "submit";
+export type TButton = "button" | "reset" | "submit" | undefined;

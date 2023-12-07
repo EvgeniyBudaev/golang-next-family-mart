@@ -7,6 +7,7 @@ export const catalogListItemSchema = z.object({
   created_at: z.string(),
   deleted: z.boolean(),
   enabled: z.boolean(),
+  image: z.string(),
   name: z.string(),
   updated_at: z.string(),
   uuid: z.string(),

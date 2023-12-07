@@ -64,7 +64,7 @@
         "table": {
           "header": "List of catalogs"
         },
-        "title": "Добавь сюда перевод!!!"
+        "title": "List of catalogs"
       },
       "title": "Admin panel",
       "attributeAdd": {
@@ -77,7 +77,7 @@
         "title": "Adding a catalog"
       },
       "catalogEdit": {
-        "title": "Добавь сюда перевод!!!"
+        "title": "Editing a catalog"
       }
     },
     "admin": {
@@ -124,7 +124,8 @@
     "alias": "Alias",
     "name": "Name",
     "type": "Type",
-    "image": "Добавь сюда перевод!!!",
+    "enabled": "Enabled",
+    "image": "Image",
     "value": "Value",
     "userName": "Login",
     "firstName": "First name",

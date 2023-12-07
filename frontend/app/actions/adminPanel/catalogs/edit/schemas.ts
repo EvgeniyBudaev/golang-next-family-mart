@@ -5,7 +5,7 @@ import { EMPTY_FIELD_ERROR_MESSAGE } from "@/app/shared/validation";
 export const catalogEditFormSchema = z.object({
   [EFormFields.Alias]: z.string().trim().min(1, EMPTY_FIELD_ERROR_MESSAGE),
   [EFormFields.Enabled]: z.boolean(),
-  [EFormFields.Image]: z.string().trim(),
+  [EFormFields.Image]: z.string().trim().optional(),
   [EFormFields.Name]: z.string().trim().min(1, EMPTY_FIELD_ERROR_MESSAGE),
   [EFormFields.Uuid]: z.string().trim().min(1, EMPTY_FIELD_ERROR_MESSAGE),
 });

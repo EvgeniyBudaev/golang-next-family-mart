@@ -1,7 +1,7 @@
 "use client";
 
 import isNil from "lodash/isNil";
-import { useEffect, type FC } from "react";
+import { useEffect, type FC, useState, type ChangeEvent } from "react";
 import { experimental_useFormState as useFormState } from "react-dom";
 import { catalogEditAction } from "@/app/actions/adminPanel/catalogs/edit/catalogEditAction";
 import { TCatalogDetail } from "@/app/api/adminPanel/catalogs/detail/types";
@@ -11,6 +11,8 @@ import { Input } from "@/app/uikit/components/input";
 import { EFormFields } from "@/app/pages/adminPanel/catalogs/edit/catalogEditForm/enums";
 import { SubmitButton } from "@/app/shared/form/submitButton";
 import "./CatalogEditForm.scss";
+import { TParams } from "@/app/shared/types/form";
+import { Checkbox } from "@/app/uikit/components/checkbox";
 
 declare module "react-dom" {
   function experimental_useFormState<State>(
@@ -37,6 +39,11 @@ type TProps = {
 export const CatalogEditForm: FC<TProps> = ({ catalog }) => {
   const [state, formAction] = useFormState(catalogEditAction, initialState);
   const { t } = useTranslation("index");
+  const idCheckbox = "enabled";
+  const [filter, setFilter] = useState<TParams>({
+    enabled: catalog?.enabled ? [idCheckbox] : [],
+  });
+  const enabled: boolean = filter[EFormFields.Enabled].includes(idCheckbox);
 
   useEffect(() => {
     if (state?.error) {
@@ -46,6 +53,28 @@ export const CatalogEditForm: FC<TProps> = ({ catalog }) => {
       notify.success({ title: "Ok" });
     }
   }, [state]);
+
+  const handleChangeEnabled = (
+    event: ChangeEvent<HTMLInputElement>,
+    id: string,
+    nameGroup: string,
+  ) => {
+    const {
+      target: { checked, value },
+    } = event;
+
+    if (checked) {
+      setFilter({
+        ...filter,
+        [nameGroup]: [...filter[nameGroup], value],
+      });
+    } else {
+      setFilter({
+        ...filter,
+        [nameGroup]: [...filter[nameGroup].filter((x: string) => x !== value)],
+      });
+    }
+  };
 
   return (
     <form action={formAction} className="CatalogEditForm-Form">
@@ -58,7 +87,16 @@ export const CatalogEditForm: FC<TProps> = ({ catalog }) => {
         name={EFormFields.Alias}
         type="text"
       />
-      enable check
+      <div className="CatalogEditForm-FormFieldGroup">
+        <Checkbox
+          checked={filter && filter[EFormFields.Enabled].includes(idCheckbox)}
+          id={idCheckbox}
+          label={t("form.enabled") ?? "Enabled"}
+          name={EFormFields.Enabled}
+          nameGroup="enabled"
+          onChange={(event, id, nameGroup) => handleChangeEnabled(event, id, nameGroup)}
+        />
+      </div>
       <Input
         defaultValue={catalog.name}
         errors={state?.errors?.name}
@@ -69,9 +107,8 @@ export const CatalogEditForm: FC<TProps> = ({ catalog }) => {
       />
       <Input
         defaultValue={catalog.image}
-        errors={state?.errors?.type}
-        isReadOnly={true}
-        isRequired={true}
+        errors={state?.errors?.image}
+        isRequired={false}
         label={t("form.image") ?? "Image"}
         name={EFormFields.Image}
         type="text"

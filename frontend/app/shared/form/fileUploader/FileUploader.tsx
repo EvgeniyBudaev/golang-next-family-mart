@@ -13,7 +13,7 @@ import { type TDropzoneProps } from "@/app/uikit/components/dropzone/Dropzone";
 import { ETypographyVariant, Typography } from "@/app/uikit/components/typography";
 import "./FileUploader.scss";
 
-type TProps = {
+export type TFileUploaderProps = {
   files?: TFile[];
   Input: ReactElement;
   isLoading?: boolean;
@@ -23,7 +23,7 @@ type TProps = {
   onDeleteFile: (deletedFile: TFile, files: TFile[]) => void;
 } & TDropzoneProps;
 
-export const FileUploader: FC<TProps> = ({
+export const FileUploader: FC<TFileUploaderProps> = ({
   accept,
   files,
   Input,

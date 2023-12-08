@@ -33,6 +33,10 @@
     "modal": {
       "deleteQuestion": "Are you sure you want to delete?"
     },
+    "previews": {
+      "addDefaultImage": "Add default image",
+      "deleteImage": "Delete image"
+    },
     "validation": {
       "email": "Invalid email",
       "cyrillicEmail": "Only Latin characters",
@@ -144,5 +148,10 @@
     "adminPanel": "Admin panel",
     "exit": "Exit",
     "enter": "Enter"
+  },
+  "fileUploader": {
+    "title": "Drag and drop your files or click to upload",
+    "subTitle": "Supported file types: {types}",
+    "action": "Add"
   }
 }

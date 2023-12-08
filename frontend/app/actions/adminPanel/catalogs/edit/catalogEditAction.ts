@@ -34,7 +34,7 @@ export async function catalogEditAction(prevState: any, formData: FormData) {
     // });
     // revalidatePath(path);
     // return { error: null, data: response.data, success: true };
-    return { error: null, data:null, success: false };
+    return { error: null, data: null, success: false };
   } catch (error) {
     const errorResponse = error as Response;
     const responseData: TCommonResponseError = await errorResponse.json();

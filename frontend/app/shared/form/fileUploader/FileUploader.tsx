@@ -3,13 +3,12 @@
 import clsx from "clsx";
 import { useCallback, useState } from "react";
 import type { FC, ReactElement } from "react";
-import Dropzone from "react-dropzone";
 import { useTranslation } from "@/app/i18n/client";
 import { Previews } from "@/app/shared/form/fileUploader/previews";
 import { filterDuplicatedFiles, getTypes } from "@/app/shared/form/fileUploader/utils";
 import { TFile } from "@/app/shared/types/file";
 import { Button } from "@/app/uikit/components/button";
-import { type TDropzoneProps } from "@/app/uikit/components/dropzone/Dropzone";
+import { Dropzone, type TDropzoneProps } from "@/app/uikit/components/dropzone/Dropzone";
 import { ETypographyVariant, Typography } from "@/app/uikit/components/typography";
 import "./FileUploader.scss";
 

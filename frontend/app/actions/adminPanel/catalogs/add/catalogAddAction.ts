@@ -23,13 +23,14 @@ export async function catalogAddAction(prevState: any, formData: FormData) {
       ...resolver.data,
     };
     console.log("formattedParams: ", formattedParams);
-    const response = await catalogAdd(formattedParams);
-    console.log("response: ", response);
-    const path = createPath({
-      route: ERoutes.AdminCatalogAdd,
-    });
-    revalidatePath(path);
-    return { error: null, data: response.data, success: true };
+    // const response = await catalogAdd(formattedParams);
+    // console.log("response: ", response);
+    // const path = createPath({
+    //   route: ERoutes.AdminCatalogAdd,
+    // });
+    // revalidatePath(path);
+    // return { error: null, data: response.data, success: true };
+    return { error: null, data: resolver.data, success: true };
   } catch (error) {
     const errorResponse = error as Response;
     const responseData: TCommonResponseError = await errorResponse.json();

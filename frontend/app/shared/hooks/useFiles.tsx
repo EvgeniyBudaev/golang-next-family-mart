@@ -36,14 +36,14 @@ export const useFiles: TUseImages = ({ fieldName, files, setValue }) => {
 
   const onDeleteFile = useCallback(
     (deletedFile: TFile) => {
-      // if (files) {
-      //     setValue(
-      //         fieldName,
-      //         files.filter(
-      //             (image: TFile) => image.name !== deletedFile.name && image.size !== deletedFile.size,
-      //         ),
-      //     );
-      // }
+      if (files) {
+        setValue(
+          fieldName,
+          files.filter(
+            (image: TFile) => image.name !== deletedFile.name && image.size !== deletedFile.size,
+          ),
+        );
+      }
     },
     [setValue, files],
   );

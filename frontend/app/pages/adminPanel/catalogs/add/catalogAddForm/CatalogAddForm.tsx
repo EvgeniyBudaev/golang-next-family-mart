@@ -119,7 +119,7 @@ export const CatalogAddForm: FC = () => {
             "image/png": [".png"],
           }}
           files={files ?? []}
-          Input={<input hidden name={EFormFields.Image} type="file" />}
+          Input={<input hidden name={EFormFields.Files} type="file" />}
           // isLoading={fetcherFilesLoading}
           maxFiles={1}
           maxSize={1024 * 1024}

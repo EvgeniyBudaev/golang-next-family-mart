@@ -65,13 +65,13 @@ export const CatalogAddForm: FC = () => {
     if (state?.error) {
       notify.error({ title: state?.error });
     }
-    if (!isNil(state.data) && state.success && !state?.error) {
-      const path = createPath({
-        route: ERoutes.AdminCatalogEdit,
-        params: { alias: state.data?.alias },
-      });
-      redirect(path);
-    }
+    // if (!isNil(state.data) && state.success && !state?.error) {
+    //   const path = createPath({
+    //     route: ERoutes.AdminCatalogEdit,
+    //     params: { alias: state.data?.alias },
+    //   });
+    //   redirect(path);
+    // }
   }, [state]);
 
   const handleAddFileToDefaultImage = (file: TFile) => {
@@ -140,11 +140,11 @@ export const CatalogAddForm: FC = () => {
         <div className="Previews-Thumb-Inner CatalogAddForm-DefaultImage">
           {!isNil(defaultImage) && !isNil(defaultImage.preview) && (
             <img
-              alt={defaultImage.name}
-              className="Previews-Thumb-Image"
-              src={defaultImage.preview}
-              onLoad={() => handleLoadImage(defaultImage)}
-            />
+            alt={defaultImage.name}
+          className="Previews-Thumb-Image"
+                  src={defaultImage.preview}
+                  onLoad={() => handleLoadImage(defaultImage)}
+              />
           )}
         </div>
         <div className="Previews-File">

@@ -3,7 +3,7 @@
 import isNil from "lodash/isNil";
 import { redirect } from "next/navigation";
 import { useEffect, type FC, useState } from "react";
-import { experimental_useFormState as useFormState } from "react-dom";
+import { useFormState } from "react-dom";
 import { catalogAddAction } from "@/app/actions/adminPanel/catalogs/add/catalogAddAction";
 import { useTranslation } from "@/app/i18n/client";
 import { EFormFields } from "@/app/pages/adminPanel/catalogs/add/enums";
@@ -18,19 +18,6 @@ import { Input } from "@/app/uikit/components/input";
 import { notify } from "@/app/uikit/components/toast/utils";
 import { ETypographyVariant, Typography } from "@/app/uikit/components/typography";
 import "./CatalogAddForm.scss";
-
-declare module "react-dom" {
-  function experimental_useFormState<State>(
-    action: (state: State) => Promise<State>,
-    initialState: State,
-    permalink?: string,
-  ): [state: State, dispatch: () => void];
-  function experimental_useFormState<State, Payload>(
-    action: (state: State, payload: Payload) => Promise<State>,
-    initialState: State,
-    permalink?: string,
-  ): [state: State, dispatch: (payload: Payload) => void];
-}
 
 const initialState = {
   error: null,
@@ -140,11 +127,11 @@ export const CatalogAddForm: FC = () => {
         <div className="Previews-Thumb-Inner CatalogAddForm-DefaultImage">
           {!isNil(defaultImage) && !isNil(defaultImage.preview) && (
             <img
-            alt={defaultImage.name}
-          className="Previews-Thumb-Image"
-                  src={defaultImage.preview}
-                  onLoad={() => handleLoadImage(defaultImage)}
-              />
+              alt={defaultImage.name}
+              className="Previews-Thumb-Image"
+              src={defaultImage.preview}
+              onLoad={() => handleLoadImage(defaultImage)}
+            />
           )}
         </div>
         <div className="Previews-File">

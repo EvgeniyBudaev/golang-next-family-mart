@@ -2,33 +2,16 @@
 
 import isNil from "lodash/isNil";
 import { useEffect, type FC, useState } from "react";
-import { experimental_useFormState as useFormState } from "react-dom";
+import { useFormState } from "react-dom";
 import { selectableEditAction } from "@/app/actions/adminPanel/selectables/edit/selectableEditAction";
 import { useTranslation } from "@/app/i18n/client";
+import type { TInitialState } from "@/app/pages/adminPanel/selectables/edit/types";
 import { EFormFields } from "@/app/pages/adminPanel/selectables/edit/enums";
 import { SubmitButton } from "@/app/shared/form/submitButton";
 import { Input } from "@/app/uikit/components/input";
 import { Modal } from "@/app/uikit/components/modal";
 import { notify } from "@/app/uikit/components/toast/utils";
 import { ETypographyVariant, Typography } from "@/app/uikit/components/typography";
-
-declare module "react-dom" {
-  function experimental_useFormState<State>(
-    action: (state: State) => Promise<State>,
-    initialState: State,
-    permalink?: string,
-  ): [state: State, dispatch: () => void];
-  function experimental_useFormState<State, Payload>(
-    action: (state: State, payload: Payload) => Promise<State>,
-    initialState: State,
-    permalink?: string,
-  ): [state: State, dispatch: (payload: Payload) => void];
-}
-
-const initialState = {
-  error: null,
-  success: false,
-};
 
 type TProps = {
   attributeAlias: string;
@@ -45,6 +28,12 @@ export const SelectableModalEdit: FC<TProps> = ({
   onClose,
   selectableUuid,
 }) => {
+  const initialState: TInitialState = {
+    data: undefined,
+    error: undefined,
+    errors: undefined,
+    success: false,
+  };
   const { t } = useTranslation("index");
   const [isFormSubmitting, setFormSubmitting] = useState(false);
   const [state, formAction] = useFormState(selectableEditAction, initialState);

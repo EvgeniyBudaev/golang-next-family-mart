@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import type { FC } from "react";
 import { type TAttributeList } from "@/app/api/adminPanel/attributes/list";
 import { AttributeListTable } from "@/app/entities/attributes/attributeListTable";
@@ -24,15 +24,12 @@ type TProps = {
 export const AttributeListPage: FC<TProps> = ({ list }) => {
   const router = useRouter();
   const { t } = useTranslation("index");
+  const [attributeUuid, setAttributeUuid] = useState("");
   const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
-  const [alias, setAlias] = useState("");
-
-  const uuid = useMemo(() => {
-    return (list.content ?? []).find((item) => item.alias === alias)?.uuid ?? "";
-  }, [alias]);
 
   const handleDelete = (alias: string) => {
-    setAlias(alias);
+    const uuid = (list.content ?? []).find((item) => item.alias === alias)?.uuid ?? "";
+    setAttributeUuid(uuid);
     setIsOpenModalDelete(true);
   };
 
@@ -107,9 +104,9 @@ export const AttributeListPage: FC<TProps> = ({ list }) => {
         onChangePageSize={onChangeLimit}
       />
       <AttributeModalDelete
-        attributeUuid={uuid}
         isOpen={isOpenModalDelete}
         onClose={handleCloseModal}
+        uuid={attributeUuid}
       />
     </section>
   );

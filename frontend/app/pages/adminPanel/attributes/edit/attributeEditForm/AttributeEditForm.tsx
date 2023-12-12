@@ -2,39 +2,28 @@
 
 import isNil from "lodash/isNil";
 import { useEffect, type FC } from "react";
-import { experimental_useFormState as useFormState } from "react-dom";
+import { useFormState } from "react-dom";
 import { attributeEditAction } from "@/app/actions/adminPanel/attributes/edit/attributeEditAction";
 import { TAttributeDetail } from "@/app/api/adminPanel/attributes/detail/types";
 import { useTranslation } from "@/app/i18n/client";
-import { notify } from "@/app/uikit/components/toast/utils";
-import { Input } from "@/app/uikit/components/input";
-import { EFormFields } from "@/app/pages/adminPanel/attributes/edit/attributeEditForm/enums";
+import { EFormFields } from "@/app/pages/adminPanel/attributes/edit/enums";
+import type { TInitialState } from "@/app/pages/adminPanel/attributes/edit/types";
 import { SubmitButton } from "@/app/shared/form/submitButton";
+import { Input } from "@/app/uikit/components/input";
+import { notify } from "@/app/uikit/components/toast/utils";
 import "./AttributeEditForm.scss";
-
-declare module "react-dom" {
-  function experimental_useFormState<State>(
-    action: (state: State) => Promise<State>,
-    initialState: State,
-    permalink?: string,
-  ): [state: State, dispatch: () => void];
-  function experimental_useFormState<State, Payload>(
-    action: (state: State, payload: Payload) => Promise<State>,
-    initialState: State,
-    permalink?: string,
-  ): [state: State, dispatch: (payload: Payload) => void];
-}
-
-const initialState = {
-  error: "",
-  success: false,
-};
 
 type TProps = {
   attribute: TAttributeDetail;
 };
 
 export const AttributeEditForm: FC<TProps> = ({ attribute }) => {
+  const initialState: TInitialState = {
+    data: undefined,
+    error: undefined,
+    errors: undefined,
+    success: false,
+  };
   const [state, formAction] = useFormState(attributeEditAction, initialState);
   const { t } = useTranslation("index");
 
@@ -76,7 +65,6 @@ export const AttributeEditForm: FC<TProps> = ({ attribute }) => {
         type="text"
       />
       <input defaultValue={attribute.uuid} name={EFormFields.Uuid} type="hidden" />
-      <div className="AttributeEditForm-FormFieldGroup"></div>
       <div className="AttributeEditForm-FormControl">
         <SubmitButton buttonText={t("common.actions.edit")} />
       </div>

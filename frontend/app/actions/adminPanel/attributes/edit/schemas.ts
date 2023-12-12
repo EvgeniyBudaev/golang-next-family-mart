@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { EFormFields } from "@/app/pages/adminPanel/attributes/edit/attributeEditForm/enums";
+import { EFormFields } from "@/app/pages/adminPanel/attributes/edit/enums";
 import { EMPTY_FIELD_ERROR_MESSAGE } from "@/app/shared/validation";
 
 export const attributeEditFormSchema = z.object({

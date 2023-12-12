@@ -12,10 +12,7 @@ export async function attributeAddAction(prevState: any, formData: FormData) {
 
   if (!resolver.success) {
     const errors = getErrorsResolver(resolver);
-    return {
-      type: "error" as const,
-      errors: errors,
-    };
+    return { data: undefined, error: undefined, errors: errors, success: false };
   }
 
   try {
@@ -29,13 +26,13 @@ export async function attributeAddAction(prevState: any, formData: FormData) {
       route: ERoutes.AdminAttributeAdd,
     });
     revalidatePath(path);
-    return { error: null, data: response.data, success: true };
+    return { data: response.data, error: undefined, errors: undefined, success: true };
   } catch (error) {
     const errorResponse = error as Response;
     const responseData: TCommonResponseError = await errorResponse.json();
-    const { message: formError, fieldErrors, success } = getResponseError(responseData) ?? {};
+    const { message: formError, fieldErrors } = getResponseError(responseData) ?? {};
     console.log("[attributeAddAction formError] ", formError);
     console.log("[attributeAddAction fieldErrors] ", fieldErrors);
-    return { error: formError, success: false };
+    return { data: undefined, error: formError, errors: fieldErrors, success: false };
   }
 }

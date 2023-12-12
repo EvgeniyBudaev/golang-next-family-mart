@@ -2,10 +2,11 @@
 
 import isNil from "lodash/isNil";
 import { redirect } from "next/navigation";
-import { useEffect, type FC } from "react";
-import { experimental_useFormState as useFormState } from "react-dom";
+import { useEffect, type FC, useRef } from "react";
+import { useFormState } from "react-dom";
 import { attributeAddAction } from "@/app/actions/adminPanel/attributes/add/attributeAddAction";
 import { useTranslation } from "@/app/i18n/client";
+import type { TInitialState } from "@/app/pages/adminPanel/attributes/add/types";
 import { EFormFields } from "@/app/pages/adminPanel/attributes/add/enums";
 import { ERoutes } from "@/app/shared/enums";
 import { SubmitButton } from "@/app/shared/form/submitButton";
@@ -14,43 +15,33 @@ import { Input } from "@/app/uikit/components/input";
 import { notify } from "@/app/uikit/components/toast/utils";
 import "./AttributeAddForm.scss";
 
-declare module "react-dom" {
-  function experimental_useFormState<State>(
-    action: (state: State) => Promise<State>,
-    initialState: State,
-    permalink?: string,
-  ): [state: State, dispatch: () => void];
-  function experimental_useFormState<State, Payload>(
-    action: (state: State, payload: Payload) => Promise<State>,
-    initialState: State,
-    permalink?: string,
-  ): [state: State, dispatch: (payload: Payload) => void];
-}
-
-const initialState = {
-  error: null,
-  success: false,
-};
-
 export const AttributeAddForm: FC = () => {
+  const initialState: TInitialState = {
+    data: undefined,
+    error: undefined,
+    errors: undefined,
+    success: false,
+  };
   const [state, formAction] = useFormState(attributeAddAction, initialState);
+  console.log("state: ", state);
+  const formRef = useRef<HTMLFormElement | null>(null);
   const { t } = useTranslation("index");
 
   useEffect(() => {
     if (state?.error) {
       notify.error({ title: state?.error });
     }
-    if (!isNil(state.data) && state.success && !state?.error) {
+    if (!isNil(state.data) && state.success && !state?.error && !state?.errors) {
       const path = createPath({
         route: ERoutes.AdminAttributeEdit,
-        params: { alias: state.data?.alias },
+        params: { alias: state.data.alias },
       });
       redirect(path);
     }
   }, [state]);
 
   return (
-    <form action={formAction} className="AttributeAddForm-Form">
+    <form action={formAction} className="AttributeAddForm-Form" ref={formRef}>
       <Input
         errors={state?.errors?.alias}
         isRequired={true}

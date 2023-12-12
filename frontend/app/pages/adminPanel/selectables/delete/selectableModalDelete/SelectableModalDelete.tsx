@@ -2,34 +2,17 @@
 
 import isNil from "lodash/isNil";
 import { useEffect, type FC, useState } from "react";
-import { experimental_useFormState as useFormState } from "react-dom";
+import { useFormState } from "react-dom";
 import { selectableDeleteAction } from "@/app/actions/adminPanel/selectables/delete/selectableDeleteAction";
 import { useTranslation } from "@/app/i18n/client";
 import { EFormFields } from "@/app/pages/adminPanel/selectables/delete/enums";
+import type { TInitialState } from "@/app/pages/adminPanel/selectables/delete/types";
 import { SubmitButton } from "@/app/shared/form/submitButton";
 import { Button } from "@/app/uikit/components/button";
 import { Modal } from "@/app/uikit/components/modal";
 import { notify } from "@/app/uikit/components/toast/utils";
 import { ETypographyVariant, Typography } from "@/app/uikit/components/typography";
 import "./SelectableModalDelete.scss";
-
-declare module "react-dom" {
-  function experimental_useFormState<State>(
-    action: (state: State) => Promise<State>,
-    initialState: State,
-    permalink?: string,
-  ): [state: State, dispatch: () => void];
-  function experimental_useFormState<State, Payload>(
-    action: (state: State, payload: Payload) => Promise<State>,
-    initialState: State,
-    permalink?: string,
-  ): [state: State, dispatch: (payload: Payload) => void];
-}
-
-const initialState = {
-  error: null,
-  success: false,
-};
 
 type TProps = {
   attributeAlias: string;
@@ -44,6 +27,12 @@ export const SelectableModalDelete: FC<TProps> = ({
   onClose,
   selectableUuid,
 }) => {
+  const initialState: TInitialState = {
+    data: undefined,
+    error: undefined,
+    errors: undefined,
+    success: false,
+  };
   const { t } = useTranslation("index");
   const [isFormSubmitting, setFormSubmitting] = useState(false);
   const [state, formAction] = useFormState(selectableDeleteAction, initialState);

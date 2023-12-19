@@ -8,7 +8,6 @@ import { TCommonResponseError } from "@/app/shared/types/error";
 import { getResponseError, getErrorsResolver, createPath } from "@/app/shared/utils";
 
 export async function attributeDeleteAction(prevState: any, formData: FormData) {
-  console.log("ACTION: ", Object.fromEntries(formData.entries()));
   const resolver = attributeDeleteFormSchema.safeParse(Object.fromEntries(formData.entries()));
 
   if (!resolver.success) {

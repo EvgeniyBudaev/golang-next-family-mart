@@ -50,6 +50,18 @@ func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Sto
 	useCaseGetSelectableList := selectable.NewGetSelectableListUseCase(selectableDataStore)
 	useCaseGetSelectableByUuid := selectable.NewGetSelectableByUuidUseCase(selectableDataStore)
 
+	// private
+	useCaseCreateAttribute := attribute.NewCreateAttributeUseCase(attributeDataStore)
+	useCaseDeleteAttribute := attribute.NewDeleteAttributeUseCase(attributeDataStore)
+	useCaseUpdateAttribute := attribute.NewUpdateAttributeUseCase(attributeDataStore)
+	useCaseCreateCatalog := catalog.NewCreateCatalogUseCase(catalogDataStore)
+	useCaseDeleteCatalog := catalog.NewDeleteCatalogUseCase(catalogDataStore)
+	useCaseUpdateCatalog := catalog.NewUpdateCatalogUseCase(catalogDataStore)
+	useCaseCreateProduct := product.NewCreateProductUseCase(productDataStore)
+	useCaseCreateSelectable := selectable.NewCreateSelectableUseCase(selectableDataStore)
+	useCaseDeleteSelectable := selectable.NewDeleteSelectableUseCase(selectableDataStore)
+	useCaseUpdateSelectable := selectable.NewUpdateSelectableUseCase(selectableDataStore)
+
 	// handlers
 	grp.Post("/user/register", registerHandler.PostRegisterHandler(useCaseRegister))
 	grp.Get("/attribute/list", attributeHandler.GetAttributeListHandler(useCaseGetAttributeList))
@@ -63,30 +75,8 @@ func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Sto
 	grp.Get("/product/uuid/:uuid", productHandler.GetProductByUuidHandler(useCaseGetProductByUuid))
 	grp.Get("/attribute/:id/selectable/list", selectableHandler.GetSelectableListHandler(useCaseGetSelectableList))
 	grp.Get("/selectable/uuid/:uuid", selectableHandler.GetSelectableByUuidHandler(useCaseGetSelectableByUuid))
-}
 
-func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.Store) {
-	grp := app.Group(prefix)
-
-	// store
-	attributeDataStore := attributeStore.NewDBAttributeStore(store)
-	catalogDataStore := catalogStore.NewDBCatalogStore(store)
-	productDataStore := productStore.NewDBProductStore(store)
-	selectableDataStore := selectableStore.NewDBSelectableStore(store)
-
-	// useCase
-	useCaseCreateAttribute := attribute.NewCreateAttributeUseCase(attributeDataStore)
-	useCaseDeleteAttribute := attribute.NewDeleteAttributeUseCase(attributeDataStore)
-	useCaseUpdateAttribute := attribute.NewUpdateAttributeUseCase(attributeDataStore)
-	useCaseCreateCatalog := catalog.NewCreateCatalogUseCase(catalogDataStore)
-	useCaseDeleteCatalog := catalog.NewDeleteCatalogUseCase(catalogDataStore)
-	useCaseUpdateCatalog := catalog.NewUpdateCatalogUseCase(catalogDataStore)
-	useCaseCreateProduct := product.NewCreateProductUseCase(productDataStore)
-	useCaseCreateSelectable := selectable.NewCreateSelectableUseCase(selectableDataStore)
-	useCaseDeleteSelectable := selectable.NewDeleteSelectableUseCase(selectableDataStore)
-	useCaseUpdateSelectable := selectable.NewUpdateSelectableUseCase(selectableDataStore)
-
-	// handlers
+	// private
 	grp.Post("/attribute/create", middlewares.NewRequiresRealmRole("admin"),
 		attributeHandler.CreateAttributeHandler(useCaseCreateAttribute))
 	grp.Delete("/attribute/delete", middlewares.NewRequiresRealmRole("admin"),
@@ -107,4 +97,48 @@ func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.
 		selectableHandler.DeleteSelectableHandler(useCaseDeleteSelectable))
 	grp.Put("/selectable/update", middlewares.NewRequiresRealmRole("admin"),
 		selectableHandler.UpdateSelectableHandler(useCaseUpdateSelectable))
+}
+
+func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.Store) {
+	//grp := app.Group(prefix)
+
+	// store
+	//attributeDataStore := attributeStore.NewDBAttributeStore(store)
+	//catalogDataStore := catalogStore.NewDBCatalogStore(store)
+	//productDataStore := productStore.NewDBProductStore(store)
+	//selectableDataStore := selectableStore.NewDBSelectableStore(store)
+
+	// useCase
+	//useCaseCreateAttribute := attribute.NewCreateAttributeUseCase(attributeDataStore)
+	//useCaseDeleteAttribute := attribute.NewDeleteAttributeUseCase(attributeDataStore)
+	//useCaseUpdateAttribute := attribute.NewUpdateAttributeUseCase(attributeDataStore)
+	//useCaseCreateCatalog := catalog.NewCreateCatalogUseCase(catalogDataStore)
+	//useCaseDeleteCatalog := catalog.NewDeleteCatalogUseCase(catalogDataStore)
+	//useCaseUpdateCatalog := catalog.NewUpdateCatalogUseCase(catalogDataStore)
+	//useCaseCreateProduct := product.NewCreateProductUseCase(productDataStore)
+	//useCaseCreateSelectable := selectable.NewCreateSelectableUseCase(selectableDataStore)
+	//useCaseDeleteSelectable := selectable.NewDeleteSelectableUseCase(selectableDataStore)
+	//useCaseUpdateSelectable := selectable.NewUpdateSelectableUseCase(selectableDataStore)
+
+	// handlers
+	//grp.Post("/attribute/create", middlewares.NewRequiresRealmRole("admin"),
+	//	attributeHandler.CreateAttributeHandler(useCaseCreateAttribute))
+	//grp.Delete("/attribute/delete", middlewares.NewRequiresRealmRole("admin"),
+	//	attributeHandler.DeleteAttributeHandler(useCaseDeleteAttribute))
+	//grp.Put("/attribute/update", middlewares.NewRequiresRealmRole("admin"),
+	//	attributeHandler.UpdateAttributeHandler(useCaseUpdateAttribute))
+	//grp.Post("/catalog/create", middlewares.NewRequiresRealmRole("admin"),
+	//	catalogHandler.CreateCatalogHandler(useCaseCreateCatalog))
+	//grp.Delete("/catalog/delete/:uuid", middlewares.NewRequiresRealmRole("admin"),
+	//	catalogHandler.DeleteCatalogHandler(useCaseDeleteCatalog))
+	//grp.Put("/catalog/update", middlewares.NewRequiresRealmRole("admin"),
+	//	catalogHandler.UpdateCatalogHandler(useCaseUpdateCatalog))
+	//grp.Post("/product/create", middlewares.NewRequiresRealmRole("admin"),
+	//	productHandler.CreateProductHandler(useCaseCreateProduct))
+	//grp.Post("/selectable/create", middlewares.NewRequiresRealmRole("admin"),
+	//	selectableHandler.CreateSelectableHandler(useCaseCreateSelectable))
+	//grp.Delete("/selectable/delete", middlewares.NewRequiresRealmRole("admin"),
+	//	selectableHandler.DeleteSelectableHandler(useCaseDeleteSelectable))
+	//grp.Put("/selectable/update", middlewares.NewRequiresRealmRole("admin"),
+	//	selectableHandler.UpdateSelectableHandler(useCaseUpdateSelectable))
 }

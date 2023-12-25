@@ -9,15 +9,16 @@ import (
 )
 
 type Catalog struct {
-	Id        int       `json:"id"`
-	Alias     string    `json:"alias"`
-	CreatedAt time.Time `json:"created_at"`
-	Deleted   bool      `json:"deleted"`
-	Enabled   bool      `json:"enabled"`
-	Image     string    `json:"image"`
-	Name      string    `json:"name"`
-	UpdatedAt time.Time `json:"updated_at"`
-	Uuid      uuid.UUID `json:"uuid"`
+	Id           int       `json:"id"`
+	Alias        string    `json:"alias"`
+	CreatedAt    time.Time `json:"created_at"`
+	DefaultImage string    `json:"default_image"`
+	Deleted      bool      `json:"deleted"`
+	Enabled      bool      `json:"enabled"`
+	Image        string    `json:"image"`
+	Name         string    `json:"name"`
+	UpdatedAt    time.Time `json:"updated_at"`
+	Uuid         uuid.UUID `json:"uuid"`
 }
 
 type ListCatalogResponse struct {

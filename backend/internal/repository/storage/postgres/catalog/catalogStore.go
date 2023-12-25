@@ -37,8 +37,8 @@ func (pg *PGCatalogStore) Create(cf *fiber.Ctx, c *catalog.Catalog) (*catalog.Ca
 	}
 	defer tx.Rollback(ctx)
 	sqlSelect := sqlBuilder.Insert("catalogs").
-		Columns("alias", "created_at", "deleted", "enabled", "image", "name", "updated_at", "uuid").
-		Values(c.Alias, c.CreatedAt, c.Deleted, c.Enabled, c.Image, c.Name, c.UpdatedAt, c.Uuid).
+		Columns("alias", "created_at", "default_image", "deleted", "enabled", "image", "name", "updated_at", "uuid").
+		Values(c.Alias, c.CreatedAt, c.DefaultImage, c.Deleted, c.Enabled, c.Image, c.Name, c.UpdatedAt, c.Uuid).
 		Suffix("RETURNING id")
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {

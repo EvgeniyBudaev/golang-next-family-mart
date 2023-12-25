@@ -2,6 +2,7 @@ CREATE TABLE catalogs (
                           id bigserial not null primary key,
                           alias varchar not null unique,
                           created_at timestamp not null,
+                          default_image varchar,
                           deleted bool not null,
                           enabled bool not null,
                           image varchar,

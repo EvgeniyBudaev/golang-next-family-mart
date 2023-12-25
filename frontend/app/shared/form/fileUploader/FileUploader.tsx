@@ -14,7 +14,7 @@ import "./FileUploader.scss";
 
 export type TFileUploaderProps = {
   files?: TFile[];
-  Input: ReactElement;
+  Input?: ReactElement;
   isLoading?: boolean;
   maxFiles?: number;
   onAddFile: (file: File) => void;

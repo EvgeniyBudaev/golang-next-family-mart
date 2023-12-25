@@ -2,7 +2,7 @@
 
 import isNil from "lodash/isNil";
 import { redirect } from "next/navigation";
-import { useEffect, type FC, useState } from "react";
+import { useEffect, type FC, useState, FormEvent } from "react";
 import { useFormState } from "react-dom";
 import { catalogAddAction } from "@/app/actions/adminPanel/catalogs/add/catalogAddAction";
 import { useTranslation } from "@/app/i18n/client";
@@ -31,14 +31,15 @@ export const CatalogAddForm: FC = () => {
   const [state, formAction] = useFormState(catalogAddAction, initialState);
 
   const { onAddFiles, onDeleteFile } = useFiles({
-    fieldName: EFormFields.Image,
+    fieldName: EFormFields.Files,
     files: files ?? [],
     setValue: (fieldName: string, files: TFile[]) => setFiles(files),
   });
 
   useEffect(() => {
+    console.log("defaultImage: ", defaultImage);
     console.log("files: ", files);
-  }, [files]);
+  }, [files, defaultImage]);
 
   useEffect(() => {
     if (!isNil(defaultImage) && !isNil(defaultImage.preview)) {
@@ -72,8 +73,16 @@ export const CatalogAddForm: FC = () => {
     }
   };
 
-  const handleLoadImage = (file: TFile) => {
+  const handleLoadImage = (file: TFile | null) => {
     return file?.preview ? URL.revokeObjectURL(file.preview) : file;
+  };
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    formAction(state, {
+      // ...omit(state, ['defaultImage']),
+      defaultImage,
+    });
   };
 
   return (
@@ -103,17 +112,19 @@ export const CatalogAddForm: FC = () => {
         <FileUploader
           accept={{
             "image/jpeg": [".jpeg"],
+            "image/jpg": [".jpg"],
             "image/png": [".png"],
           }}
           files={files ?? []}
-          Input={<input hidden name={EFormFields.Files} type="file" />}
           // isLoading={fetcherFilesLoading}
           maxFiles={1}
           maxSize={1024 * 1024}
           multiple={false}
+          name={EFormFields.Files}
           onAddFile={handleAddFileToDefaultImage}
           onAddFiles={onAddFiles}
           onDeleteFile={handleDeleteFile}
+          type="file"
         />
       </div>
 
@@ -124,6 +135,7 @@ export const CatalogAddForm: FC = () => {
             variant={ETypographyVariant.TextB3Regular}
           />
         </div>
+        <input hidden={true} name={EFormFields.DefaultImage} type="file" />
         <div className="Previews-Thumb-Inner CatalogAddForm-DefaultImage">
           {!isNil(defaultImage) && !isNil(defaultImage.preview) && (
             <img

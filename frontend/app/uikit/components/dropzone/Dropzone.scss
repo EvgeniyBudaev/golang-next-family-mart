@@ -1,6 +1,7 @@
 @import "@/app/styles";
 
 .Dropzone {
+  position: relative;
   padding: 24px;
   border: 1px dashed $color-black;
   border-radius: $border-radius;

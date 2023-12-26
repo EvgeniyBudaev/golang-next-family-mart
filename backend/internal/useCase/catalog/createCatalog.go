@@ -13,7 +13,7 @@ import (
 
 type CreateCatalogRequest struct {
 	Alias        string `json:"alias"`
-	DefaultImage []byte `json:"default_image"`
+	DefaultImage []byte `json:"defaultImage"`
 	Name         string `json:"name"`
 }
 

@@ -16,7 +16,7 @@ import (
 type UpdateCatalogRequest struct {
 	Alias   string    `json:"alias"`
 	Enabled bool      `json:"enabled"`
-	Image   string    `json:"image"`
+	Image   []string  `json:"image"`
 	Name    string    `json:"name"`
 	Uuid    uuid.UUID `json:"uuid"`
 }

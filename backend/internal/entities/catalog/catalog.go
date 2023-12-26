@@ -15,7 +15,7 @@ type Catalog struct {
 	DefaultImage string    `json:"default_image"`
 	Deleted      bool      `json:"deleted"`
 	Enabled      bool      `json:"enabled"`
-	Image        string    `json:"image"`
+	Image        []string  `json:"image"`
 	Name         string    `json:"name"`
 	UpdatedAt    time.Time `json:"updated_at"`
 	Uuid         uuid.UUID `json:"uuid"`

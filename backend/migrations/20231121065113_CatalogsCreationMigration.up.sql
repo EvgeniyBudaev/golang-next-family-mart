@@ -1,12 +1,10 @@
 CREATE TABLE catalogs (
-                          id bigserial not null primary key,
-                          alias varchar not null unique,
-                          created_at timestamp not null,
-                          default_image varchar,
-                          deleted bool not null,
-                          enabled bool not null,
-                          image varchar,
-                          name varchar not null unique,
-                          updated_at timestamp not null,
-                          uuid uuid not null unique
+                          id BIGSERIAL NOT NULL PRIMARY KEY,
+                          uuid uuid NOT NULL UNIQUE,
+                          alias VARCHAR NOT NULL UNIQUE,
+                          name VARCHAR NOT NULL UNIQUE,
+                          created_at TIMESTAMP NOT NULL,
+                          updated_at TIMESTAMP NOT NULL,
+                          is_deleted bool NOT NULL,
+                          is_enabled bool NOT NULL
 );

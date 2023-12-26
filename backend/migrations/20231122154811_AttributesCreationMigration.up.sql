@@ -1,12 +1,12 @@
 CREATE TABLE attributes (
-                            id bigserial not null primary key,
-                            alias varchar not null unique,
-                            created_at timestamp not null,
-                            deleted bool not null,
-                            enabled bool not null,
-                            filtered bool not null,
-                            name varchar not null unique,
-                            type varchar not null,
-                            updated_at timestamp not null,
-                            uuid uuid not null unique
+                            id BIGSERIAL NOT NULL PRIMARY KEY,
+                            alias VARCHAR NOT NULL UNIQUE,
+                            created_at TIMESTAMP NOT NULL,
+                            deleted bool NOT NULL,
+                            enabled bool NOT NULL,
+                            filtered bool NOT NULL,
+                            name VARCHAR NOT NULL UNIQUE,
+                            type VARCHAR NOT NULL,
+                            updated_at TIMESTAMP NOT NULL,
+                            uuid uuid NOT NULL UNIQUE
 );

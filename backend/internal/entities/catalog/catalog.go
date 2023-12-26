@@ -9,16 +9,28 @@ import (
 )
 
 type Catalog struct {
-	Id           int       `json:"id"`
-	Alias        string    `json:"alias"`
-	CreatedAt    time.Time `json:"created_at"`
-	DefaultImage string    `json:"default_image"`
-	Deleted      bool      `json:"deleted"`
-	Enabled      bool      `json:"enabled"`
-	Image        []string  `json:"image"`
-	Name         string    `json:"name"`
-	UpdatedAt    time.Time `json:"updated_at"`
-	Uuid         uuid.UUID `json:"uuid"`
+	Id            int                    `json:"id"`
+	Uuid          uuid.UUID              `json:"uuid"`
+	Alias         string                 `json:"alias"`
+	Name          string                 `json:"name"`
+	CreatedAt     time.Time              `json:"created_at"`
+	UpdatedAt     time.Time              `json:"updated_at"`
+	IsDeleted     bool                   `json:"is_deleted"`
+	IsEnabled     bool                   `json:"is_enabled"`
+	DefaultImages []*DefaultImageCatalog `json:"default_images"`
+	Images        []*ImageCatalog        `json:"images"`
+}
+
+type DefaultImageCatalog struct {
+	Id        int    `json:"id"`
+	CatalogId int    `json:"catalog_id"`
+	Url       string `json:"url"`
+}
+
+type ImageCatalog struct {
+	Id        int    `json:"id"`
+	CatalogId int    `json:"catalog_id"`
+	Url       string `json:"url"`
 }
 
 type ListCatalogResponse struct {

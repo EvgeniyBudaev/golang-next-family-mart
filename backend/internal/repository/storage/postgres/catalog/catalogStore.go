@@ -37,8 +37,8 @@ func (pg *PGCatalogStore) Create(cf *fiber.Ctx, c *catalog.Catalog) (*catalog.Ca
 	}
 	defer tx.Rollback(ctx)
 	sqlSelect := sqlBuilder.Insert("catalogs").
-		Columns("alias", "created_at", "default_image", "deleted", "enabled", "image", "name", "updated_at", "uuid").
-		Values(c.Alias, c.CreatedAt, c.DefaultImage, c.Deleted, c.Enabled, c.Image, c.Name, c.UpdatedAt, c.Uuid).
+		Columns("uuid", "alias", "name", "created_at", "updated_at", "is_deleted", "is_enabled").
+		Values(c.Uuid, c.Alias, c.Name, c.CreatedAt, c.UpdatedAt, c.IsDeleted, c.IsEnabled).
 		Suffix("RETURNING id")
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
@@ -66,14 +66,13 @@ func (pg *PGCatalogStore) Delete(cf *fiber.Ctx, c *catalog.Catalog) (*catalog.Ca
 	}
 	defer tx.Rollback(ctx)
 	sqlSelect := sqlBuilder.Update("catalogs").
-		Set("alias", c.Alias).
-		Set("created_at", c.CreatedAt).
-		Set("deleted", c.Deleted).
-		Set("enabled", c.Enabled).
-		Set("image", c.Image).
-		Set("name", c.Name).
-		Set("updated_at", c.UpdatedAt).
 		Set("uuid", c.Uuid).
+		Set("alias", c.Alias).
+		Set("name", c.Name).
+		Set("created_at", c.CreatedAt).
+		Set("updated_at", c.UpdatedAt).
+		Set("is_deleted", c.IsDeleted).
+		Set("is_enabled", c.IsEnabled).
 		Where(sq.Eq{"uuid": c.Uuid})
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
@@ -99,14 +98,13 @@ func (pg *PGCatalogStore) Update(cf *fiber.Ctx, c *catalog.Catalog) (*catalog.Ca
 	}
 	defer tx.Rollback(ctx)
 	sqlSelect := sqlBuilder.Update("catalogs").
-		Set("alias", c.Alias).
-		Set("created_at", c.CreatedAt).
-		Set("deleted", c.Deleted).
-		Set("enabled", c.Enabled).
-		Set("image", c.Image).
-		Set("name", c.Name).
-		Set("updated_at", c.UpdatedAt).
 		Set("uuid", c.Uuid).
+		Set("alias", c.Alias).
+		Set("name", c.Name).
+		Set("created_at", c.CreatedAt).
+		Set("updated_at", c.UpdatedAt).
+		Set("is_deleted", c.IsDeleted).
+		Set("is_enabled", c.IsEnabled).
 		Where(sq.Eq{"uuid": c.Uuid})
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
@@ -138,15 +136,15 @@ func (pg *PGCatalogStore) FindByAlias(ctx *fiber.Ctx, alias string) (*catalog.Ca
 		logger.Log.Debug("error while FindByAlias. error in method Query", zap.Error(err))
 		return nil, err
 	}
-	err = row.Scan(&data.Id, &data.Alias, &data.CreatedAt, &data.Deleted,
-		&data.Enabled, &data.Image, &data.Name, &data.UpdatedAt, &data.Uuid)
+	err = row.Scan(&data.Id, &data.Uuid, &data.Alias, &data.Name, &data.CreatedAt, &data.UpdatedAt, &data.IsDeleted,
+		&data.IsEnabled)
 	if err != nil {
 		logger.Log.Debug("error while FindByAlias. error in method Scan", zap.Error(err))
 		msg := errors.Wrap(err, "catalog not found")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
-	if data.Deleted == true {
+	if data.IsDeleted == true {
 		msg := fmt.Errorf("catalog has already been deleted")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
@@ -156,7 +154,10 @@ func (pg *PGCatalogStore) FindByAlias(ctx *fiber.Ctx, alias string) (*catalog.Ca
 
 func (pg *PGCatalogStore) FindByUuid(ctx *fiber.Ctx, uuid uuid.UUID) (*catalog.Catalog, error) {
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	sqlSelect := sqlBuilder.Select("*").From("catalogs").Where(sq.Eq{"uuid": uuid})
+	sqlSelect := sqlBuilder.
+		Select("id", "uuid", "alias", "name", "created_at", "updated_at", "is_deleted", "is_enabled").
+		From("catalogs").
+		Where(sq.Eq{"uuid": uuid})
 	data := catalog.Catalog{}
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
@@ -168,20 +169,42 @@ func (pg *PGCatalogStore) FindByUuid(ctx *fiber.Ctx, uuid uuid.UUID) (*catalog.C
 		logger.Log.Debug("error while FindByUuid. error in method Query", zap.Error(err))
 		return nil, err
 	}
-	err = row.Scan(&data.Id, &data.Alias, &data.CreatedAt, &data.Deleted,
-		&data.Enabled, &data.Image, &data.Name, &data.UpdatedAt, &data.Uuid)
+	err = row.Scan(&data.Id, &data.Uuid, &data.Alias, &data.Name, &data.CreatedAt, &data.UpdatedAt, &data.IsDeleted,
+		&data.IsEnabled)
 	if err != nil {
 		logger.Log.Debug("error while FindByUuid. error in method Scan", zap.Error(err))
 		msg := errors.Wrap(err, "catalog not found")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
-	if data.Deleted == true {
+	if data.IsDeleted == true {
 		msg := fmt.Errorf("catalog has already been deleted")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
-	return &data, nil
+	defaultImages, err := pg.SelectListDefaultImage(ctx, data.Id)
+	if err != nil {
+		logger.Log.Debug("error while FindByUuid. error in method SelectListDefaultImage", zap.Error(err))
+		return nil, err
+	}
+	images, err := pg.SelectListImage(ctx, data.Id)
+	if err != nil {
+		logger.Log.Debug("error while FindByUuid. error in method SelectListImage", zap.Error(err))
+		return nil, err
+	}
+	catalogResponse := &catalog.Catalog{
+		Id:            data.Id,
+		Uuid:          data.Uuid,
+		Alias:         data.Alias,
+		Name:          data.Name,
+		CreatedAt:     data.CreatedAt,
+		UpdatedAt:     data.UpdatedAt,
+		IsDeleted:     data.IsDeleted,
+		IsEnabled:     data.IsEnabled,
+		DefaultImages: defaultImages,
+		Images:        images,
+	}
+	return catalogResponse, nil
 }
 
 func (pg *PGCatalogStore) SelectList(
@@ -229,8 +252,8 @@ func (pg *PGCatalogStore) SelectList(
 	defer rows.Close()
 	for rows.Next() {
 		data := catalog.Catalog{}
-		err := rows.Scan(&data.Id, &data.Alias, &data.CreatedAt, &data.Deleted,
-			&data.Enabled, &data.Image, &data.Name, &data.UpdatedAt, &data.Uuid)
+		err := rows.Scan(&data.Id, &data.Uuid, &data.Alias, &data.Name, &data.CreatedAt, &data.UpdatedAt, &data.IsDeleted,
+			&data.IsEnabled)
 		if err != nil {
 			logger.Log.Debug("error while SelectList. error in method Scan", zap.Error(err))
 			continue
@@ -243,4 +266,116 @@ func (pg *PGCatalogStore) SelectList(
 		Content:    catalogList,
 	}
 	return &response, nil
+}
+
+func (pg *PGCatalogStore) AddDefaultImage(cf *fiber.Ctx, c *catalog.DefaultImageCatalog) (*catalog.DefaultImageCatalog, error) {
+	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	ctx := cf.Context()
+	tx, err := pg.store.Db().Begin(ctx)
+	if err != nil {
+		logger.Log.Debug("error while AddDefaultImage. error in method Begin", zap.Error(err))
+		return nil, err
+	}
+	defer tx.Rollback(ctx)
+	sqlSelect := sqlBuilder.Insert("catalog_default_images").
+		Columns("catalog_id", "url").
+		Values(&c.CatalogId, &c.Url).
+		Suffix("RETURNING id")
+	query, args, err := sqlSelect.ToSql()
+	if err != nil {
+		return nil, err
+	}
+	err = tx.QueryRow(ctx, query, args...).Scan(&c.Id)
+	if err != nil {
+		logger.Log.Debug("error while AddDefaultImage. error in method QueryRow", zap.Error(err))
+		msg := errors.Wrap(err, "bad request")
+		err = errorDomain.NewCustomError(msg, http.StatusBadRequest)
+		return nil, err
+	}
+	tx.Commit(ctx)
+	return c, nil
+}
+
+func (pg *PGCatalogStore) SelectListDefaultImage(cf *fiber.Ctx, catalogId int) ([]*catalog.DefaultImageCatalog, error) {
+	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	sqlSelect := sqlBuilder.Select("id", "catalog_id", "url").
+		From("catalog_default_images").Where(sq.Eq{"catalog_id": catalogId})
+	list := make([]*catalog.DefaultImageCatalog, 0)
+	query, args, err := sqlSelect.ToSql()
+	if err != nil {
+		logger.Log.Debug("error while SelectListDefaultImageByCatalogId. error in method ToSql", zap.Error(err))
+		return nil, err
+	}
+	rows, err := pg.store.Db().Query(cf.Context(), query, args...)
+	if err != nil {
+		logger.Log.Debug("error while SelectListDefaultImageByCatalogId. error in method Query", zap.Error(err))
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		data := catalog.DefaultImageCatalog{}
+		err := rows.Scan(&data.Id, &data.CatalogId, &data.Url)
+		if err != nil {
+			logger.Log.Debug("error while SelectListDefaultImageByCatalogId. error in method Scan", zap.Error(err))
+			continue
+		}
+		list = append(list, &data)
+	}
+	return list, nil
+}
+
+func (pg *PGCatalogStore) AddImage(cf *fiber.Ctx, c *catalog.ImageCatalog) (*catalog.ImageCatalog, error) {
+	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	ctx := cf.Context()
+	tx, err := pg.store.Db().Begin(ctx)
+	if err != nil {
+		logger.Log.Debug("error while AddImage. error in method Begin", zap.Error(err))
+		return nil, err
+	}
+	defer tx.Rollback(ctx)
+	sqlSelect := sqlBuilder.Insert("catalog_images").
+		Columns("catalog_id", "url").
+		Values(&c.CatalogId, &c.Url).
+		Suffix("RETURNING id")
+	query, args, err := sqlSelect.ToSql()
+	if err != nil {
+		return nil, err
+	}
+	err = tx.QueryRow(ctx, query, args...).Scan(&c.Id)
+	if err != nil {
+		logger.Log.Debug("error while AddImage. error in method QueryRow", zap.Error(err))
+		msg := errors.Wrap(err, "bad request")
+		err = errorDomain.NewCustomError(msg, http.StatusBadRequest)
+		return nil, err
+	}
+	tx.Commit(ctx)
+	return c, nil
+}
+
+func (pg *PGCatalogStore) SelectListImage(cf *fiber.Ctx, catalogId int) ([]*catalog.ImageCatalog, error) {
+	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	sqlSelect := sqlBuilder.Select("id", "catalog_id", "url").
+		From("catalog_images").Where(sq.Eq{"catalog_id": catalogId})
+	list := make([]*catalog.ImageCatalog, 0)
+	query, args, err := sqlSelect.ToSql()
+	if err != nil {
+		logger.Log.Debug("error while SelectListImage. error in method ToSql", zap.Error(err))
+		return nil, err
+	}
+	rows, err := pg.store.Db().Query(cf.Context(), query, args...)
+	if err != nil {
+		logger.Log.Debug("error while SelectListImage. error in method Query", zap.Error(err))
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		data := catalog.ImageCatalog{}
+		err := rows.Scan(&data.Id, &data.CatalogId, &data.Url)
+		if err != nil {
+			logger.Log.Debug("error while SelectListImage. error in method Scan", zap.Error(err))
+			continue
+		}
+		list = append(list, &data)
+	}
+	return list, nil
 }

@@ -40,21 +40,21 @@ func (uc *DeleteCatalogUseCase) DeleteCatalog(ctx *fiber.Ctx) (*catalog.Catalog,
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
-	if catalogInDB.Deleted == true {
+	if catalogInDB.IsDeleted == true {
 		msg := errors.Wrap(err, "catalog has already been deleted")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
 	var request = &catalog.Catalog{
 		Id:        catalogInDB.Id,
-		Alias:     catalogInDB.Alias,
-		CreatedAt: catalogInDB.CreatedAt,
-		Deleted:   true,
-		Enabled:   catalogInDB.Enabled,
-		Image:     catalogInDB.Image,
-		Name:      catalogInDB.Name,
-		UpdatedAt: time.Now(),
 		Uuid:      catalogInDB.Uuid,
+		Alias:     catalogInDB.Alias,
+		Name:      catalogInDB.Name,
+		CreatedAt: catalogInDB.CreatedAt,
+		UpdatedAt: time.Now(),
+		IsDeleted: true,
+		IsEnabled: catalogInDB.IsEnabled,
+		Images:    catalogInDB.Images,
 	}
 	response, err := uc.dataStore.Delete(ctx, request)
 	if err != nil {

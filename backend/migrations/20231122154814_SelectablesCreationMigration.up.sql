@@ -1,13 +1,13 @@
 CREATE TABLE selectables (
-                             id bigserial not null primary key,
-                             created_at timestamp not null,
-                             deleted bool not null,
-                             enabled bool not null,
-                             updated_at timestamp not null,
-                             uuid uuid not null unique,
-                             value varchar not null unique
+                             id BIGSERIAL NOT NULL PRIMARY KEY,
+                             created_at TIMESTAMP NOT NULL,
+                             deleted bool NOT NULL,
+                             enabled bool NOT NULL,
+                             updated_at TIMESTAMP NOT NULL,
+                             uuid uuid NOT NULL UNIQUE,
+                             value varchar NOT NULL UNIQUE
 );
 
 ALTER TABLE selectables
-    ADD COLUMN attribute_id bigint,
+    ADD COLUMN attribute_id BIGINT,
     ADD FOREIGN KEY (attribute_id) REFERENCES attributes(id);

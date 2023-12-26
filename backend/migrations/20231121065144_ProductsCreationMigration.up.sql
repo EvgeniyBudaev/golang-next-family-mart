@@ -1,15 +1,15 @@
 CREATE TABLE products (
-                          id bigserial not null primary key,
-                          alias varchar not null unique,
-                          created_at timestamp not null,
-                          deleted bool not null,
-                          enabled bool not null,
-                          image varchar,
-                          name varchar not null unique,
-                          updated_at timestamp not null,
-                          uuid uuid not null unique
+                          id BIGSERIAL NOT NULL PRIMARY KEY,
+                          alias VARCHAR NOT NULL UNIQUE,
+                          created_at TIMESTAMP NOT NULL,
+                          deleted bool NOT NULL,
+                          enabled bool NOT NULL,
+                          image VARCHAR,
+                          name VARCHAR NOT NULL UNIQUE,
+                          updated_at TIMESTAMP NOT NULL,
+                          uuid uuid NOT NULL UNIQUE
 );
 
 ALTER TABLE products
-    ADD COLUMN catalog_id bigint,
+    ADD COLUMN catalog_id BIGINT,
     ADD FOREIGN KEY (catalog_id) REFERENCES catalogs(id);

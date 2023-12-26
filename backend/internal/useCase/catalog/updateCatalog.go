@@ -14,11 +14,11 @@ import (
 )
 
 type UpdateCatalogRequest struct {
-	Alias   string    `json:"alias"`
-	Enabled bool      `json:"enabled"`
-	Image   []string  `json:"image"`
-	Name    string    `json:"name"`
-	Uuid    uuid.UUID `json:"uuid"`
+	Alias     string    `json:"alias"`
+	Uuid      uuid.UUID `json:"uuid"`
+	Name      string    `json:"name"`
+	IsEnabled bool      `json:"isEnabled"`
+	Image     []string  `json:"image"`
 }
 
 type UpdateCatalogUseCase struct {
@@ -37,21 +37,21 @@ func (uc *UpdateCatalogUseCase) UpdateCatalog(ctx *fiber.Ctx, r UpdateCatalogReq
 		logger.Log.Debug("error while UpdateCatalog. error in method FindByUuid", zap.Error(err))
 		return nil, err
 	}
-	if catalogInDB.Deleted == true {
+	if catalogInDB.IsDeleted == true {
 		msg := errors.Wrap(err, "catalog has already been deleted")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
 	var request = &catalog.Catalog{
 		Id:        catalogInDB.Id,
-		Alias:     strings.ToLower(r.Alias),
-		CreatedAt: catalogInDB.CreatedAt,
-		Deleted:   catalogInDB.Deleted,
-		Enabled:   r.Enabled,
-		Image:     r.Image,
-		Name:      strings.ToLower(r.Name),
-		UpdatedAt: time.Now(),
 		Uuid:      r.Uuid,
+		Alias:     strings.ToLower(r.Alias),
+		Name:      strings.ToLower(r.Name),
+		CreatedAt: catalogInDB.CreatedAt,
+		UpdatedAt: time.Now(),
+		IsDeleted: catalogInDB.IsDeleted,
+		IsEnabled: r.IsEnabled,
+		//Image:     r.Image,
 	}
 	response, err := uc.dataStore.Update(ctx, request)
 	if err != nil {

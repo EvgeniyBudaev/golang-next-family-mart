@@ -84,6 +84,8 @@ sudo rm migrate.list
 migrate create -ext sql -dir migrations AttributesCreationMigration
 migrate create -ext sql -dir migrations SelectablesCreationMigration
 migrate create -ext sql -dir migrations CatalogsCreationMigration
+migrate create -ext sql -dir migrations CatalogImagesCreationMigration
+migrate create -ext sql -dir migrations CatalogDefaultImagesCreationMigration
 migrate create -ext sql -dir migrations ProductsCreationMigration
 ```
 
@@ -102,7 +104,7 @@ migrate -path migrations -database "postgres://localhost:5432/familymart?sslmode
 Если ошибка Dirty database version 1. Fix and force version
 
 ```
-migrate create -ext sql -dir migrations UsersCreationMigration force 20230930052519
+migrate create -ext sql -dir migrations UsersCreationMigration force 20231226053322
 ```
 
 SQLx

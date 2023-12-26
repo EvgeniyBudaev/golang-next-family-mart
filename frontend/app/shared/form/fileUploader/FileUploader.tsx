@@ -76,7 +76,9 @@ export const FileUploader: FC<TFileUploaderProps> = ({
         onDrop={onDrop}
         accept={accept}
         disabled={isLoading}
-        className={clsx("FileUploader-Dropzone", { "FileUploader-Dropzone__isLoading": isLoading })}
+        className={clsx("FileUploader-Dropzone", {
+          ["FileUploader-Dropzone__isLoading"]: isLoading,
+        })}
         {...rest}
       >
         <div className="FileUploader-Dropzone-Inner">

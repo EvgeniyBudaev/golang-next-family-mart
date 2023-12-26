@@ -77,16 +77,15 @@ export const CatalogAddForm: FC = () => {
     return file?.preview ? URL.revokeObjectURL(file.preview) : file;
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    formAction(state, {
-      // ...omit(state, ['defaultImage']),
-      defaultImage,
-    });
+  const handleSubmit = (formData: FormData) => {
+    if (!isNil(defaultImage)) {
+      formData.append(EFormFields.DefaultImage, defaultImage);
+    }
+    formAction(formData);
   };
 
   return (
-    <form action={formAction} className="CatalogAddForm-Form">
+    <form action={handleSubmit} className="CatalogAddForm-Form">
       <Input
         errors={state?.errors?.alias}
         isRequired={true}
@@ -120,7 +119,7 @@ export const CatalogAddForm: FC = () => {
           maxFiles={1}
           maxSize={1024 * 1024}
           multiple={false}
-          name={EFormFields.Files}
+          // name={EFormFields.Files}
           onAddFile={handleAddFileToDefaultImage}
           onAddFiles={onAddFiles}
           onDeleteFile={handleDeleteFile}
@@ -135,7 +134,6 @@ export const CatalogAddForm: FC = () => {
             variant={ETypographyVariant.TextB3Regular}
           />
         </div>
-        <input hidden={true} name={EFormFields.DefaultImage} type="file" />
         <div className="Previews-Thumb-Inner CatalogAddForm-DefaultImage">
           {!isNil(defaultImage) && !isNil(defaultImage.preview) && (
             <img

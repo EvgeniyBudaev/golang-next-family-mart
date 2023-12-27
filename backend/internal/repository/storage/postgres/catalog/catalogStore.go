@@ -278,8 +278,9 @@ func (pg *PGCatalogStore) AddDefaultImage(cf *fiber.Ctx, c *catalog.DefaultImage
 	}
 	defer tx.Rollback(ctx)
 	sqlSelect := sqlBuilder.Insert("catalog_default_images").
-		Columns("catalog_id", "url").
-		Values(&c.CatalogId, &c.Url).
+		Columns("catalog_id", "uuid", "name", "url", "size", "created_at", "updated_at", "is_deleted",
+			"is_enabled").
+		Values(&c.CatalogId, &c.Uuid, &c.Name, &c.Url, &c.Size, &c.CreatedAt, &c.UpdatedAt, &c.IsDeleted, &c.IsEnabled).
 		Suffix("RETURNING id")
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
@@ -298,7 +299,8 @@ func (pg *PGCatalogStore) AddDefaultImage(cf *fiber.Ctx, c *catalog.DefaultImage
 
 func (pg *PGCatalogStore) SelectListDefaultImage(cf *fiber.Ctx, catalogId int) ([]*catalog.DefaultImageCatalog, error) {
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	sqlSelect := sqlBuilder.Select("id", "catalog_id", "url").
+	sqlSelect := sqlBuilder.Select("id", "catalog_id", "uuid", "name", "url", "size", "created_at",
+		"updated_at", "is_deleted", "is_enabled").
 		From("catalog_default_images").Where(sq.Eq{"catalog_id": catalogId})
 	list := make([]*catalog.DefaultImageCatalog, 0)
 	query, args, err := sqlSelect.ToSql()
@@ -314,7 +316,8 @@ func (pg *PGCatalogStore) SelectListDefaultImage(cf *fiber.Ctx, catalogId int) (
 	defer rows.Close()
 	for rows.Next() {
 		data := catalog.DefaultImageCatalog{}
-		err := rows.Scan(&data.Id, &data.CatalogId, &data.Url)
+		err := rows.Scan(&data.Id, &data.CatalogId, &data.Uuid, &data.Name, &data.Url, &data.Size, &data.CreatedAt,
+			&data.UpdatedAt, &data.IsDeleted, &data.IsEnabled)
 		if err != nil {
 			logger.Log.Debug("error while SelectListDefaultImageByCatalogId. error in method Scan", zap.Error(err))
 			continue
@@ -334,8 +337,9 @@ func (pg *PGCatalogStore) AddImage(cf *fiber.Ctx, c *catalog.ImageCatalog) (*cat
 	}
 	defer tx.Rollback(ctx)
 	sqlSelect := sqlBuilder.Insert("catalog_images").
-		Columns("catalog_id", "url").
-		Values(&c.CatalogId, &c.Url).
+		Columns("catalog_id", "uuid", "name", "url", "size", "created_at", "updated_at", "is_deleted",
+			"is_enabled").
+		Values(&c.CatalogId, &c.Uuid, &c.Name, &c.Url, &c.Size, &c.CreatedAt, &c.UpdatedAt, &c.IsDeleted, &c.IsEnabled).
 		Suffix("RETURNING id")
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
@@ -354,7 +358,8 @@ func (pg *PGCatalogStore) AddImage(cf *fiber.Ctx, c *catalog.ImageCatalog) (*cat
 
 func (pg *PGCatalogStore) SelectListImage(cf *fiber.Ctx, catalogId int) ([]*catalog.ImageCatalog, error) {
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	sqlSelect := sqlBuilder.Select("id", "catalog_id", "url").
+	sqlSelect := sqlBuilder.Select("id", "catalog_id", "uuid", "name", "url", "size", "created_at",
+		"updated_at", "is_deleted", "is_enabled").
 		From("catalog_images").Where(sq.Eq{"catalog_id": catalogId})
 	list := make([]*catalog.ImageCatalog, 0)
 	query, args, err := sqlSelect.ToSql()
@@ -370,7 +375,8 @@ func (pg *PGCatalogStore) SelectListImage(cf *fiber.Ctx, catalogId int) ([]*cata
 	defer rows.Close()
 	for rows.Next() {
 		data := catalog.ImageCatalog{}
-		err := rows.Scan(&data.Id, &data.CatalogId, &data.Url)
+		err := rows.Scan(&data.Id, &data.CatalogId, &data.Uuid, &data.Name, &data.Url, &data.Size, &data.CreatedAt,
+			&data.UpdatedAt, &data.IsDeleted, &data.IsEnabled)
 		if err != nil {
 			logger.Log.Debug("error while SelectListImage. error in method Scan", zap.Error(err))
 			continue

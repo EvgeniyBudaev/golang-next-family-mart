@@ -45,7 +45,16 @@ func (uc *CreateCatalogUseCase) CreateCatalog(ctx *fiber.Ctx, r CreateCatalogReq
 			logger.Log.Debug("error while CreateCatalog. error SaveFile", zap.Error(err))
 			return nil, err
 		}
-		defaultImage := catalog.DefaultImageCatalog{Url: filePath}
+		defaultImage := catalog.DefaultImageCatalog{
+			Uuid:      uuid.New(),
+			Name:      file.Filename,
+			Url:       filePath,
+			Size:      file.Size,
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+			IsDeleted: false,
+			IsEnabled: true,
+		}
 		defaultImagePath = append(defaultImagePath, filePath)
 		defaultImagesCatalog = append(defaultImagesCatalog, &defaultImage)
 	}
@@ -58,7 +67,16 @@ func (uc *CreateCatalogUseCase) CreateCatalog(ctx *fiber.Ctx, r CreateCatalogReq
 			logger.Log.Debug("error while CreateCatalog. error SaveFile", zap.Error(err))
 			return nil, err
 		}
-		image := catalog.ImageCatalog{Url: filePath}
+		image := catalog.ImageCatalog{
+			Uuid:      uuid.New(),
+			Name:      file.Filename,
+			Url:       filePath,
+			Size:      file.Size,
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+			IsDeleted: false,
+			IsEnabled: true,
+		}
 		imagesFilePath = append(imagesFilePath, filePath)
 		imagesCatalog = append(imagesCatalog, &image)
 	}
@@ -81,7 +99,14 @@ func (uc *CreateCatalogUseCase) CreateCatalog(ctx *fiber.Ctx, r CreateCatalogReq
 	for _, i := range catalogRequest.DefaultImages {
 		image := &catalog.DefaultImageCatalog{
 			CatalogId: catalogRequest.Id,
+			Uuid:      i.Uuid,
+			Name:      i.Name,
 			Url:       i.Url,
+			Size:      i.Size,
+			CreatedAt: i.CreatedAt,
+			UpdatedAt: i.UpdatedAt,
+			IsDeleted: i.IsDeleted,
+			IsEnabled: i.IsEnabled,
 		}
 		_, err := uc.dataStore.AddDefaultImage(ctx, image)
 		if err != nil {
@@ -92,7 +117,14 @@ func (uc *CreateCatalogUseCase) CreateCatalog(ctx *fiber.Ctx, r CreateCatalogReq
 	for _, i := range catalogRequest.Images {
 		image := &catalog.ImageCatalog{
 			CatalogId: catalogRequest.Id,
+			Uuid:      i.Uuid,
+			Name:      i.Name,
 			Url:       i.Url,
+			Size:      i.Size,
+			CreatedAt: i.CreatedAt,
+			UpdatedAt: i.UpdatedAt,
+			IsDeleted: i.IsDeleted,
+			IsEnabled: i.IsEnabled,
 		}
 		_, err := uc.dataStore.AddImage(ctx, image)
 		if err != nil {

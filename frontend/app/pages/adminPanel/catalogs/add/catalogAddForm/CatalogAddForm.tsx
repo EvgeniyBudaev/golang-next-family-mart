@@ -31,7 +31,7 @@ export const CatalogAddForm: FC = () => {
   const [state, formAction] = useFormState(catalogAddAction, initialState);
 
   const { onAddFiles, onDeleteFile } = useFiles({
-    fieldName: EFormFields.Files,
+    fieldName: EFormFields.Image,
     files: files ?? [],
     setValue: (fieldName: string, files: TFile[]) => setFiles(files),
   });
@@ -119,7 +119,7 @@ export const CatalogAddForm: FC = () => {
           maxFiles={1}
           maxSize={1024 * 1024}
           multiple={false}
-          // name={EFormFields.Files}
+          name={EFormFields.Image}
           onAddFile={handleAddFileToDefaultImage}
           onAddFiles={onAddFiles}
           onDeleteFile={handleDeleteFile}

@@ -1,6 +1,6 @@
 export enum EFormFields {
   Alias = "alias",
-  DefaultImage = "defaultImage",
-  Files = "files",
   Name = "name",
+  DefaultImage = "defaultImage",
+  Image = "image",
 }

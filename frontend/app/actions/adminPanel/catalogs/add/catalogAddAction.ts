@@ -6,6 +6,7 @@ import { catalogAdd } from "@/app/api/adminPanel/catalogs/add/domain";
 import { ERoutes } from "@/app/shared/enums";
 import { TCommonResponseError } from "@/app/shared/types/error";
 import { getResponseError, getErrorsResolver, createPath } from "@/app/shared/utils";
+import { TCatalogAddParams } from "@/app/api/adminPanel/catalogs/add";
 
 export async function catalogAddAction(prevState: any, formData: FormData) {
   const resolver = catalogAddFormSchema.safeParse(Object.fromEntries(formData.entries()));
@@ -20,7 +21,7 @@ export async function catalogAddAction(prevState: any, formData: FormData) {
       ...resolver.data,
     };
     console.log("formattedParams: ", formattedParams);
-    const response = await catalogAdd(formData);
+    const response = await catalogAdd(formData as TCatalogAddParams);
     console.log("response: ", response);
     const path = createPath({
       route: ERoutes.AdminCatalogAdd,

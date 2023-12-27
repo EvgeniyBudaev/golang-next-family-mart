@@ -1,17 +1,30 @@
 import { z } from "zod";
 import { paginationSchema } from "@/app/api/pagination/schemas";
 
+const catalogImageListItemSchema = z.object({
+  id: z.number(),
+  catalogId: z.number(),
+  uuid: z.string(),
+  name: z.string(),
+  url: z.string(),
+  size: z.number(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  isDeleted: z.boolean(),
+  isEnabled: z.boolean(),
+});
+
 export const catalogListItemSchema = z.object({
   id: z.number(),
-  alias: z.string(),
-  created_at: z.string(),
-  default_image: z.string(),
-  deleted: z.boolean(),
-  enabled: z.boolean(),
-  image: z.string(),
-  name: z.string(),
-  updated_at: z.string(),
   uuid: z.string(),
+  alias: z.string(),
+  name: z.string(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  isDeleted: z.boolean(),
+  isEnabled: z.boolean(),
+  defaultImages: catalogImageListItemSchema.array().nullish(),
+  images: catalogImageListItemSchema.array().nullish(),
 });
 
 export const catalogListParamsSchema = z.object({

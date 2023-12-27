@@ -3,10 +3,12 @@ package catalog
 import (
 	"fmt"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/catalog"
+	errorDomain "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/error"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
+	"net/http"
 	"strings"
 	"time"
 )
@@ -29,6 +31,12 @@ func NewCreateCatalogUseCase(ds ICatalogStore) *CreateCatalogUseCase {
 }
 
 func (uc *CreateCatalogUseCase) CreateCatalog(ctx *fiber.Ctx, r CreateCatalogRequest) (*catalog.Catalog, error) {
+	catalogInDB, _ := uc.dataStore.FindByAlias(ctx, r.Alias)
+	if catalogInDB.Alias == r.Alias {
+		msg := fmt.Errorf("catalog has already been created")
+		err := errorDomain.NewCustomError(msg, http.StatusConflict)
+		return nil, err
+	}
 	filePath := "./static/uploads/catalog/image/defaultImage.jpg"
 	directoryPath := fmt.Sprintf("./static/uploads/catalog/image")
 	form, err := ctx.MultipartForm()

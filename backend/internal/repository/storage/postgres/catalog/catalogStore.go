@@ -124,7 +124,10 @@ func (pg *PGCatalogStore) FindByAlias(ctx *fiber.Ctx, alias string) (*catalog.Ca
 	//c, cancel := context.WithTimeout(ctx.Context(), 3*time.Second)
 	//defer cancel()
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	sqlSelect := sqlBuilder.Select("*").From("catalogs").Where(sq.Eq{"alias": alias})
+	sqlSelect := sqlBuilder.
+		Select("id", "uuid", "alias", "name", "created_at", "updated_at", "is_deleted", "is_enabled").
+		From("catalogs").
+		Where(sq.Eq{"alias": alias})
 	data := catalog.Catalog{}
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
@@ -144,12 +147,29 @@ func (pg *PGCatalogStore) FindByAlias(ctx *fiber.Ctx, alias string) (*catalog.Ca
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
-	if data.IsDeleted == true {
-		msg := fmt.Errorf("catalog has already been deleted")
-		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
+	defaultImages, err := pg.SelectListDefaultImage(ctx, data.Id)
+	if err != nil {
+		logger.Log.Debug("error while FindByUuid. error in method SelectListDefaultImage", zap.Error(err))
 		return nil, err
 	}
-	return &data, nil
+	images, err := pg.SelectListImage(ctx, data.Id)
+	if err != nil {
+		logger.Log.Debug("error while FindByUuid. error in method SelectListImage", zap.Error(err))
+		return nil, err
+	}
+	catalogResponse := &catalog.Catalog{
+		Id:            data.Id,
+		Uuid:          data.Uuid,
+		Alias:         data.Alias,
+		Name:          data.Name,
+		CreatedAt:     data.CreatedAt,
+		UpdatedAt:     data.UpdatedAt,
+		IsDeleted:     data.IsDeleted,
+		IsEnabled:     data.IsEnabled,
+		DefaultImages: defaultImages,
+		Images:        images,
+	}
+	return catalogResponse, nil
 }
 
 func (pg *PGCatalogStore) FindByUuid(ctx *fiber.Ctx, uuid uuid.UUID) (*catalog.Catalog, error) {
@@ -211,8 +231,11 @@ func (pg *PGCatalogStore) SelectList(
 	ctx *fiber.Ctx,
 	qp *catalog.QueryParamsCatalogList) (*catalog.ListCatalogResponse, error) {
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	sqlSelect := sqlBuilder.Select("*").From("catalogs").Where(sq.Eq{"deleted": false})
-	countSelect := sqlBuilder.Select("COUNT(*)").From("catalogs").Where(sq.Eq{"deleted": false})
+	sqlSelect := sqlBuilder.
+		Select("id", "uuid", "alias", "name", "created_at", "updated_at", "is_deleted", "is_enabled").
+		From("catalogs").
+		Where(sq.Eq{"is_deleted": false})
+	countSelect := sqlBuilder.Select("COUNT(*)").From("catalogs").Where(sq.Eq{"is_deleted": false})
 	limit := qp.Limit
 	page := qp.Page
 	// search
@@ -258,7 +281,29 @@ func (pg *PGCatalogStore) SelectList(
 			logger.Log.Debug("error while SelectList. error in method Scan", zap.Error(err))
 			continue
 		}
-		catalogList = append(catalogList, &data)
+		defaultImages, err := pg.SelectListDefaultImage(ctx, data.Id)
+		if err != nil {
+			logger.Log.Debug("error while FindByUuid. error in method SelectListDefaultImage", zap.Error(err))
+			return nil, err
+		}
+		images, err := pg.SelectListImage(ctx, data.Id)
+		if err != nil {
+			logger.Log.Debug("error while FindByUuid. error in method SelectListImage", zap.Error(err))
+			return nil, err
+		}
+		catalog := &catalog.Catalog{
+			Id:            data.Id,
+			Uuid:          data.Uuid,
+			Alias:         data.Alias,
+			Name:          data.Name,
+			CreatedAt:     data.CreatedAt,
+			UpdatedAt:     data.UpdatedAt,
+			IsDeleted:     data.IsDeleted,
+			IsEnabled:     data.IsEnabled,
+			DefaultImages: defaultImages,
+			Images:        images,
+		}
+		catalogList = append(catalogList, catalog)
 	}
 	paging := pagination.GetPagination(limit, page, totalItems)
 	response := catalog.ListCatalogResponse{

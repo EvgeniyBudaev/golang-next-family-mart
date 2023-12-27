@@ -13,41 +13,15 @@ type Catalog struct {
 	Uuid          uuid.UUID              `json:"uuid"`
 	Alias         string                 `json:"alias"`
 	Name          string                 `json:"name"`
-	CreatedAt     time.Time              `json:"created_at"`
-	UpdatedAt     time.Time              `json:"updated_at"`
-	IsDeleted     bool                   `json:"is_deleted"`
-	IsEnabled     bool                   `json:"is_enabled"`
-	DefaultImages []*DefaultImageCatalog `json:"default_images"`
+	CreatedAt     time.Time              `json:"createdAt"`
+	UpdatedAt     time.Time              `json:"updatedAt"`
+	IsDeleted     bool                   `json:"isDeleted"`
+	IsEnabled     bool                   `json:"isEnabled"`
+	DefaultImages []*DefaultImageCatalog `json:"defaultImages"`
 	Images        []*ImageCatalog        `json:"images"`
 }
 
-type ResponseCatalog struct {
-	Id            int                            `json:"id"`
-	Uuid          uuid.UUID                      `json:"uuid"`
-	Alias         string                         `json:"alias"`
-	Name          string                         `json:"name"`
-	CreatedAt     time.Time                      `json:"createdAt"`
-	UpdatedAt     time.Time                      `json:"updatedAt"`
-	IsDeleted     bool                           `json:"isDeleted"`
-	IsEnabled     bool                           `json:"isEnabled"`
-	DefaultImages []*ResponseDefaultImageCatalog `json:"defaultImages"`
-	Images        []*ResponseImageCatalog        `json:"images"`
-}
-
 type DefaultImageCatalog struct {
-	Id        int       `json:"id"`
-	CatalogId int       `json:"catalog_id"`
-	Uuid      uuid.UUID `json:"uuid"`
-	Name      string    `json:"name"`
-	Url       string    `json:"url"`
-	Size      int64     `json:"size"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	IsDeleted bool      `json:"is_deleted"`
-	IsEnabled bool      `json:"is_enabled"`
-}
-
-type ResponseDefaultImageCatalog struct {
 	Id        int       `json:"id"`
 	CatalogId int       `json:"catalogId"`
 	Uuid      uuid.UUID `json:"uuid"`
@@ -62,28 +36,15 @@ type ResponseDefaultImageCatalog struct {
 
 type ImageCatalog struct {
 	Id        int       `json:"id"`
-	CatalogId int       `json:"catalog_id"`
+	CatalogId int       `json:"catalogId"`
 	Uuid      uuid.UUID `json:"uuid"`
 	Name      string    `json:"name"`
 	Url       string    `json:"url"`
 	Size      int64     `json:"size"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	IsDeleted bool      `json:"is_deleted"`
-	IsEnabled bool      `json:"is_enabled"`
-}
-
-type ResponseImageCatalog struct {
-	Id        int       `json:"id"`
-	CatalogId int       `json:"catalog_id"`
-	Uuid      uuid.UUID `json:"uuid"`
-	Name      string    `json:"name"`
-	Url       string    `json:"url"`
-	Size      int64     `json:"size"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	IsDeleted bool      `json:"is_deleted"`
-	IsEnabled bool      `json:"is_enabled"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	IsDeleted bool      `json:"isDeleted"`
+	IsEnabled bool      `json:"isEnabled"`
 }
 
 type ListCatalogResponse struct {

@@ -28,7 +28,6 @@ export async function catalogAddAction(prevState: any, formData: FormData) {
     });
     revalidatePath(path);
     return { data: response.data, error: undefined, errors: undefined, success: true };
-    // return { data: undefined, error: undefined, errors: undefined, success: true };
   } catch (error) {
     const errorResponse = error as Response;
     const responseData: TCommonResponseError = await errorResponse.json();

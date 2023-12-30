@@ -47,8 +47,8 @@ func (pg *PGCatalogStore) Create(cf *fiber.Ctx, c *catalog.Catalog) (*catalog.Ca
 	err = tx.QueryRow(ctx, query, args...).Scan(&c.Id)
 	if err != nil {
 		logger.Log.Debug("error while Create. error in method QueryRow", zap.Error(err))
-		msg := errors.Wrap(err, "bad request")
-		err = errorDomain.NewCustomError(msg, http.StatusBadRequest)
+		msg := errors.Wrap(err, "catalog already exists")
+		err = errorDomain.NewCustomError(msg, http.StatusConflict)
 		return nil, err
 	}
 	tx.Commit(ctx)

@@ -9,16 +9,14 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"net/http"
-	"strings"
-	"time"
 )
 
 type UpdateCatalogRequest struct {
-	Alias     string    `json:"alias"`
-	Uuid      uuid.UUID `json:"uuid"`
-	Name      string    `json:"name"`
-	IsEnabled bool      `json:"isEnabled"`
-	Image     []string  `json:"image"`
+	Uuid         uuid.UUID `json:"uuid"`
+	Alias        string    `json:"alias"`
+	Name         string    `json:"name"`
+	DefaultImage []byte    `json:"defaultImage"`
+	Image        []byte    `json:"image"`
 }
 
 type UpdateCatalogUseCase struct {
@@ -42,21 +40,22 @@ func (uc *UpdateCatalogUseCase) UpdateCatalog(ctx *fiber.Ctx, r UpdateCatalogReq
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
-	var request = &catalog.Catalog{
-		Id:        catalogInDB.Id,
-		Uuid:      r.Uuid,
-		Alias:     strings.ToLower(r.Alias),
-		Name:      strings.ToLower(r.Name),
-		CreatedAt: catalogInDB.CreatedAt,
-		UpdatedAt: time.Now(),
-		IsDeleted: catalogInDB.IsDeleted,
-		IsEnabled: r.IsEnabled,
-		//Image:     r.Image,
-	}
-	response, err := uc.dataStore.Update(ctx, request)
-	if err != nil {
-		logger.Log.Debug("error while UpdateCatalog. error in method Update", zap.Error(err))
-		return nil, err
-	}
-	return response, nil
+	//var request = &catalog.Catalog{
+	//	Id:        catalogInDB.Id,
+	//	Uuid:      r.Uuid,
+	//	Alias:     strings.ToLower(r.Alias),
+	//	Name:      strings.ToLower(r.Name),
+	//	CreatedAt: catalogInDB.CreatedAt,
+	//	UpdatedAt: time.Now(),
+	//	IsDeleted: catalogInDB.IsDeleted,
+	//	IsEnabled: r.IsEnabled,
+	//	//Image:     r.Image,
+	//}
+	//response, err := uc.dataStore.Update(ctx, request)
+	//if err != nil {
+	//	logger.Log.Debug("error while UpdateCatalog. error in method Update", zap.Error(err))
+	//	return nil, err
+	//}
+	//return response, nil
+	return nil, nil
 }

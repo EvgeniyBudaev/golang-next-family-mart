@@ -31,14 +31,14 @@ func NewCreateCatalogUseCase(ds ICatalogStore) *CreateCatalogUseCase {
 }
 
 func (uc *CreateCatalogUseCase) CreateCatalog(ctx *fiber.Ctx, r CreateCatalogRequest) (*catalog.Catalog, error) {
-	catalogInDB, _ := uc.dataStore.FindByAlias(ctx, r.Alias)
-	if catalogInDB.Alias == r.Alias {
+	catalogInDB, err := uc.dataStore.FindByAlias(ctx, r.Alias)
+	if err == nil && catalogInDB.Alias == r.Alias {
 		msg := fmt.Errorf("catalog has already been created")
 		err := errorDomain.NewCustomError(msg, http.StatusConflict)
 		return nil, err
 	}
-	filePath := "./static/uploads/catalog/image/defaultImage.jpg"
-	directoryPath := fmt.Sprintf("./static/uploads/catalog/image")
+	filePath := "static/uploads/catalog/image/defaultImage.jpg"
+	directoryPath := "static/uploads/catalog/image"
 	form, err := ctx.MultipartForm()
 	if err != nil {
 		logger.Log.Debug("error while CreateCatalog. error FormFile", zap.Error(err))

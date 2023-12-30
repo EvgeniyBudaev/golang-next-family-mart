@@ -1,10 +1,13 @@
 package catalog
 
 import (
+	"fmt"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/catalog"
+	errorDomain "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/error"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
+	"net/http"
 )
 
 type GetCatalogByAliasUseCase struct {
@@ -22,6 +25,11 @@ func (uc *GetCatalogByAliasUseCase) GetCatalogByAlias(ctx *fiber.Ctx) (*catalog.
 	response, err := uc.dataStore.FindByAlias(ctx, params)
 	if err != nil {
 		logger.Log.Debug("error while GetCatalogByAlias. error in method FindByAlias", zap.Error(err))
+		return nil, err
+	}
+	if response.IsDeleted == true {
+		msg := fmt.Errorf("catalog has already been deleted")
+		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
 	return response, nil

@@ -9,7 +9,6 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"net/http"
-	"time"
 )
 
 type DeleteCatalogRequest struct {
@@ -28,12 +27,12 @@ func NewDeleteCatalogUseCase(ds ICatalogStore) *DeleteCatalogUseCase {
 
 func (uc *DeleteCatalogUseCase) DeleteCatalog(ctx *fiber.Ctx) (*catalog.Catalog, error) {
 	params := ctx.Params("uuid")
-	paramsStr, err := uuid.Parse(params)
+	catalogUUID, err := uuid.Parse(params)
 	if err != nil {
 		logger.Log.Debug("error while parsing UUID", zap.Error(err))
 		return nil, err
 	}
-	catalogInDB, err := uc.dataStore.FindByUuid(ctx, paramsStr)
+	catalogInDB, err := uc.dataStore.FindByUuid(ctx, catalogUUID)
 	if err != nil {
 		logger.Log.Debug("error while DeleteCatalog. error in method FindByUuid", zap.Error(err))
 		msg := errors.Wrap(err, "catalog not found")
@@ -45,18 +44,7 @@ func (uc *DeleteCatalogUseCase) DeleteCatalog(ctx *fiber.Ctx) (*catalog.Catalog,
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
-	var request = &catalog.Catalog{
-		Id:        catalogInDB.Id,
-		Uuid:      catalogInDB.Uuid,
-		Alias:     catalogInDB.Alias,
-		Name:      catalogInDB.Name,
-		CreatedAt: catalogInDB.CreatedAt,
-		UpdatedAt: time.Now(),
-		IsDeleted: true,
-		IsEnabled: catalogInDB.IsEnabled,
-		Images:    catalogInDB.Images,
-	}
-	response, err := uc.dataStore.Delete(ctx, request)
+	response, err := uc.dataStore.Delete(ctx, catalogUUID)
 	if err != nil {
 		logger.Log.Debug("error while DeleteCatalog. error in method Delete", zap.Error(err))
 		return nil, err

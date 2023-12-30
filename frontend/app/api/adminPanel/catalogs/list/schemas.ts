@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { paginationSchema } from "@/app/api/pagination/schemas";
 
-const catalogImageListItemSchema = z.object({
+export const catalogImageListItemSchema = z.object({
   id: z.number(),
   catalogId: z.number(),
   uuid: z.string(),

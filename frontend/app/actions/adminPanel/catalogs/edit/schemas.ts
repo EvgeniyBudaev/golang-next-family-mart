@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { EFormFields } from "@/app/pages/adminPanel/catalogs/edit/catalogEditForm/enums";
+import { EFormFields } from "@/app/pages/adminPanel/catalogs/edit/enums";
 import { EMPTY_FIELD_ERROR_MESSAGE } from "@/app/shared/validation";
 
 export const catalogEditFormSchema = z.object({

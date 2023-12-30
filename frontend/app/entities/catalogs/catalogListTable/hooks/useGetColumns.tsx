@@ -3,9 +3,10 @@
 import { useMemo } from "react";
 import type { ColumnDef, ColumnHelper } from "@tanstack/react-table";
 
-import { TCatalogListItem } from "@/app/api/adminPanel/catalogs/list/types";
+import { TCatalogImageListItem, TCatalogListItem } from "@/app/api/adminPanel/catalogs/list/types";
 import { ETableColumns } from "@/app/entities/catalogs/catalogListTable/enums";
 import { useTranslation } from "@/app/i18n/client";
+import { TableCellImage } from "@/app/shared/components/table/tableCellImage";
 import { TableHeader } from "@/app/shared/components/table/tableHeader";
 import { DateTime } from "@/app/uikit/components/dateTime";
 import { ClientOnly } from "@/app/uikit/components/clientOnly";
@@ -29,6 +30,16 @@ export const useGetColumns: TUseGetColumns = (columnHelper) => {
         columnHelper.accessor(ETableColumns.Alias, {
           id: ETableColumns.Alias,
           header: () => <TableHeader>{t("table.columns.alias")}</TableHeader>,
+          minSize: 192,
+        }),
+
+        columnHelper.accessor(ETableColumns.DefaultImages, {
+          id: ETableColumns.DefaultImages,
+          header: () => <TableHeader>{t("table.columns.defaultImages")}</TableHeader>,
+          cell: (data) => {
+            const defaultImageList: TCatalogImageListItem[] = data.getValue();
+            return <TableCellImage alt={defaultImageList[0].name} src={defaultImageList[0].url} />;
+          },
           minSize: 192,
         }),
 

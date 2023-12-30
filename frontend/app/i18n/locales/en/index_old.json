@@ -55,6 +55,8 @@
     },
     "passwordConfirm": {
       "title": "Password confirm"
-    }
+    },
+    "enabled": "Enabled",
+    "image": "Image"
   }
 }

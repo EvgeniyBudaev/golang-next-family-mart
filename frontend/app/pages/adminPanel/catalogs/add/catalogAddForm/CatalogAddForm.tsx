@@ -37,11 +37,6 @@ export const CatalogAddForm: FC = () => {
   });
 
   useEffect(() => {
-    console.log("defaultImage: ", defaultImage);
-    console.log("files: ", files);
-  }, [files, defaultImage]);
-
-  useEffect(() => {
     if (!isNil(defaultImage) && !isNil(defaultImage.preview)) {
       if (typeof defaultImage.preview === "string") {
         URL.revokeObjectURL(defaultImage.preview);

@@ -1,8 +1,5 @@
 import { z } from "zod";
-import {
-  catalogListItemSchema,
-  catalogListSchema,
-} from "@/app/api/adminPanel/catalogs/list/schemas";
+import { catalogListItemSchema } from "@/app/api/adminPanel/catalogs/list/schemas";
 
 export const catalogEditParamsSchema = z.object({
   alias: z.string(),
@@ -13,7 +10,7 @@ export const catalogEditParamsSchema = z.object({
 });
 
 export const catalogEditResponseSchema = z.object({
-  data: catalogListSchema.optional(),
+  data: catalogListItemSchema.optional(),
   message: z.string().optional(),
   statusCode: z.number(),
   success: z.boolean(),

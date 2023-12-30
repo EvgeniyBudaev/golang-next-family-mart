@@ -123,15 +123,14 @@
       "name": "Name",
       "alias": "Alias",
       "type": "Type",
-      "updatedAt": "Update date"
+      "updatedAt": "Update date",
+      "defaultImages": "Default image"
     }
   },
   "form": {
     "alias": "Alias",
     "name": "Name",
     "type": "Type",
-    "enabled": "Enabled",
-    "image": "Image",
     "value": "Value",
     "userName": "Login",
     "firstName": "First name",

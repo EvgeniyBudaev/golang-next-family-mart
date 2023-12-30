@@ -12,7 +12,7 @@ type TProps = {
 
 export const TableHeader: FC<TProps> = ({ children, info, placement = ETablePlacement.Top }) => {
   return (
-    <div className={clsx("TableHeader", { "TableHeader-CursorHelp": info })}>
+    <div className={clsx("TableHeader", { ["TableHeader-CursorHelp"]: info })}>
       {info ? (
         <Tooltip message={info} placement={placement}>
           {children}

@@ -2,33 +2,25 @@
 
 import isNil from "lodash/isNil";
 import { useEffect, type FC, useState, type ChangeEvent } from "react";
-import { experimental_useFormState as useFormState } from "react-dom";
+import { useFormState } from "react-dom";
 import { catalogEditAction } from "@/app/actions/adminPanel/catalogs/edit/catalogEditAction";
 import { TCatalogDetail } from "@/app/api/adminPanel/catalogs/detail/types";
 import { useTranslation } from "@/app/i18n/client";
 import { notify } from "@/app/uikit/components/toast/utils";
 import { Input } from "@/app/uikit/components/input";
-import { EFormFields } from "@/app/pages/adminPanel/catalogs/edit/catalogEditForm/enums";
+import { EFormFields } from "@/app/pages/adminPanel/catalogs/edit/enums";
 import { SubmitButton } from "@/app/shared/form/submitButton";
 import "./CatalogEditForm.scss";
 import { TParams } from "@/app/shared/types/form";
 import { Checkbox } from "@/app/uikit/components/checkbox";
-
-declare module "react-dom" {
-  function experimental_useFormState<State>(
-    action: (state: State) => Promise<State>,
-    initialState: State,
-    permalink?: string,
-  ): [state: State, dispatch: () => void];
-  function experimental_useFormState<State, Payload>(
-    action: (state: State, payload: Payload) => Promise<State>,
-    initialState: State,
-    permalink?: string,
-  ): [state: State, dispatch: (payload: Payload) => void];
-}
+import { TFile } from "@/app/shared/types/file";
+import { useFiles } from "@/app/shared/hooks";
+import { ETypographyVariant, Typography } from "@/app/uikit/components/typography";
+import { FileUploader } from "@/app/shared/form/fileUploader";
+import { Icon } from "@/app/uikit/components/icon";
 
 const initialState = {
-  error: "",
+  error: null,
   success: false,
 };
 
@@ -37,13 +29,34 @@ type TProps = {
 };
 
 export const CatalogEditForm: FC<TProps> = ({ catalog }) => {
-  const [state, formAction] = useFormState(catalogEditAction, initialState);
   const { t } = useTranslation("index");
+  const [defaultImage, setDefaultImage] = useState<TFile | null>(null);
+  const [files, setFiles] = useState<TFile[] | null>(null);
+  const [state, formAction] = useFormState(catalogEditAction, initialState);
   const idCheckbox = "enabled";
   const [filter, setFilter] = useState<TParams>({
-    enabled: catalog?.enabled ? [idCheckbox] : [],
+    enabled: catalog?.isEnabled ? [idCheckbox] : [],
   });
-  const enabled: boolean = filter[EFormFields.Enabled].includes(idCheckbox);
+  // const enabled: boolean = filter[EFormFields.Enabled].includes(idCheckbox);
+
+  const { onAddFiles, onDeleteFile } = useFiles({
+    fieldName: EFormFields.Image,
+    files: files ?? [],
+    setValue: (fieldName: string, files: TFile[]) => setFiles(files),
+  });
+
+  useEffect(() => {
+    console.log("defaultImage: ", defaultImage);
+    console.log("files: ", files);
+  }, [files, defaultImage]);
+
+  useEffect(() => {
+    if (!isNil(defaultImage) && !isNil(defaultImage.preview)) {
+      if (typeof defaultImage.preview === "string") {
+        URL.revokeObjectURL(defaultImage.preview);
+      }
+    }
+  }, [defaultImage]);
 
   useEffect(() => {
     if (state?.error) {
@@ -76,6 +89,28 @@ export const CatalogEditForm: FC<TProps> = ({ catalog }) => {
     }
   };
 
+  const handleAddFileToDefaultImage = (file: TFile) => {
+    setDefaultImage(file);
+  };
+
+  const handleDeleteFile = (file: TFile, files: TFile[]) => {
+    onDeleteFile(file, files);
+    if (file.name === defaultImage?.name) {
+      setDefaultImage(null);
+    }
+  };
+
+  const handleLoadImage = (file: TFile | null) => {
+    return file?.preview ? URL.revokeObjectURL(file.preview) : file;
+  };
+
+  const handleSubmit = (formData: FormData) => {
+    if (!isNil(defaultImage)) {
+      formData.append(EFormFields.DefaultImage, defaultImage);
+    }
+    formAction(formData);
+  };
+
   return (
     <form action={formAction} className="CatalogEditForm-Form">
       <Input
@@ -87,16 +122,6 @@ export const CatalogEditForm: FC<TProps> = ({ catalog }) => {
         name={EFormFields.Alias}
         type="text"
       />
-      <div className="CatalogEditForm-FormFieldGroup">
-        <Checkbox
-          checked={filter && filter[EFormFields.Enabled].includes(idCheckbox)}
-          id={idCheckbox}
-          label={t("form.enabled") ?? "Enabled"}
-          name={EFormFields.Enabled}
-          nameGroup="enabled"
-          onChange={(event, id, nameGroup) => handleChangeEnabled(event, id, nameGroup)}
-        />
-      </div>
       <Input
         defaultValue={catalog.name}
         errors={state?.errors?.name}
@@ -105,16 +130,74 @@ export const CatalogEditForm: FC<TProps> = ({ catalog }) => {
         name={EFormFields.Name}
         type="text"
       />
-      <Input
-        defaultValue={catalog.image}
-        errors={state?.errors?.image}
-        isRequired={false}
-        label={t("form.image") ?? "Image"}
-        name={EFormFields.Image}
-        type="text"
-      />
+      <div className="CatalogEditForm-FormFieldGroup">
+        {/*<Checkbox*/}
+        {/*  checked={filter && filter[EFormFields.Enabled].includes(idCheckbox)}*/}
+        {/*  id={idCheckbox}*/}
+        {/*  label={t("form.enabled") ?? "Enabled"}*/}
+        {/*  name={EFormFields.Enabled}*/}
+        {/*  nameGroup="enabled"*/}
+        {/*  onChange={(event, id, nameGroup) => handleChangeEnabled(event, id, nameGroup)}*/}
+        {/*/>*/}
+      </div>
+
+      <div className="CatalogEditForm-FormFieldGroup">
+        <div className="CatalogEditForm-SubTitle">
+          <Typography
+            value={t("common.previews.addImage")}
+            variant={ETypographyVariant.TextB3Regular}
+          />
+        </div>
+        <FileUploader
+          accept={{
+            "image/jpeg": [".jpeg"],
+            "image/jpg": [".jpg"],
+            "image/png": [".png"],
+          }}
+          files={files ?? []}
+          // isLoading={fetcherFilesLoading}
+          maxFiles={1}
+          maxSize={1024 * 1024}
+          multiple={false}
+          name={EFormFields.Image}
+          onAddFile={handleAddFileToDefaultImage}
+          onAddFiles={onAddFiles}
+          onDeleteFile={handleDeleteFile}
+          type="file"
+        />
+      </div>
+
+      <div className="CatalogEditForm-FormFieldGroup">
+        <div className="CatalogEditForm-SubTitle">
+          <Typography
+            value={t("common.previews.defaultImage")}
+            variant={ETypographyVariant.TextB3Regular}
+          />
+        </div>
+        <div className="Previews-Thumb-Inner CatalogEditForm-DefaultImage">
+          {!isNil(defaultImage) && !isNil(defaultImage.preview) && (
+            <img
+              alt={defaultImage.name}
+              className="Previews-Thumb-Image"
+              src={defaultImage.preview}
+              onLoad={() => handleLoadImage(defaultImage)}
+            />
+          )}
+        </div>
+        <div className="Previews-File">
+          <div className="Previews-File-Inner">
+            <div className="Previews-File-IconWrapper">
+              <Icon className="Previews-File-ImageIcon" type="Image" />
+            </div>
+            <div className="Previews-File-Name">{defaultImage?.name}</div>
+          </div>
+        </div>
+      </div>
+
       <input defaultValue={catalog.uuid} name={EFormFields.Uuid} type="hidden" />
+
       <div className="CatalogEditForm-FormFieldGroup"></div>
+
       <div className="CatalogEditForm-FormControl">
         <SubmitButton buttonText={t("common.actions.edit")} />
       </div>

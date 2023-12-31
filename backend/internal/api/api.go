@@ -2,6 +2,8 @@ package api
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/api/routes"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/config"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
@@ -11,7 +13,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/zap"
-	"net/http"
 )
 
 type API struct {
@@ -29,7 +30,9 @@ func NewAPI(config *config.Config) *API {
 
 func (api *API) Start() error {
 	// Инициализация
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		ReadBufferSize: 16384,
+	})
 
 	// Логирование
 	// Logrus

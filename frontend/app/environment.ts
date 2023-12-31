@@ -12,5 +12,5 @@ const { API_URL } = process.env;
  * Переменные окружения
  */
 export const Environment: EnvironmentType = {
-  API_URL: "http://localhost:8080",
+  API_URL: "http://127.0.0.1:8080",
 };

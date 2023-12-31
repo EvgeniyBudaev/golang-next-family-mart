@@ -27,6 +27,8 @@ var (
 )
 
 func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Store) {
+	app.Static("/static", "./static")
+
 	grp := app.Group(prefix)
 
 	// store
@@ -66,6 +68,10 @@ func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Sto
 }
 
 func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.Store) {
+	// app.Use("/static", middlewares.NewRequiresRealmRole("admin"), filesystem.New(filesystem.Config{
+	// 	Root: http.Dir("./static"),
+	// }))
+
 	grp := app.Group(prefix)
 
 	// store

@@ -14,7 +14,7 @@ type TProps = {
 
 export const TableCellImage: FC<TProps> = ({ alt, src }) => {
   const { proxyUrl } = useProxyUrl();
-  const url = "http://localhost:8080/backend/static/uploads/catalog/image/mirrors.jpg";
+  const url = src ? `/${src}` : "http://127.0.0.1:8080/backend/static/uploads/catalog/image/mirrors.jpg";
 
   return (
     <>

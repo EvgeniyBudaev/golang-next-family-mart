@@ -15,7 +15,7 @@ type IDeleteCatalogUseCase interface {
 
 func DeleteCatalogHandler(uc IDeleteCatalogUseCase) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
-		logger.Log.Info("post to catalog create DELETE /api/v1/catalog/delete/:uuid")
+		logger.Log.Info("delete to catalog delete DELETE /api/v1/catalog/delete/:uuid")
 		response, err := uc.DeleteCatalog(ctx)
 		if err != nil {
 			logger.Log.Debug("error while DeleteCatalogHandler(. Error in Delete", zap.Error(err))

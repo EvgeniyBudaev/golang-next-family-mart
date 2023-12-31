@@ -16,7 +16,7 @@ type IDeleteSelectableUseCase interface {
 
 func DeleteSelectableHandler(uc IDeleteSelectableUseCase) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
-		logger.Log.Info("post to Selectable create DELETE /api/v1/selectable/update")
+		logger.Log.Info("delete to Selectable delete DELETE /api/v1/selectable/delete")
 		var request = selectableUseCase.DeleteSelectableRequest{}
 		err := ctx.BodyParser(&request)
 		if err != nil {

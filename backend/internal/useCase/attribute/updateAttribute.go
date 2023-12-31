@@ -48,7 +48,7 @@ func (uc *UpdateAttributeUseCase) UpdateAttribute(ctx *fiber.Ctx, r UpdateAttrib
 		Deleted:   attributeInDB.Deleted,
 		Enabled:   attributeInDB.Enabled,
 		Filtered:  attributeInDB.Filtered,
-		Name:      strings.ToLower(r.Name),
+		Name:      r.Name,
 		Type:      strings.ToLower(r.Type),
 		UpdatedAt: time.Now(),
 		Uuid:      r.Uuid,

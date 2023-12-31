@@ -1,6 +1,7 @@
 package catalog
 
 import (
+	"fmt"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/catalog"
 	errorDomain "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/error"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
@@ -9,14 +10,15 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"net/http"
+	"strings"
+	"time"
 )
 
 type UpdateCatalogRequest struct {
-	Uuid         uuid.UUID `json:"uuid"`
-	Alias        string    `json:"alias"`
-	Name         string    `json:"name"`
-	DefaultImage []byte    `json:"defaultImage"`
-	Image        []byte    `json:"image"`
+	Uuid  uuid.UUID `json:"uuid"`
+	Alias string    `json:"alias"`
+	Name  string    `json:"name"`
+	Image []byte    `json:"image"`
 }
 
 type UpdateCatalogUseCase struct {
@@ -40,22 +42,72 @@ func (uc *UpdateCatalogUseCase) UpdateCatalog(ctx *fiber.Ctx, r UpdateCatalogReq
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
-	//var request = &catalog.Catalog{
-	//	Id:        catalogInDB.Id,
-	//	Uuid:      r.Uuid,
-	//	Alias:     strings.ToLower(r.Alias),
-	//	Name:      strings.ToLower(r.Name),
-	//	CreatedAt: catalogInDB.CreatedAt,
-	//	UpdatedAt: time.Now(),
-	//	IsDeleted: catalogInDB.IsDeleted,
-	//	IsEnabled: r.IsEnabled,
-	//	//Image:     r.Image,
-	//}
-	//response, err := uc.dataStore.Update(ctx, request)
-	//if err != nil {
-	//	logger.Log.Debug("error while UpdateCatalog. error in method Update", zap.Error(err))
-	//	return nil, err
-	//}
-	//return response, nil
-	return nil, nil
+	directoryPath := "static/uploads/catalog/image"
+	filePath := fmt.Sprintf("%s/defaultImage.jpg", directoryPath)
+	form, err := ctx.MultipartForm()
+	if err != nil {
+		logger.Log.Debug("error while UpdateCatalog. error FormFile", zap.Error(err))
+		return nil, err
+	}
+	imageFiles := form.File["image"]
+	imagesFilePath := make([]string, 0, len(imageFiles))
+	imagesCatalog := make([]*catalog.ImageCatalog, 0, len(imagesFilePath))
+	for _, file := range imageFiles {
+		filePath = fmt.Sprintf("%s/%s", directoryPath, file.Filename)
+		if err := ctx.SaveFile(file, filePath); err != nil {
+			logger.Log.Debug("error while UpdateCatalog. error SaveFile", zap.Error(err))
+			return nil, err
+		}
+		image := catalog.ImageCatalog{
+			Uuid:      uuid.New(),
+			Name:      file.Filename,
+			Url:       filePath,
+			Size:      file.Size,
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+			IsDeleted: false,
+			IsEnabled: true,
+		}
+		imagesFilePath = append(imagesFilePath, filePath)
+		imagesCatalog = append(imagesCatalog, &image)
+	}
+	catalogRequest := &catalog.Catalog{
+		Uuid:      r.Uuid,
+		Alias:     strings.ToLower(r.Alias),
+		Name:      r.Name,
+		CreatedAt: catalogInDB.CreatedAt,
+		UpdatedAt: time.Now(),
+		IsDeleted: false,
+		IsEnabled: true,
+		Images:    imagesCatalog,
+	}
+	updatedCatalog, err := uc.dataStore.Update(ctx, catalogRequest)
+	if err != nil {
+		logger.Log.Debug("error while UpdateCatalog. error in method Update", zap.Error(err))
+		return nil, err
+	}
+	for _, i := range catalogRequest.Images {
+		image := &catalog.ImageCatalog{
+			CatalogId: catalogInDB.Id,
+			Uuid:      i.Uuid,
+			Name:      i.Name,
+			Url:       i.Url,
+			Size:      i.Size,
+			CreatedAt: i.CreatedAt,
+			UpdatedAt: i.UpdatedAt,
+			IsDeleted: i.IsDeleted,
+			IsEnabled: i.IsEnabled,
+		}
+		_, err := uc.dataStore.AddImage(ctx, image)
+		if err != nil {
+			logger.Log.Debug("error while UpdateCatalog. error in method AddImage", zap.Error(err))
+			return nil, err
+		}
+	}
+	response, err := uc.dataStore.FindByUuid(ctx, updatedCatalog.Uuid)
+	if err != nil {
+		logger.Log.Debug("error while UpdateCatalog. error in method FindByUuid", zap.Error(err))
+		return nil, err
+	}
+	return response, nil
 }

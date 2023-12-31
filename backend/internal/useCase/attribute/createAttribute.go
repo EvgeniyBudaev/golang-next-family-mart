@@ -35,7 +35,7 @@ func (uc *CreateAttributeUseCase) CreateAttribute(ctx *fiber.Ctx, r CreateAttrib
 		Deleted:   false,
 		Enabled:   true,
 		Filtered:  true,
-		Name:      strings.ToLower(r.Name),
+		Name:      r.Name,
 		Type:      strings.ToLower(r.Type),
 		UpdatedAt: time.Now(),
 		Uuid:      uuid.New(),

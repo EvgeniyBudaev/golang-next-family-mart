@@ -12,10 +12,9 @@ import (
 )
 
 type CreateCatalogRequest struct {
-	Alias        string `json:"alias"`
-	Name         string `json:"name"`
-	DefaultImage []byte `json:"defaultImage"`
-	Image        []byte `json:"image"`
+	Alias string `json:"alias"`
+	Name  string `json:"name"`
+	Image []byte `json:"image"`
 }
 
 type CreateCatalogUseCase struct {
@@ -29,34 +28,12 @@ func NewCreateCatalogUseCase(ds ICatalogStore) *CreateCatalogUseCase {
 }
 
 func (uc *CreateCatalogUseCase) CreateCatalog(ctx *fiber.Ctx, r CreateCatalogRequest) (*catalog.Catalog, error) {
-	filePath := "static/uploads/catalog/image/defaultImage.jpg"
 	directoryPath := "static/uploads/catalog/image"
+	filePath := fmt.Sprintf("%s/defaultImage.jpg", directoryPath)
 	form, err := ctx.MultipartForm()
 	if err != nil {
 		logger.Log.Debug("error while CreateCatalog. error FormFile", zap.Error(err))
 		return nil, err
-	}
-	defaultImageFiles := form.File["defaultImage"]
-	defaultImagePath := make([]string, 0, len(defaultImageFiles))
-	defaultImagesCatalog := make([]*catalog.DefaultImageCatalog, 0, len(defaultImagePath))
-	for _, file := range defaultImageFiles {
-		filePath = fmt.Sprintf("%s/%s", directoryPath, file.Filename)
-		if err := ctx.SaveFile(file, filePath); err != nil {
-			logger.Log.Debug("error while CreateCatalog. error SaveFile", zap.Error(err))
-			return nil, err
-		}
-		defaultImage := catalog.DefaultImageCatalog{
-			Uuid:      uuid.New(),
-			Name:      file.Filename,
-			Url:       filePath,
-			Size:      file.Size,
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
-			IsDeleted: false,
-			IsEnabled: true,
-		}
-		defaultImagePath = append(defaultImagePath, filePath)
-		defaultImagesCatalog = append(defaultImagesCatalog, &defaultImage)
 	}
 	imageFiles := form.File["image"]
 	imagesFilePath := make([]string, 0, len(imageFiles))
@@ -81,42 +58,23 @@ func (uc *CreateCatalogUseCase) CreateCatalog(ctx *fiber.Ctx, r CreateCatalogReq
 		imagesCatalog = append(imagesCatalog, &image)
 	}
 	catalogRequest := &catalog.Catalog{
-		Uuid:          uuid.New(),
-		Alias:         strings.ToLower(r.Alias),
-		Name:          strings.ToLower(r.Name),
-		CreatedAt:     time.Now(),
-		UpdatedAt:     time.Now(),
-		IsDeleted:     false,
-		IsEnabled:     true,
-		DefaultImages: defaultImagesCatalog,
-		Images:        imagesCatalog,
+		Uuid:      uuid.New(),
+		Alias:     strings.ToLower(r.Alias),
+		Name:      r.Name,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		IsDeleted: false,
+		IsEnabled: true,
+		Images:    imagesCatalog,
 	}
 	newCatalog, err := uc.dataStore.Create(ctx, catalogRequest)
 	if err != nil {
 		logger.Log.Debug("error while CreateCatalog. error in method Create", zap.Error(err))
 		return nil, err
 	}
-	for _, i := range catalogRequest.DefaultImages {
-		image := &catalog.DefaultImageCatalog{
-			CatalogId: catalogRequest.Id,
-			Uuid:      i.Uuid,
-			Name:      i.Name,
-			Url:       i.Url,
-			Size:      i.Size,
-			CreatedAt: i.CreatedAt,
-			UpdatedAt: i.UpdatedAt,
-			IsDeleted: i.IsDeleted,
-			IsEnabled: i.IsEnabled,
-		}
-		_, err := uc.dataStore.AddDefaultImage(ctx, image)
-		if err != nil {
-			logger.Log.Debug("error while CreateCatalog. error in method AddDefaultImage", zap.Error(err))
-			return nil, err
-		}
-	}
 	for _, i := range catalogRequest.Images {
 		image := &catalog.ImageCatalog{
-			CatalogId: catalogRequest.Id,
+			CatalogId: newCatalog.Id,
 			Uuid:      i.Uuid,
 			Name:      i.Name,
 			Url:       i.Url,
@@ -134,7 +92,7 @@ func (uc *CreateCatalogUseCase) CreateCatalog(ctx *fiber.Ctx, r CreateCatalogReq
 	}
 	response, err := uc.dataStore.FindByUuid(ctx, newCatalog.Uuid)
 	if err != nil {
-		logger.Log.Debug("error while GetCatalogByUuid. error in method FindByUuid", zap.Error(err))
+		logger.Log.Debug("error while CreateCatalog. error in method FindByUuid", zap.Error(err))
 		return nil, err
 	}
 	return response, nil

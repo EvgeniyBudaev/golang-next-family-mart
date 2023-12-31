@@ -68,6 +68,7 @@ func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Sto
 }
 
 func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.Store) {
+	// Private static
 	// app.Use("/static", middlewares.NewRequiresRealmRole("admin"), filesystem.New(filesystem.Config{
 	// 	Root: http.Dir("./static"),
 	// }))

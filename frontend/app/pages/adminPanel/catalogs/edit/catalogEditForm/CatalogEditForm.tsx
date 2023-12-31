@@ -33,11 +33,12 @@ export const CatalogEditForm: FC<TProps> = ({ catalog }) => {
   const [files, setFiles] = useState<TFile[] | null>(null);
   const [state, formAction] = useFormState(catalogEditAction, initialState);
   const { pending } = useFormStatus();
-  const idCheckbox = "enabled";
+  const idCheckbox = "isEnabled";
   const [filter, setFilter] = useState<TParams>({
-    enabled: catalog?.isEnabled ? [idCheckbox] : [],
+    isEnabled: catalog?.isEnabled ? [idCheckbox] : [],
   });
-  // const enabled: boolean = filter[EFormFields.Enabled].includes(idCheckbox);
+  const enabled: boolean = filter[EFormFields.IsEnabled].includes(idCheckbox);
+  console.log("filter: ", filter);
 
   const { onAddFiles, onDeleteFile } = useFiles({
     fieldName: EFormFields.Image,
@@ -66,13 +67,16 @@ export const CatalogEditForm: FC<TProps> = ({ catalog }) => {
     const {
       target: { checked, value },
     } = event;
-
+    console.log("checked: ", checked);
+    console.log("value: ", value);
+    console.log("nameGroup1: ", nameGroup);
     if (checked) {
       setFilter({
         ...filter,
         [nameGroup]: [...filter[nameGroup], value],
       });
     } else {
+      console.log("nameGroup2: ", [...filter[nameGroup].filter((x: string) => x !== value)]);
       setFilter({
         ...filter,
         [nameGroup]: [...filter[nameGroup].filter((x: string) => x !== value)],
@@ -104,14 +108,14 @@ export const CatalogEditForm: FC<TProps> = ({ catalog }) => {
         type="text"
       />
       <div className="CatalogEditForm-FormFieldGroup">
-        {/*<Checkbox*/}
-        {/*  checked={filter && filter[EFormFields.Enabled].includes(idCheckbox)}*/}
-        {/*  id={idCheckbox}*/}
-        {/*  label={t("form.enabled") ?? "Enabled"}*/}
-        {/*  name={EFormFields.Enabled}*/}
-        {/*  nameGroup="enabled"*/}
-        {/*  onChange={(event, id, nameGroup) => handleChangeEnabled(event, id, nameGroup)}*/}
-        {/*/>*/}
+        <Checkbox
+          checked={enabled}
+          id={idCheckbox}
+          label={t("form.isEnabled") ?? "Enabled"}
+          name={EFormFields.IsEnabled}
+          nameGroup="isEnabled"
+          onChange={(event, id, nameGroup) => handleChangeEnabled(event, id, nameGroup)}
+        />
       </div>
 
       <div className="CatalogEditForm-FormFieldGroup">

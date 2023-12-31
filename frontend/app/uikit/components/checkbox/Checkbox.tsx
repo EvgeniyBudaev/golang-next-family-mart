@@ -47,7 +47,7 @@ const CheckboxComponent: FC<TCheckboxProps> = ({
         id={id}
         type="checkbox"
         name={name}
-        value={value}
+        value={id}
         checked={checked}
         onChange={handleChange}
         {...props}

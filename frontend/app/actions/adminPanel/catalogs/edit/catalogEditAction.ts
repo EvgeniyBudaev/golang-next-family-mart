@@ -22,14 +22,15 @@ export async function catalogEditAction(prevState: any, formData: FormData) {
       ...resolver.data,
     };
     console.log("formattedParams: ", formattedParams);
-    const response = await catalogEdit(formData as TCatalogEditParams);
-    console.log("response: ", response);
-    const path = createPath({
-      route: ERoutes.AdminCatalogEdit,
-      params: { alias: formattedParams.alias },
-    });
-    revalidatePath(path);
-    return { data: response.data, error: undefined, errors: undefined, success: true };
+    // const response = await catalogEdit(formData as TCatalogEditParams);
+    // console.log("response: ", response);
+    // const path = createPath({
+    //   route: ERoutes.AdminCatalogEdit,
+    //   params: { alias: formattedParams.alias },
+    // });
+    // revalidatePath(path);
+    // return { data: response.data, error: undefined, errors: undefined, success: true };
+    return { data: undefined, error: undefined, errors: undefined, success: true };
   } catch (error) {
     const errorResponse = error as Response;
     const responseData: TCommonResponseError = await errorResponse.json();

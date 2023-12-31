@@ -130,6 +130,7 @@
     "alias": "Alias",
     "name": "Name",
     "type": "Type",
+    "isEnabled": "Enabled",
     "value": "Value",
     "userName": "Login",
     "firstName": "First name",

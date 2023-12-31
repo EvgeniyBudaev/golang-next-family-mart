@@ -83,9 +83,9 @@ const InputComponent = forwardRef<HTMLInputElement, IInputProps>(
       >
         <div
           className={clsx("InputField-Inner", {
-            "InputField-Inner__disabled": isReadOnly || isDisabled,
-            "InputField-Inner__active": isFocused,
-            "InputField-Inner__error": errors,
+            ["InputField-Inner__disabled"]: isReadOnly || isDisabled,
+            ["InputField-Inner__active"]: isFocused,
+            ["InputField-Inner__error"]: errors,
           })}
         >
           <input

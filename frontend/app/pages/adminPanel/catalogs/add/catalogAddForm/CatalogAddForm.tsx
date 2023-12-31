@@ -2,7 +2,7 @@
 
 import isNil from "lodash/isNil";
 import { redirect } from "next/navigation";
-import { useEffect, type FC, useState, FormEvent } from "react";
+import { useEffect, type FC, useState } from "react";
 import { useFormState } from "react-dom";
 import { catalogAddAction } from "@/app/actions/adminPanel/catalogs/add/catalogAddAction";
 import { useTranslation } from "@/app/i18n/client";
@@ -13,7 +13,6 @@ import { SubmitButton } from "@/app/shared/form/submitButton";
 import { useFiles } from "@/app/shared/hooks";
 import { TFile } from "@/app/shared/types/file";
 import { createPath } from "@/app/shared/utils";
-import { Icon } from "@/app/uikit/components/icon";
 import { Input } from "@/app/uikit/components/input";
 import { notify } from "@/app/uikit/components/toast/utils";
 import { ETypographyVariant, Typography } from "@/app/uikit/components/typography";
@@ -26,7 +25,6 @@ const initialState = {
 
 export const CatalogAddForm: FC = () => {
   const { t } = useTranslation("index");
-  const [defaultImage, setDefaultImage] = useState<TFile | null>(null);
   const [files, setFiles] = useState<TFile[] | null>(null);
   const [state, formAction] = useFormState(catalogAddAction, initialState);
 
@@ -37,50 +35,26 @@ export const CatalogAddForm: FC = () => {
   });
 
   useEffect(() => {
-    if (!isNil(defaultImage) && !isNil(defaultImage.preview)) {
-      if (typeof defaultImage.preview === "string") {
-        URL.revokeObjectURL(defaultImage.preview);
-      }
-    }
-  }, [defaultImage]);
-
-  useEffect(() => {
     if (state?.error) {
       notify.error({ title: state?.error });
     }
-    // if (!isNil(state.data) && state.success && !state?.error) {
-    //   const path = createPath({
-    //     route: ERoutes.AdminCatalogEdit,
-    //     params: { alias: state.data?.alias },
-    //   });
-    //   redirect(path);
-    // }
+    if (!isNil(state.data) && state.success && !state?.error) {
+      const path = createPath({
+        route: ERoutes.AdminCatalogEdit,
+        params: { alias: state.data?.alias },
+      });
+      redirect(path);
+    }
   }, [state]);
-
-  const handleAddFileToDefaultImage = (file: TFile) => {
-    setDefaultImage(file);
-  };
 
   const handleDeleteFile = (file: TFile, files: TFile[]) => {
     onDeleteFile(file, files);
-    if (file.name === defaultImage?.name) {
-      setDefaultImage(null);
-    }
   };
 
-  const handleLoadImage = (file: TFile | null) => {
-    return file?.preview ? URL.revokeObjectURL(file.preview) : file;
-  };
-
-  const handleSubmit = (formData: FormData) => {
-    if (!isNil(defaultImage)) {
-      formData.append(EFormFields.DefaultImage, defaultImage);
-    }
-    formAction(formData);
-  };
+  console.log("state?.errors: ", state?.errors);
 
   return (
-    <form action={handleSubmit} className="CatalogAddForm-Form">
+    <form action={formAction} className="Form">
       <Input
         errors={state?.errors?.alias}
         isRequired={true}
@@ -96,12 +70,13 @@ export const CatalogAddForm: FC = () => {
         type="text"
       />
 
-      <div className="CatalogAddForm-FormFieldGroup">
-        <div className="CatalogAddForm-SubTitle">
+      <div className="Form-FieldGroup">
+        <div className="Form-SubTitle">
           <Typography
             value={t("common.previews.addImage")}
             variant={ETypographyVariant.TextB3Regular}
           />
+          <span className="Form-SubTitle__isRequired"> *</span>
         </div>
         <FileUploader
           accept={{
@@ -115,41 +90,13 @@ export const CatalogAddForm: FC = () => {
           maxSize={1024 * 1024}
           multiple={false}
           name={EFormFields.Image}
-          onAddFile={handleAddFileToDefaultImage}
           onAddFiles={onAddFiles}
           onDeleteFile={handleDeleteFile}
           type="file"
         />
       </div>
 
-      <div className="CatalogAddForm-FormFieldGroup">
-        <div className="CatalogAddForm-SubTitle">
-          <Typography
-            value={t("common.previews.defaultImage")}
-            variant={ETypographyVariant.TextB3Regular}
-          />
-        </div>
-        <div className="Previews-Thumb-Inner CatalogAddForm-DefaultImage">
-          {!isNil(defaultImage) && !isNil(defaultImage.preview) && (
-            <img
-              alt={defaultImage.name}
-              className="Previews-Thumb-Image"
-              src={defaultImage.preview}
-              onLoad={() => handleLoadImage(defaultImage)}
-            />
-          )}
-        </div>
-        <div className="Previews-File">
-          <div className="Previews-File-Inner">
-            <div className="Previews-File-IconWrapper">
-              <Icon className="Previews-File-ImageIcon" type="Image" />
-            </div>
-            <div className="Previews-File-Name">{defaultImage?.name}</div>
-          </div>
-        </div>
-      </div>
-
-      <div className="CatalogAddForm-FormControl">
+      <div className="Form-Control">
         <SubmitButton buttonText={t("common.actions.add")} />
       </div>
     </form>

@@ -32,6 +32,10 @@
     "actions": {
       "create": "Create",
       "update": "Обновить"
+    },
+    "previews": {
+      "defaultImage": "Изображение по умолчанию",
+      "addDefaultImage": "Добавить изображение по умолчанию"
     }
   },
   "form": {
@@ -58,5 +62,10 @@
     },
     "enabled": "Включено",
     "image": "Изображение"
+  },
+  "table": {
+    "columns": {
+      "defaultImages": "Изображение по умолчанию"
+    }
   }
 }

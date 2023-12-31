@@ -1,11 +1,13 @@
 import { z } from "zod";
+import { zfd } from "zod-form-data";
+import { fileSchema } from "@/app/api/upload";
 import { EFormFields } from "@/app/pages/adminPanel/catalogs/edit/enums";
 import { EMPTY_FIELD_ERROR_MESSAGE } from "@/app/shared/validation";
 
-export const catalogEditFormSchema = z.object({
+export const catalogEditFormSchema = zfd.formData({
   [EFormFields.Alias]: z.string().trim().min(1, EMPTY_FIELD_ERROR_MESSAGE),
-  [EFormFields.Enabled]: z.string().trim(),
-  [EFormFields.Image]: z.string().trim().optional(),
   [EFormFields.Name]: z.string().trim().min(1, EMPTY_FIELD_ERROR_MESSAGE),
+  // [EFormFields.Enabled]: z.string().trim(),
+  [EFormFields.Image]: fileSchema.or(fileSchema.array()).nullish(),
   [EFormFields.Uuid]: z.string().trim().min(1, EMPTY_FIELD_ERROR_MESSAGE),
 });

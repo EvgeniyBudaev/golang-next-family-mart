@@ -6,6 +6,7 @@ import { catalogEdit } from "@/app/api/adminPanel/catalogs/edit/domain";
 import { ERoutes } from "@/app/shared/enums";
 import { TCommonResponseError } from "@/app/shared/types/error";
 import { getResponseError, getErrorsResolver, createPath } from "@/app/shared/utils";
+import { TCatalogEditParams } from "@/app/api/adminPanel/catalogs/edit";
 
 export async function catalogEditAction(prevState: any, formData: FormData) {
   console.log("catalogEditAction", Object.fromEntries(formData.entries()));
@@ -13,12 +14,7 @@ export async function catalogEditAction(prevState: any, formData: FormData) {
 
   if (!resolver.success) {
     const errors = getErrorsResolver(resolver);
-    console.log("errors", errors);
-    return {
-      type: "error" as const,
-      errors: errors,
-      success: false,
-    };
+    return { data: undefined, error: undefined, errors: errors, success: false };
   }
 
   try {
@@ -26,21 +22,20 @@ export async function catalogEditAction(prevState: any, formData: FormData) {
       ...resolver.data,
     };
     console.log("formattedParams: ", formattedParams);
-    // const response = await catalogEdit(formattedParams);
-    // console.log("response: ", response);
-    // const path = createPath({
-    //   route: ERoutes.AdminCatalogEdit,
-    //   params: { alias: formattedParams.alias },
-    // });
-    // revalidatePath(path);
-    // return { error: null, data: response.data, success: true };
-    return { error: null, data: null, success: false };
+    const response = await catalogEdit(formData as TCatalogEditParams);
+    console.log("response: ", response);
+    const path = createPath({
+      route: ERoutes.AdminCatalogEdit,
+      params: { alias: formattedParams.alias },
+    });
+    revalidatePath(path);
+    return { data: response.data, error: undefined, errors: undefined, success: true };
   } catch (error) {
     const errorResponse = error as Response;
     const responseData: TCommonResponseError = await errorResponse.json();
     const { message: formError, fieldErrors, success } = getResponseError(responseData) ?? {};
     console.log("[formError] ", formError);
     console.log("[fieldErrors] ", fieldErrors);
-    return { error: formError, success: false };
+    return { data: undefined, error: formError, errors: fieldErrors, success: false };
   }
 }

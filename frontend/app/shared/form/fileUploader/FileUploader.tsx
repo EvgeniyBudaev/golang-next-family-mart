@@ -17,7 +17,6 @@ export type TFileUploaderProps = {
   Input?: ReactElement;
   isLoading?: boolean;
   maxFiles?: number;
-  onAddFile: (file: File) => void;
   onAddFiles: (acceptedFiles: TFile[], files: TFile[]) => void;
   onDeleteFile: (deletedFile: TFile, files: TFile[]) => void;
 } & TDropzoneProps;
@@ -28,7 +27,6 @@ export const FileUploader: FC<TFileUploaderProps> = ({
   Input,
   isLoading,
   maxFiles,
-  onAddFile,
   onAddFiles,
   onDeleteFile,
   ...rest
@@ -96,7 +94,6 @@ export const FileUploader: FC<TFileUploaderProps> = ({
       <Previews
         className="FileUploader-Previews"
         files={files}
-        onAddFile={onAddFile}
         onDeleteFile={onDelete}
         onLoad={handleLoadImage}
       />

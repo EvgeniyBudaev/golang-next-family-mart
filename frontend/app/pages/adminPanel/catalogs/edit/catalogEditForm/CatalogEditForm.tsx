@@ -2,22 +2,22 @@
 
 import isNil from "lodash/isNil";
 import { useEffect, type FC, useState, type ChangeEvent } from "react";
-import { useFormState } from "react-dom";
+import { useFormState, useFormStatus } from "react-dom";
 import { catalogEditAction } from "@/app/actions/adminPanel/catalogs/edit/catalogEditAction";
 import { TCatalogDetail } from "@/app/api/adminPanel/catalogs/detail/types";
 import { useTranslation } from "@/app/i18n/client";
+import { ImageList } from "@/app/pages/adminPanel/catalogs/edit/imageList";
+import { FileUploader } from "@/app/shared/form/fileUploader";
+import { useFiles } from "@/app/shared/hooks";
+import { TFile } from "@/app/shared/types/file";
+import { TParams } from "@/app/shared/types/form";
+import { Checkbox } from "@/app/uikit/components/checkbox";
 import { notify } from "@/app/uikit/components/toast/utils";
+import { ETypographyVariant, Typography } from "@/app/uikit/components/typography";
 import { Input } from "@/app/uikit/components/input";
 import { EFormFields } from "@/app/pages/adminPanel/catalogs/edit/enums";
 import { SubmitButton } from "@/app/shared/form/submitButton";
 import "./CatalogEditForm.scss";
-import { TParams } from "@/app/shared/types/form";
-import { Checkbox } from "@/app/uikit/components/checkbox";
-import { TFile } from "@/app/shared/types/file";
-import { useFiles } from "@/app/shared/hooks";
-import { ETypographyVariant, Typography } from "@/app/uikit/components/typography";
-import { FileUploader } from "@/app/shared/form/fileUploader";
-import { Icon } from "@/app/uikit/components/icon";
 
 const initialState = {
   error: null,
@@ -30,9 +30,9 @@ type TProps = {
 
 export const CatalogEditForm: FC<TProps> = ({ catalog }) => {
   const { t } = useTranslation("index");
-  const [defaultImage, setDefaultImage] = useState<TFile | null>(null);
   const [files, setFiles] = useState<TFile[] | null>(null);
   const [state, formAction] = useFormState(catalogEditAction, initialState);
+  const { pending } = useFormStatus();
   const idCheckbox = "enabled";
   const [filter, setFilter] = useState<TParams>({
     enabled: catalog?.isEnabled ? [idCheckbox] : [],
@@ -46,23 +46,14 @@ export const CatalogEditForm: FC<TProps> = ({ catalog }) => {
   });
 
   useEffect(() => {
-    console.log("defaultImage: ", defaultImage);
     console.log("files: ", files);
-  }, [files, defaultImage]);
-
-  useEffect(() => {
-    if (!isNil(defaultImage) && !isNil(defaultImage.preview)) {
-      if (typeof defaultImage.preview === "string") {
-        URL.revokeObjectURL(defaultImage.preview);
-      }
-    }
-  }, [defaultImage]);
+  }, [files]);
 
   useEffect(() => {
     if (state?.error) {
       notify.error({ title: state?.error });
     }
-    if (!isNil(state.data) && state.success && !state?.error) {
+    if (!isNil(state?.data) && state.success && !state?.error) {
       notify.success({ title: "Ok" });
     }
   }, [state]);
@@ -89,26 +80,8 @@ export const CatalogEditForm: FC<TProps> = ({ catalog }) => {
     }
   };
 
-  const handleAddFileToDefaultImage = (file: TFile) => {
-    setDefaultImage(file);
-  };
-
   const handleDeleteFile = (file: TFile, files: TFile[]) => {
     onDeleteFile(file, files);
-    if (file.name === defaultImage?.name) {
-      setDefaultImage(null);
-    }
-  };
-
-  const handleLoadImage = (file: TFile | null) => {
-    return file?.preview ? URL.revokeObjectURL(file.preview) : file;
-  };
-
-  const handleSubmit = (formData: FormData) => {
-    if (!isNil(defaultImage)) {
-      formData.append(EFormFields.DefaultImage, defaultImage);
-    }
-    formAction(formData);
   };
 
   return (
@@ -144,6 +117,16 @@ export const CatalogEditForm: FC<TProps> = ({ catalog }) => {
       <div className="CatalogEditForm-FormFieldGroup">
         <div className="CatalogEditForm-SubTitle">
           <Typography
+            value={t("common.previews.images")}
+            variant={ETypographyVariant.TextB3Regular}
+          />
+        </div>
+        <ImageList catalogAlias={catalog.alias} images={catalog?.images ?? []} />
+      </div>
+
+      <div className="CatalogEditForm-FormFieldGroup">
+        <div className="CatalogEditForm-SubTitle">
+          <Typography
             value={t("common.previews.addImage")}
             variant={ETypographyVariant.TextB3Regular}
           />
@@ -155,48 +138,18 @@ export const CatalogEditForm: FC<TProps> = ({ catalog }) => {
             "image/png": [".png"],
           }}
           files={files ?? []}
-          // isLoading={fetcherFilesLoading}
+          isLoading={pending}
           maxFiles={1}
           maxSize={1024 * 1024}
           multiple={false}
           name={EFormFields.Image}
-          onAddFile={handleAddFileToDefaultImage}
           onAddFiles={onAddFiles}
           onDeleteFile={handleDeleteFile}
           type="file"
         />
       </div>
 
-      <div className="CatalogEditForm-FormFieldGroup">
-        <div className="CatalogEditForm-SubTitle">
-          <Typography
-            value={t("common.previews.defaultImage")}
-            variant={ETypographyVariant.TextB3Regular}
-          />
-        </div>
-        <div className="Previews-Thumb-Inner CatalogEditForm-DefaultImage">
-          {!isNil(defaultImage) && !isNil(defaultImage.preview) && (
-            <img
-              alt={defaultImage.name}
-              className="Previews-Thumb-Image"
-              src={defaultImage.preview}
-              onLoad={() => handleLoadImage(defaultImage)}
-            />
-          )}
-        </div>
-        <div className="Previews-File">
-          <div className="Previews-File-Inner">
-            <div className="Previews-File-IconWrapper">
-              <Icon className="Previews-File-ImageIcon" type="Image" />
-            </div>
-            <div className="Previews-File-Name">{defaultImage?.name}</div>
-          </div>
-        </div>
-      </div>
-
       <input defaultValue={catalog.uuid} name={EFormFields.Uuid} type="hidden" />
-
-      <div className="CatalogEditForm-FormFieldGroup"></div>
 
       <div className="CatalogEditForm-FormControl">
         <SubmitButton buttonText={t("common.actions.edit")} />

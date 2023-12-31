@@ -6,8 +6,7 @@ import { fileSchema } from "@/app/api/upload";
 export const catalogAddParamsSchema = zfd.formData({
   alias: zfd.text(),
   name: zfd.text(),
-  defaultImage: fileSchema.or(fileSchema.array()).nullish(),
-  image: fileSchema.or(fileSchema.array()).nullish(),
+  image: fileSchema.or(fileSchema.array()),
 });
 
 export const catalogAddResponseSchema = z.object({

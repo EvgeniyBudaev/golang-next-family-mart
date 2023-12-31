@@ -35,8 +35,7 @@
     },
     "previews": {
       "addImage": "Add new image to gallery",
-      "defaultImage": "Default image",
-      "addDefaultImage": "Add default image",
+      "images": "List of uploaded images",
       "deleteImage": "Delete image"
     },
     "validation": {
@@ -124,7 +123,7 @@
       "alias": "Alias",
       "type": "Type",
       "updatedAt": "Update date",
-      "defaultImages": "Default image"
+      "images": "Image"
     }
   },
   "form": {

@@ -12,12 +12,11 @@ import "./Previews.scss";
 type TProps = {
   className?: string;
   files?: TFile[];
-  onAddFile: (file: TFile) => void;
   onDeleteFile: (file: TFile) => void;
   onLoad: (file: TFile) => void;
 };
 
-export const Previews: FC<TProps> = ({ className, files, onAddFile, onDeleteFile, onLoad }) => {
+export const Previews: FC<TProps> = ({ className, files, onDeleteFile, onLoad }) => {
   const { t } = useTranslation("index");
   // console.log("files: ", files);
   const renderThumbs =
@@ -44,13 +43,6 @@ export const Previews: FC<TProps> = ({ className, files, onAddFile, onDeleteFile
           </div>
 
           <div className="Previews-File-IconWrapper">
-            <Tooltip message={t("common.previews.addDefaultImage")}>
-              <Icon
-                className="Previews-File-AddIcon"
-                onClick={() => onAddFile(file)}
-                type="AddCircleOutline"
-              />
-            </Tooltip>
             <Tooltip message={t("common.previews.deleteImage")}>
               <Icon
                 className="Previews-File-TrashIcon"

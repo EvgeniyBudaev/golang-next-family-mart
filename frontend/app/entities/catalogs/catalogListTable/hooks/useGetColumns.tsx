@@ -33,14 +33,12 @@ export const useGetColumns: TUseGetColumns = (columnHelper) => {
           minSize: 192,
         }),
 
-        columnHelper.accessor(ETableColumns.DefaultImages, {
-          id: ETableColumns.DefaultImages,
-          header: () => <TableHeader>{t("table.columns.defaultImages")}</TableHeader>,
+        columnHelper.accessor(ETableColumns.Images, {
+          id: ETableColumns.Images,
+          header: () => <TableHeader>{t("table.columns.images")}</TableHeader>,
           cell: (data) => {
-            const defaultImageList: TCatalogImageListItem[] = data.getValue();
-            return (
-              <TableCellImage alt={defaultImageList[0]?.name} src={defaultImageList[0]?.url} />
-            );
+            const imageList: TCatalogImageListItem[] = data.getValue();
+            return <TableCellImage alt={imageList[0]?.name} src={imageList[0]?.url} />;
           },
           minSize: 192,
         }),

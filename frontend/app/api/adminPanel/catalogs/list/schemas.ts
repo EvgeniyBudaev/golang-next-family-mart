@@ -23,7 +23,6 @@ export const catalogListItemSchema = z.object({
   updatedAt: z.string(),
   isDeleted: z.boolean(),
   isEnabled: z.boolean(),
-  defaultImages: catalogImageListItemSchema.array().nullish(),
   images: catalogImageListItemSchema.array().nullish(),
 });
 

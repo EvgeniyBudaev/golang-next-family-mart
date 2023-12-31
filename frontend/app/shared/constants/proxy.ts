@@ -1,1 +1,1 @@
-export const PROXY_URL = "/proxy/";
+export const PROXY_URL = "/";

@@ -14,7 +14,6 @@ type TProps = {
 
 export const TableCellImage: FC<TProps> = ({ alt, src }) => {
   const { proxyUrl } = useProxyUrl();
-  const url = src ? `/${src}` : "http://127.0.0.1:8080/backend/static/uploads/catalog/image/mirrors.jpg";
 
   return (
     <>
@@ -23,11 +22,9 @@ export const TableCellImage: FC<TProps> = ({ alt, src }) => {
           alt={alt ?? ""}
           className="TableCellImage"
           height={76}
-          src={url}
-          // https://github.com/vercel/next.js/discussions/18825
-          unoptimized={process.env.NODE_ENV !== "production"}
+          priority={true}
+          src={`${proxyUrl}${src}`}
           width={76}
-          // src={`${proxyUrl}${src}`}
         />
       ) : (
         <Icon type="NoImage" />

@@ -38,7 +38,9 @@ export const useGetColumns: TUseGetColumns = (columnHelper) => {
           header: () => <TableHeader>{t("table.columns.defaultImages")}</TableHeader>,
           cell: (data) => {
             const defaultImageList: TCatalogImageListItem[] = data.getValue();
-            return <TableCellImage alt={defaultImageList[0]?.name} src={defaultImageList[0]?.url} />;
+            return (
+              <TableCellImage alt={defaultImageList[0]?.name} src={defaultImageList[0]?.url} />
+            );
           },
           minSize: 192,
         }),

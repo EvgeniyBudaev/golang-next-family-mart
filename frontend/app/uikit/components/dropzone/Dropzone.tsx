@@ -48,6 +48,7 @@ export const Dropzone: FC<TDropzoneProps> = ({
           height: "100%",
           opacity: "0",
           zIndex: "100",
+          cursor: "pointer",
         }}
       />
       {children}

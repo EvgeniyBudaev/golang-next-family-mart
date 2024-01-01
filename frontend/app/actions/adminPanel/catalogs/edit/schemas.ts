@@ -8,6 +8,6 @@ export const catalogEditFormSchema = zfd.formData({
   [EFormFields.Uuid]: z.string().trim().min(1, EMPTY_FIELD_ERROR_MESSAGE),
   [EFormFields.Alias]: z.string().trim().min(1, EMPTY_FIELD_ERROR_MESSAGE),
   [EFormFields.Name]: z.string().trim().min(1, EMPTY_FIELD_ERROR_MESSAGE),
-  [EFormFields.IsEnabled]: z.any(),
+  [EFormFields.IsEnabled]: z.string().trim().min(1, EMPTY_FIELD_ERROR_MESSAGE),
   [EFormFields.Image]: fileSchema.or(fileSchema.array()).nullish(),
 });

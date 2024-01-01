@@ -27,7 +27,6 @@ async function loader(params: TLoader) {
   } catch (error) {
     const errorResponse = error as Response;
     const responseData: TCommonResponseError = await errorResponse.json();
-    console.log("responseData: ", responseData);
     const { message: formError, fieldErrors, success } = getResponseError(responseData) ?? {};
     throw new Error("errorBoundary.common.unexpectedError");
   }

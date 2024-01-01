@@ -9,6 +9,7 @@ import { getResponseError, getErrorsResolver, createPath } from "@/app/shared/ut
 import { TCatalogAddParams } from "@/app/api/adminPanel/catalogs/add";
 
 export async function catalogAddAction(prevState: any, formData: FormData) {
+  console.log("catalogAddAction", Object.fromEntries(formData.entries()));
   const resolver = catalogAddFormSchema.safeParse(Object.fromEntries(formData.entries()));
 
   if (!resolver.success) {
@@ -26,7 +27,7 @@ export async function catalogAddAction(prevState: any, formData: FormData) {
     const path = createPath({
       route: ERoutes.AdminCatalogAdd,
     });
-    revalidatePath(path);
+    // revalidatePath(path);
     return { data: response.data, error: undefined, errors: undefined, success: true };
   } catch (error) {
     const errorResponse = error as Response;

@@ -9,6 +9,7 @@ import "./Dropzone.scss";
 export type TDropzoneProps = {
   className?: string;
   dataTestId?: string;
+  errors?: string[];
   name: string;
 } & DropzoneOptions;
 
@@ -16,6 +17,7 @@ export const Dropzone: FC<TDropzoneProps> = ({
   children,
   className,
   dataTestId = "uikit__dropzone",
+  errors,
   name,
   onDrop,
   ...rest
@@ -25,7 +27,14 @@ export const Dropzone: FC<TDropzoneProps> = ({
   return (
     <div
       {...getRootProps()}
-      className={clsx("Dropzone", isDragActive ? "Dropzone__isDragActive" : "", className)}
+      className={clsx(
+        "Dropzone",
+        isDragActive ? "Dropzone__isDragActive" : "",
+        {
+          ["Dropzone__isError"]: Boolean(errors?.length),
+        },
+        className,
+      )}
       data-testid={dataTestId}
     >
       <input

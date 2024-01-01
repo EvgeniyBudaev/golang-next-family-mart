@@ -15,9 +15,9 @@ export type TCheckboxProps = {
   defaultChecked?: boolean;
   id: string;
   label: string;
-  name: string;
-  nameGroup: string;
-  onChange?: (event: ChangeEvent<HTMLInputElement>, id: string, nameGroup: string) => void;
+  name?: string;
+  nameGroup?: string;
+  onChange?: (event: ChangeEvent<HTMLInputElement>, nameGroup?: string) => void;
   value?: string | readonly string[] | number | undefined;
 };
 
@@ -36,7 +36,7 @@ const CheckboxComponent: FC<TCheckboxProps> = ({
   ...props
 }) => {
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    onChange?.(event, id, nameGroup);
+    onChange?.(event, nameGroup);
   };
 
   return (

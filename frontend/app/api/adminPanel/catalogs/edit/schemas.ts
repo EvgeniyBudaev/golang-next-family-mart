@@ -6,7 +6,7 @@ import { fileSchema } from "@/app/api/upload";
 export const catalogEditParamsSchema = zfd.formData({
   alias: zfd.text(),
   name: zfd.text(),
-  // enabled: z.boolean(),
+  enabled: zfd.text(),
   image: fileSchema.or(fileSchema.array()).nullish(),
   uuid: zfd.text(),
 });

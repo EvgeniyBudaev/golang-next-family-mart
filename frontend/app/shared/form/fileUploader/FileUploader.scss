@@ -24,4 +24,11 @@
       margin-top: 16px;
     }
   }
+
+  &-ErrorField {
+    display: block;
+    padding-top: 5px;
+    color: $color-red;
+    transition: all 0.3s;
+  }
 }

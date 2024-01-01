@@ -1,54 +1,47 @@
 "use client";
 
 import isNil from "lodash/isNil";
-import { useEffect, type FC, useState, type ChangeEvent } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, type FC, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { catalogEditAction } from "@/app/actions/adminPanel/catalogs/edit/catalogEditAction";
 import { TCatalogDetail } from "@/app/api/adminPanel/catalogs/detail/types";
 import { useTranslation } from "@/app/i18n/client";
+import { EFormFields } from "@/app/pages/adminPanel/catalogs/edit/enums";
 import { ImageList } from "@/app/pages/adminPanel/catalogs/edit/imageList";
+import { ERoutes } from "@/app/shared/enums";
 import { FileUploader } from "@/app/shared/form/fileUploader";
+import { SubmitButton } from "@/app/shared/form/submitButton";
 import { useFiles } from "@/app/shared/hooks";
 import { TFile } from "@/app/shared/types/file";
-import { TParams } from "@/app/shared/types/form";
+import { createPath } from "@/app/shared/utils";
 import { Checkbox } from "@/app/uikit/components/checkbox";
 import { notify } from "@/app/uikit/components/toast/utils";
 import { ETypographyVariant, Typography } from "@/app/uikit/components/typography";
 import { Input } from "@/app/uikit/components/input";
-import { EFormFields } from "@/app/pages/adminPanel/catalogs/edit/enums";
-import { SubmitButton } from "@/app/shared/form/submitButton";
 import "./CatalogEditForm.scss";
-
-const initialState = {
-  error: null,
-  success: false,
-};
 
 type TProps = {
   catalog: TCatalogDetail;
 };
 
 export const CatalogEditForm: FC<TProps> = ({ catalog }) => {
+  const router = useRouter();
   const { t } = useTranslation("index");
   const [files, setFiles] = useState<TFile[] | null>(null);
-  const [state, formAction] = useFormState(catalogEditAction, initialState);
+  const [isEnabled, setIsEnabled] = useState(catalog.isEnabled);
+  const [state, formAction] = useFormState(catalogEditAction, {});
   const { pending } = useFormStatus();
-  const idCheckbox = "isEnabled";
-  const [filter, setFilter] = useState<TParams>({
-    isEnabled: catalog?.isEnabled ? [idCheckbox] : [],
-  });
-  const enabled: boolean = filter[EFormFields.IsEnabled].includes(idCheckbox);
-  console.log("filter: ", filter);
+
+  const handleCheckboxChange = () => {
+    setIsEnabled(!isEnabled);
+  };
 
   const { onAddFiles, onDeleteFile } = useFiles({
     fieldName: EFormFields.Image,
     files: files ?? [],
     setValue: (fieldName: string, files: TFile[]) => setFiles(files),
   });
-
-  useEffect(() => {
-    console.log("files: ", files);
-  }, [files]);
 
   useEffect(() => {
     if (state?.error) {
@@ -59,41 +52,35 @@ export const CatalogEditForm: FC<TProps> = ({ catalog }) => {
     }
   }, [state]);
 
-  const handleChangeEnabled = (
-    event: ChangeEvent<HTMLInputElement>,
-    id: string,
-    nameGroup: string,
-  ) => {
-    const {
-      target: { checked, value },
-    } = event;
-    console.log("checked: ", checked);
-    console.log("value: ", value);
-    console.log("nameGroup1: ", nameGroup);
-    if (checked) {
-      setFilter({
-        ...filter,
-        [nameGroup]: [...filter[nameGroup], value],
-      });
-    } else {
-      console.log("nameGroup2: ", [...filter[nameGroup].filter((x: string) => x !== value)]);
-      setFilter({
-        ...filter,
-        [nameGroup]: [...filter[nameGroup].filter((x: string) => x !== value)],
-      });
-    }
-  };
-
   const handleDeleteFile = (file: TFile, files: TFile[]) => {
     onDeleteFile(file, files);
   };
 
+  const handleSubmit = (formData: FormData) => {
+    const data = new FormData();
+    data.append(EFormFields.Uuid, formData.get(EFormFields.Uuid));
+    data.append(EFormFields.Alias, formData.get(EFormFields.Alias));
+    data.append(EFormFields.Name, formData.get(EFormFields.Name));
+    data.append(EFormFields.IsEnabled, isEnabled.toString());
+    if (files) {
+      files.forEach((file) => {
+        data.append(EFormFields.Image, file);
+      });
+    }
+    const alias = formData.get(EFormFields.Alias);
+    formAction(data as FormData);
+    const path = createPath({
+      route: ERoutes.AdminCatalogEdit,
+      params: { alias: alias as string },
+    });
+    router.push(path);
+  };
+
   return (
-    <form action={formAction} className="CatalogEditForm-Form">
+    <form action={handleSubmit} className="CatalogEditForm-Form">
       <Input
         defaultValue={catalog.alias}
         errors={state?.errors?.alias}
-        isReadOnly={true}
         isRequired={true}
         label={t("form.alias") ?? "Alias"}
         name={EFormFields.Alias}
@@ -109,12 +96,10 @@ export const CatalogEditForm: FC<TProps> = ({ catalog }) => {
       />
       <div className="CatalogEditForm-FormFieldGroup">
         <Checkbox
-          checked={enabled}
-          id={idCheckbox}
+          checked={isEnabled}
+          id={EFormFields.IsEnabled}
           label={t("form.isEnabled") ?? "Enabled"}
-          name={EFormFields.IsEnabled}
-          nameGroup="isEnabled"
-          onChange={(event, id, nameGroup) => handleChangeEnabled(event, id, nameGroup)}
+          onChange={handleCheckboxChange}
         />
       </div>
 

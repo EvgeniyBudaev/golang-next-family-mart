@@ -3,7 +3,7 @@
 import isNil from "lodash/isNil";
 import { redirect } from "next/navigation";
 import { useEffect, type FC, useState } from "react";
-import { useFormState } from "react-dom";
+import { useFormState, useFormStatus } from "react-dom";
 import { catalogAddAction } from "@/app/actions/adminPanel/catalogs/add/catalogAddAction";
 import { useTranslation } from "@/app/i18n/client";
 import { EFormFields } from "@/app/pages/adminPanel/catalogs/add/enums";
@@ -18,15 +18,11 @@ import { notify } from "@/app/uikit/components/toast/utils";
 import { ETypographyVariant, Typography } from "@/app/uikit/components/typography";
 import "./CatalogAddForm.scss";
 
-const initialState = {
-  error: null,
-  success: false,
-};
-
 export const CatalogAddForm: FC = () => {
   const { t } = useTranslation("index");
   const [files, setFiles] = useState<TFile[] | null>(null);
-  const [state, formAction] = useFormState(catalogAddAction, initialState);
+  const [state, formAction] = useFormState(catalogAddAction, {});
+  const { pending } = useFormStatus();
 
   const { onAddFiles, onDeleteFile } = useFiles({
     fieldName: EFormFields.Image,
@@ -50,8 +46,6 @@ export const CatalogAddForm: FC = () => {
   const handleDeleteFile = (file: TFile, files: TFile[]) => {
     onDeleteFile(file, files);
   };
-
-  console.log("state?.errors: ", state?.errors);
 
   return (
     <form action={formAction} className="Form">
@@ -84,8 +78,9 @@ export const CatalogAddForm: FC = () => {
             "image/jpg": [".jpg"],
             "image/png": [".png"],
           }}
+          errors={state?.errors?.image}
           files={files ?? []}
-          // isLoading={fetcherFilesLoading}
+          isLoading={pending}
           maxFiles={1}
           maxSize={1024 * 1024}
           multiple={false}

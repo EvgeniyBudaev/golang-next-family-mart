@@ -1,13 +1,20 @@
 import z from "zod";
 import { MAX_FILE_AMOUNT, MAX_FILE_SIZE } from "@/app/api/upload/constants";
-import { TFieldValue, TFilesArgs } from "@/app/api/upload/types";
+import { TFilesArgs } from "@/app/api/upload/types";
 import {
   EMPTY_FIELD_ERROR_MESSAGE,
   FILE_MAX_AMOUNT_MESSAGE,
   FILE_MAX_SIZE_MESSAGE,
 } from "@/app/shared/validation";
 
-export const fileSchema = z.custom<TFieldValue>();
+export const fileSchema = z
+  .object({
+    size: z.number(),
+  })
+  .refine((file) => file.size > 0, {
+    message: EMPTY_FIELD_ERROR_MESSAGE,
+    path: ["size"],
+  });
 
 export const filesSchema = ({ isEmpty }: TFilesArgs = {}) =>
   z

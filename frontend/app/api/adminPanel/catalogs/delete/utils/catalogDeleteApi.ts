@@ -8,8 +8,8 @@ import { EFormMethods } from "@/app/shared/form";
 export const catalogDeleteApi: TApiFunction<TCatalogDeleteParams, TCatalogDeleteResponse> = (
   params,
 ) => {
-  return fetchApi<TCatalogDeleteResponse>(`/api/v1/catalog/delete`, {
+  const url = `/api/v1/catalog/delete/${params.uuid}`;
+  return fetchApi<TCatalogDeleteResponse>(url, {
     method: EFormMethods.Delete,
-    body: params,
   });
 };

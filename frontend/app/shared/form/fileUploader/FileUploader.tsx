@@ -9,10 +9,12 @@ import { filterDuplicatedFiles, getTypes } from "@/app/shared/form/fileUploader/
 import { TFile } from "@/app/shared/types/file";
 import { Button } from "@/app/uikit/components/button";
 import { Dropzone, type TDropzoneProps } from "@/app/uikit/components/dropzone/Dropzone";
+import { Error } from "@/app/uikit/components/error";
 import { ETypographyVariant, Typography } from "@/app/uikit/components/typography";
 import "./FileUploader.scss";
 
 export type TFileUploaderProps = {
+  errors?: string[];
   files?: TFile[];
   Input?: ReactElement;
   isLoading?: boolean;
@@ -23,6 +25,7 @@ export type TFileUploaderProps = {
 
 export const FileUploader: FC<TFileUploaderProps> = ({
   accept,
+  errors,
   files,
   Input,
   isLoading,
@@ -71,12 +74,13 @@ export const FileUploader: FC<TFileUploaderProps> = ({
   return (
     <div className="FileUploader">
       <Dropzone
-        onDrop={onDrop}
         accept={accept}
-        disabled={isLoading}
         className={clsx("FileUploader-Dropzone", {
           ["FileUploader-Dropzone__isLoading"]: isLoading,
         })}
+        disabled={isLoading}
+        errors={errors}
+        onDrop={onDrop}
         {...rest}
       >
         <div className="FileUploader-Dropzone-Inner">
@@ -91,6 +95,11 @@ export const FileUploader: FC<TFileUploaderProps> = ({
           <Button className="FileUploader-Dropzone-Button">{t("fileUploader.action")}</Button>
         </div>
       </Dropzone>
+      {errors && (
+        <div className="FileUploader-ErrorField">
+          <Error errors={errors} />
+        </div>
+      )}
       <Previews
         className="FileUploader-Previews"
         files={files}

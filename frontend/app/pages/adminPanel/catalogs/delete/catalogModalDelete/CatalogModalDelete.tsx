@@ -13,11 +13,6 @@ import { notify } from "@/app/uikit/components/toast/utils";
 import { ETypographyVariant, Typography } from "@/app/uikit/components/typography";
 import "./CatalogModalDelete.scss";
 
-const initialState = {
-  error: null,
-  success: false,
-};
-
 type TProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -27,7 +22,7 @@ type TProps = {
 export const CatalogModalDelete: FC<TProps> = ({ uuid, isOpen, onClose }) => {
   const { t } = useTranslation("index");
   const [isFormSubmitting, setFormSubmitting] = useState(false);
-  const [state, formAction] = useFormState(catalogDeleteAction, initialState);
+  const [state, formAction] = useFormState(catalogDeleteAction, {});
 
   useEffect(() => {
     if (state?.error) {

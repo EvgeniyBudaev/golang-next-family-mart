@@ -10,22 +10,22 @@ import (
 	"net/http"
 )
 
-type ICreateProductUseCase interface {
-	CreateProduct(ctx *fiber.Ctx, request productUseCase.CreateProductRequest) (*product.Product, error)
+type IUpdateProductUseCase interface {
+	UpdateProduct(ctx *fiber.Ctx, request productUseCase.UpdateProductRequest) (*product.Product, error)
 }
 
-func CreateProductHandler(uc ICreateProductUseCase) fiber.Handler {
+func UpdateProductHandler(uc IUpdateProductUseCase) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
-		logger.Log.Info("post to product create POST /api/v1/product/create")
-		var request = productUseCase.CreateProductRequest{}
+		logger.Log.Info("post to product create POST /api/v1/product/update")
+		var request = productUseCase.UpdateProductRequest{}
 		err := ctx.BodyParser(&request)
 		if err != nil {
-			logger.Log.Debug("error while CreateProductHandler. Error in BodyParser", zap.Error(err))
+			logger.Log.Debug("error while UpdateProductHandler. Error in BodyParser", zap.Error(err))
 			return r.WrapError(ctx, err, http.StatusBadRequest)
 		}
-		response, err := uc.CreateProduct(ctx, request)
+		response, err := uc.UpdateProduct(ctx, request)
 		if err != nil {
-			logger.Log.Debug("error while CreateProductHandler. Error in CreateProduct", zap.Error(err))
+			logger.Log.Debug("error while UpdateProductHandler. Error in UpdateProduct", zap.Error(err))
 			return r.WrapError(ctx, err, http.StatusBadRequest)
 		}
 		return r.WrapCreated(ctx, response)

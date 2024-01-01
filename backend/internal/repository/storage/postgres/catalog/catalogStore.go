@@ -150,7 +150,7 @@ func (pg *PGCatalogStore) FindByAlias(ctx *fiber.Ctx, alias string) (*catalog.Ca
 		logger.Log.Debug("error while FindByUuid. error in method SelectListImage", zap.Error(err))
 		return nil, err
 	}
-	catalogResponse := &catalog.Catalog{
+	response := &catalog.Catalog{
 		Id:        data.Id,
 		Uuid:      data.Uuid,
 		Alias:     data.Alias,
@@ -161,7 +161,7 @@ func (pg *PGCatalogStore) FindByAlias(ctx *fiber.Ctx, alias string) (*catalog.Ca
 		IsEnabled: data.IsEnabled,
 		Images:    images,
 	}
-	return catalogResponse, nil
+	return response, nil
 }
 
 func (pg *PGCatalogStore) FindByUuid(ctx *fiber.Ctx, uuid uuid.UUID) (*catalog.Catalog, error) {

@@ -85,8 +85,8 @@ migrate create -ext sql -dir migrations AttributesCreationMigration
 migrate create -ext sql -dir migrations SelectablesCreationMigration
 migrate create -ext sql -dir migrations CatalogsCreationMigration
 migrate create -ext sql -dir migrations CatalogImagesCreationMigration
-migrate create -ext sql -dir migrations CatalogDefaultImagesCreationMigration
 migrate create -ext sql -dir migrations ProductsCreationMigration
+migrate create -ext sql -dir migrations ProductImagesCreationMigration
 ```
 
 Создание up sql файлов

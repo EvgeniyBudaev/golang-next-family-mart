@@ -15,7 +15,7 @@ type IGetCatalogByAliasUseCase interface {
 
 func GetCatalogByAliasHandler(uc IGetCatalogByAliasUseCase) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
-		logger.Log.Info("get catalog by alias GET /api/v1/catalog/:alias")
+		logger.Log.Info("get catalog by alias GET /api/v1/catalog/alias/:alias")
 		response, err := uc.GetCatalogByAlias(ctx)
 		if err != nil {
 			logger.Log.Debug("error while GetCatalogByAliasHandler. Error in GetCatalogByAlias", zap.Error(err))

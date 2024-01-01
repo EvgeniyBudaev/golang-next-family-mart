@@ -1,15 +1,12 @@
 CREATE TABLE products (
                           id BIGSERIAL NOT NULL PRIMARY KEY,
+                          catalog_id BIGINT NOT NULL,
+                          uuid UUID NOT NULL UNIQUE,
                           alias VARCHAR NOT NULL UNIQUE,
-                          created_at TIMESTAMP NOT NULL,
-                          deleted bool NOT NULL,
-                          enabled bool NOT NULL,
-                          image VARCHAR,
                           name VARCHAR NOT NULL UNIQUE,
+                          created_at TIMESTAMP NOT NULL,
                           updated_at TIMESTAMP NOT NULL,
-                          uuid uuid NOT NULL UNIQUE
+                          is_deleted BOOL NOT NULL,
+                          is_enabled BOOL NOT NULL,
+                          CONSTRAINT fk_catalog_id FOREIGN KEY (catalog_id) REFERENCES catalogs (id)
 );
-
-ALTER TABLE products
-    ADD COLUMN catalog_id BIGINT,
-    ADD FOREIGN KEY (catalog_id) REFERENCES catalogs(id);

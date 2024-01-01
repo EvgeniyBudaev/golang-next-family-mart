@@ -90,6 +90,9 @@ func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.
 	useCaseDeleteCatalogImage := catalog.NewDeleteCatalogImageUseCase(catalogDataStore)
 	useCaseUpdateCatalog := catalog.NewUpdateCatalogUseCase(catalogDataStore)
 	useCaseCreateProduct := product.NewCreateProductUseCase(productDataStore)
+	useCaseDeleteProduct := product.NewDeleteProductUseCase(productDataStore)
+	useCaseDeleteProductImage := product.NewDeleteProductImageUseCase(productDataStore)
+	useCaseUpdateProduct := product.NewUpdateProductUseCase(productDataStore)
 	useCaseCreateSelectable := selectable.NewCreateSelectableUseCase(selectableDataStore)
 	useCaseDeleteSelectable := selectable.NewDeleteSelectableUseCase(selectableDataStore)
 	useCaseUpdateSelectable := selectable.NewUpdateSelectableUseCase(selectableDataStore)
@@ -111,6 +114,12 @@ func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.
 		catalogHandler.UpdateCatalogHandler(useCaseUpdateCatalog))
 	grp.Post("/product/create", middlewares.NewRequiresRealmRole("admin"),
 		productHandler.CreateProductHandler(useCaseCreateProduct))
+	grp.Delete("/product/delete", middlewares.NewRequiresRealmRole("admin"),
+		productHandler.DeleteProductHandler(useCaseDeleteProduct))
+	grp.Delete("/product/image/delete", middlewares.NewRequiresRealmRole("admin"),
+		productHandler.DeleteProductImageHandler(useCaseDeleteProductImage))
+	grp.Put("/product/update", middlewares.NewRequiresRealmRole("admin"),
+		productHandler.UpdateProductHandler(useCaseUpdateProduct))
 	grp.Post("/selectable/create", middlewares.NewRequiresRealmRole("admin"),
 		selectableHandler.CreateSelectableHandler(useCaseCreateSelectable))
 	grp.Delete("/selectable/delete", middlewares.NewRequiresRealmRole("admin"),

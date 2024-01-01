@@ -9,16 +9,29 @@ import (
 )
 
 type Product struct {
+	Id        int             `json:"id"`
+	CatalogId int             `json:"catalogId"`
+	Uuid      uuid.UUID       `json:"uuid"`
+	Alias     string          `json:"alias"`
+	Name      string          `json:"name"`
+	CreatedAt time.Time       `json:"createdAt"`
+	UpdatedAt time.Time       `json:"updatedAt"`
+	IsDeleted bool            `json:"isDeleted"`
+	IsEnabled bool            `json:"isEnabled"`
+	Images    []*ImageProduct `json:"images"`
+}
+
+type ImageProduct struct {
 	Id        int       `json:"id"`
-	Alias     string    `json:"alias"`
-	CatalogId int       `json:"catalog_id"`
-	CreatedAt time.Time `json:"created_at"`
-	Deleted   bool      `json:"deleted"`
-	Enabled   bool      `json:"enabled"`
-	Image     string    `json:"image"`
-	Name      string    `json:"name"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ProductId int       `json:"productId"`
 	Uuid      uuid.UUID `json:"uuid"`
+	Name      string    `json:"name"`
+	Url       string    `json:"url"`
+	Size      int64     `json:"size"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	IsDeleted bool      `json:"isDeleted"`
+	IsEnabled bool      `json:"isEnabled"`
 }
 
 type ListProductResponse struct {
@@ -30,4 +43,8 @@ type QueryParamsProductList struct {
 	pagination.Pagination
 	searching.Searching
 	sorting.Sorting
+}
+
+type QueryParamsProductByAlias struct {
+	Alias string `json:"alias"`
 }

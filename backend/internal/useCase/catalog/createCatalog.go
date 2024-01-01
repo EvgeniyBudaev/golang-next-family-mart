@@ -37,7 +37,7 @@ func (uc *CreateCatalogUseCase) CreateCatalog(ctx *fiber.Ctx, r CreateCatalogReq
 	}
 	imageFiles := form.File["image"]
 	imagesFilePath := make([]string, 0, len(imageFiles))
-	imagesCatalog := make([]*catalog.ImageCatalog, 0, len(imagesFilePath))
+	images := make([]*catalog.ImageCatalog, 0, len(imagesFilePath))
 	for _, file := range imageFiles {
 		filePath = fmt.Sprintf("%s/%s", directoryPath, file.Filename)
 		if err := ctx.SaveFile(file, filePath); err != nil {
@@ -55,9 +55,9 @@ func (uc *CreateCatalogUseCase) CreateCatalog(ctx *fiber.Ctx, r CreateCatalogReq
 			IsEnabled: true,
 		}
 		imagesFilePath = append(imagesFilePath, filePath)
-		imagesCatalog = append(imagesCatalog, &image)
+		images = append(images, &image)
 	}
-	catalogRequest := &catalog.Catalog{
+	request := &catalog.Catalog{
 		Uuid:      uuid.New(),
 		Alias:     strings.ToLower(r.Alias),
 		Name:      r.Name,
@@ -65,14 +65,14 @@ func (uc *CreateCatalogUseCase) CreateCatalog(ctx *fiber.Ctx, r CreateCatalogReq
 		UpdatedAt: time.Now(),
 		IsDeleted: false,
 		IsEnabled: true,
-		Images:    imagesCatalog,
+		Images:    images,
 	}
-	newCatalog, err := uc.dataStore.Create(ctx, catalogRequest)
+	newCatalog, err := uc.dataStore.Create(ctx, request)
 	if err != nil {
 		logger.Log.Debug("error while CreateCatalog. error in method Create", zap.Error(err))
 		return nil, err
 	}
-	for _, i := range catalogRequest.Images {
+	for _, i := range request.Images {
 		image := &catalog.ImageCatalog{
 			CatalogId: newCatalog.Id,
 			Uuid:      i.Uuid,

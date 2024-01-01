@@ -1,9 +1,9 @@
-package catalog
+package product
 
 import (
 	"fmt"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/catalog"
 	errorDomain "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/error"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/product"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-type UpdateCatalogRequest struct {
+type UpdateProductRequest struct {
 	Uuid      uuid.UUID `json:"uuid"`
 	Alias     string    `json:"alias"`
 	Name      string    `json:"name"`
@@ -22,46 +22,46 @@ type UpdateCatalogRequest struct {
 	Image     []byte    `json:"image"`
 }
 
-type UpdateCatalogUseCase struct {
-	dataStore ICatalogStore
+type UpdateProductUseCase struct {
+	dataStore IProductStore
 }
 
-func NewUpdateCatalogUseCase(ds ICatalogStore) *UpdateCatalogUseCase {
-	return &UpdateCatalogUseCase{
+func NewUpdateProductUseCase(ds IProductStore) *UpdateProductUseCase {
+	return &UpdateProductUseCase{
 		dataStore: ds,
 	}
 }
 
-func (uc *UpdateCatalogUseCase) UpdateCatalog(ctx *fiber.Ctx, r UpdateCatalogRequest) (*catalog.Catalog, error) {
-	catalogInDB, err := uc.dataStore.FindByUuid(ctx, r.Uuid)
+func (uc *UpdateProductUseCase) UpdateProduct(ctx *fiber.Ctx, r UpdateProductRequest) (*product.Product, error) {
+	productInDB, err := uc.dataStore.FindByUuid(ctx, r.Uuid)
 	if err != nil {
-		logger.Log.Debug("error while UpdateCatalog. error in method FindByUuid", zap.Error(err))
+		logger.Log.Debug("error while UpdateProduct. error in method FindByUuid", zap.Error(err))
 		return nil, err
 	}
-	if catalogInDB.IsDeleted == true {
-		msg := errors.Wrap(err, "catalog has already been deleted")
+	if productInDB.IsDeleted == true {
+		msg := errors.Wrap(err, "product has already been deleted")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
-	directoryPath := "static/uploads/catalog/image"
+	directoryPath := "static/uploads/product/image"
 	filePath := fmt.Sprintf("%s/defaultImage.jpg", directoryPath)
 	form, err := ctx.MultipartForm()
 	if err != nil {
-		logger.Log.Debug("error while UpdateCatalog. error FormFile", zap.Error(err))
+		logger.Log.Debug("error while UpdateProduct. error FormFile", zap.Error(err))
 		return nil, err
 	}
-	var catalogRequest *catalog.Catalog
+	var productRequest *product.Product
 	imageFiles := form.File["image"]
 	if len(imageFiles) > 0 {
 		imagesFilePath := make([]string, 0, len(imageFiles))
-		images := make([]*catalog.ImageCatalog, 0, len(imagesFilePath))
+		images := make([]*product.ImageProduct, 0, len(imagesFilePath))
 		for _, file := range imageFiles {
 			filePath = fmt.Sprintf("%s/%s", directoryPath, file.Filename)
 			if err := ctx.SaveFile(file, filePath); err != nil {
-				logger.Log.Debug("error while UpdateCatalog. error SaveFile", zap.Error(err))
+				logger.Log.Debug("error while UpdateProduct. error SaveFile", zap.Error(err))
 				return nil, err
 			}
-			image := catalog.ImageCatalog{
+			image := product.ImageProduct{
 				Uuid:      uuid.New(),
 				Name:      file.Filename,
 				Url:       filePath,
@@ -74,36 +74,36 @@ func (uc *UpdateCatalogUseCase) UpdateCatalog(ctx *fiber.Ctx, r UpdateCatalogReq
 			imagesFilePath = append(imagesFilePath, filePath)
 			images = append(images, &image)
 		}
-		catalogRequest = &catalog.Catalog{
+		productRequest = &product.Product{
 			Uuid:      r.Uuid,
 			Alias:     strings.ToLower(r.Alias),
 			Name:      r.Name,
-			CreatedAt: catalogInDB.CreatedAt,
+			CreatedAt: productInDB.CreatedAt,
 			UpdatedAt: time.Now(),
 			IsDeleted: false,
 			IsEnabled: r.IsEnabled,
 			Images:    images,
 		}
 	} else {
-		catalogRequest = &catalog.Catalog{
+		productRequest = &product.Product{
 			Uuid:      r.Uuid,
 			Alias:     strings.ToLower(r.Alias),
 			Name:      r.Name,
-			CreatedAt: catalogInDB.CreatedAt,
+			CreatedAt: productInDB.CreatedAt,
 			UpdatedAt: time.Now(),
 			IsDeleted: false,
 			IsEnabled: r.IsEnabled,
 		}
 	}
-	updatedCatalog, err := uc.dataStore.Update(ctx, catalogRequest)
+	updatedProduct, err := uc.dataStore.Update(ctx, productRequest)
 	if err != nil {
-		logger.Log.Debug("error while UpdateCatalog. error in method Update", zap.Error(err))
+		logger.Log.Debug("error while UpdateProduct. error in method Update", zap.Error(err))
 		return nil, err
 	}
 	if len(imageFiles) > 0 {
-		for _, i := range catalogRequest.Images {
-			image := &catalog.ImageCatalog{
-				CatalogId: catalogInDB.Id,
+		for _, i := range productRequest.Images {
+			image := &product.ImageProduct{
+				ProductId: productInDB.Id,
 				Uuid:      i.Uuid,
 				Name:      i.Name,
 				Url:       i.Url,
@@ -115,14 +115,14 @@ func (uc *UpdateCatalogUseCase) UpdateCatalog(ctx *fiber.Ctx, r UpdateCatalogReq
 			}
 			_, err := uc.dataStore.AddImage(ctx, image)
 			if err != nil {
-				logger.Log.Debug("error while UpdateCatalog. error in method AddImage", zap.Error(err))
+				logger.Log.Debug("error while UpdateProduct. error in method AddImage", zap.Error(err))
 				return nil, err
 			}
 		}
 	}
-	response, err := uc.dataStore.FindByUuid(ctx, updatedCatalog.Uuid)
+	response, err := uc.dataStore.FindByUuid(ctx, updatedProduct.Uuid)
 	if err != nil {
-		logger.Log.Debug("error while UpdateCatalog. error in method FindByUuid", zap.Error(err))
+		logger.Log.Debug("error while UpdateProduct. error in method FindByUuid", zap.Error(err))
 		return nil, err
 	}
 	return response, nil

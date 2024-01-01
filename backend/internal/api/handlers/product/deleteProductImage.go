@@ -10,22 +10,22 @@ import (
 	"net/http"
 )
 
-type ICreateProductUseCase interface {
-	CreateProduct(ctx *fiber.Ctx, request productUseCase.CreateProductRequest) (*product.Product, error)
+type IDeleteProductImageUseCase interface {
+	DeleteProductImage(ctx *fiber.Ctx, request productUseCase.DeleteProductImageRequest) (*product.ImageProduct, error)
 }
 
-func CreateProductHandler(uc ICreateProductUseCase) fiber.Handler {
+func DeleteProductImageHandler(uc IDeleteProductImageUseCase) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
-		logger.Log.Info("post to product create POST /api/v1/product/create")
-		var request = productUseCase.CreateProductRequest{}
+		logger.Log.Info("post to product create DELETE /api/v1/product/image/delete")
+		var request = productUseCase.DeleteProductImageRequest{}
 		err := ctx.BodyParser(&request)
 		if err != nil {
-			logger.Log.Debug("error while CreateProductHandler. Error in BodyParser", zap.Error(err))
+			logger.Log.Debug("error while DeleteProductImageHandler. Error in BodyParser", zap.Error(err))
 			return r.WrapError(ctx, err, http.StatusBadRequest)
 		}
-		response, err := uc.CreateProduct(ctx, request)
+		response, err := uc.DeleteProductImage(ctx, request)
 		if err != nil {
-			logger.Log.Debug("error while CreateProductHandler. Error in CreateProduct", zap.Error(err))
+			logger.Log.Debug("error while DeleteProductImageHandler. Error in Delete", zap.Error(err))
 			return r.WrapError(ctx, err, http.StatusBadRequest)
 		}
 		return r.WrapCreated(ctx, response)

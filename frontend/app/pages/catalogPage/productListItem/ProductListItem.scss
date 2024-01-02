@@ -1,0 +1,200 @@
+@import "@/app/styles";
+
+.ProductListItem {
+  $this: &;
+  min-height: max-content;
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: $border-radius;
+  padding: 4px;
+  transition: all $transition;
+
+  &:hover {
+    border: 1px solid $color-primary;
+    box-shadow: $shadow-perimeter;
+  }
+
+  &-Wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    position: relative;
+  }
+
+  &-Content {
+    position: relative;
+    transition: all $transition;
+
+    #{$this}-ContentContainerImage {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 200px;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+
+    #{$this}-ContentLink {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    #{$this}-ContentImage {
+      width: auto;
+      max-width: 100%;
+      max-height: 100%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    #{$this}-ContentDescription {
+      padding: 0 4px;
+
+      &Line {
+        display: none;
+      }
+    }
+
+    #{$this}-ContentTitle {
+      margin-bottom: 4px;
+      text-align: center;
+      width: 100%;
+      color: $color-text;
+    }
+
+    &:hover span {
+      color: $color-primary;
+    }
+  }
+
+  &-Footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+    padding: 0 4px;
+
+    &Price {
+      margin-bottom: 4px;
+    }
+
+    &Status {
+      margin-bottom: 4px;
+      color: $color-primary;
+    }
+
+    &AddToCart {
+      margin-bottom: 16px;
+    }
+  }
+
+  &#{$this}__line {
+    max-width: 100%;
+    max-height: 312px;
+    min-height: max-content;
+    border-left: transparent;
+    border-right: transparent;
+    border-bottom: transparent;
+    border-radius: 0;
+
+    #{$this}-Wrapper {
+      flex-direction: row;
+    }
+
+    #{$this}-Content {
+      display: flex;
+      flex: 1 0 auto;
+      align-items: center;
+    }
+
+    #{$this}-ContentContainerImage {
+      margin-bottom: 0;
+      height: max-content;
+      min-height: 200px;
+      width: 100%;
+      max-width: 200px;
+    }
+
+    #{$this}-ContentTitleLine {
+      min-height: max-content;
+      margin-bottom: 20px;
+    }
+
+    #{$this}-ContentTitle {
+    }
+
+    #{$this}-ContentDescription {
+      display: none;
+      justify-content: center;
+      flex-direction: column;
+      margin-left: 50px;
+      max-width: 300px;
+      width: 100%;
+    }
+
+    #{$this}-ContentDescriptionLine {
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      margin-left: 50px;
+      max-width: 360px;
+      width: 100%;
+    }
+
+    #{$this}-ContentDescriptionLinePrice {
+      display: none;
+    }
+
+    #{$this}-ContentDescriptionLineStatus {
+      display: none;
+      margin-top: 8px;
+      margin-bottom: 16px;
+      color: $color-suit-gray;
+    }
+
+    #{$this}-Footer {
+      justify-content: center;
+    }
+  }
+
+  &-ButtonGoAtCart {
+    padding: 10px 30px;
+    height: 42px;
+    width: max-content;
+    color: $color-primary;
+    background-color: transparent;
+    border: 1px solid $color-primary;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+    transition: all 0.3s;
+
+    &:hover {
+      color: $color-primary-hover;
+      border: 1px solid $color-primary-hover;
+    }
+  }
+
+  &-ButtonAddToCart {
+    height: 42px;
+  }
+}
+
+.theme-dark {
+  .ProductListItem {
+    background: linear-gradient(40deg, rgba(138, 143, 160, 0.16), rgba(31, 32, 41, 0.24) 16%),
+      linear-gradient(210deg, rgba(138, 143, 160, 0.5), rgba(31, 32, 41, 0.24) 20%);
+    border: 1px solid $color-nightSky;
+
+    &:hover {
+      border: 1px solid $color-primary;
+      box-shadow: $shadow-perimeter-light;
+    }
+  }
+}

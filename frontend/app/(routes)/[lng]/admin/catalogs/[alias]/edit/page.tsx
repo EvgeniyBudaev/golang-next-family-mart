@@ -25,9 +25,6 @@ async function loader(params: TLoader) {
     const catalogDetail = catalogDetailResponse.data as TCatalogDetail;
     return { catalogDetail };
   } catch (error) {
-    const errorResponse = error as Response;
-    const responseData: TCommonResponseError = await errorResponse.json();
-    const { message: formError, fieldErrors, success } = getResponseError(responseData) ?? {};
     throw new Error("errorBoundary.common.unexpectedError");
   }
 }

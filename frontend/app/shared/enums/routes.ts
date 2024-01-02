@@ -25,7 +25,6 @@ export enum ERoutes {
 
   Cart = "/cart",
   CatalogDetail = "/catalogs/:aliasCatalog",
-  CatalogMirrors = "/catalogs/mirrors",
   Order = "/shipping/recipient/order",
   ProductDetail = "/catalogs/:aliasCatalog/:aliasProduct",
   Recipient = "/shipping/recipient",

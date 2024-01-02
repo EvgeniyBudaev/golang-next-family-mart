@@ -267,7 +267,7 @@ func (pg *PGProductStore) SelectList(
 		}
 		images, err := pg.SelectListImage(ctx, data.Id)
 		if err != nil {
-			logger.Log.Debug("error while FindByUuid. error in method SelectListImage", zap.Error(err))
+			logger.Log.Debug("error while SelectList. error in method SelectListImage", zap.Error(err))
 			return nil, err
 		}
 		productResponse := &product.Product{

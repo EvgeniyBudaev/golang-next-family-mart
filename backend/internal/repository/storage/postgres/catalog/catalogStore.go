@@ -4,6 +4,7 @@ import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/catalog"
 	errorDomain "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/error"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/pagination"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/product"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/searching"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/sorting"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
@@ -147,7 +148,12 @@ func (pg *PGCatalogStore) FindByAlias(ctx *fiber.Ctx, alias string) (*catalog.Ca
 	}
 	images, err := pg.SelectListImage(ctx, data.Id)
 	if err != nil {
-		logger.Log.Debug("error while FindByUuid. error in method SelectListImage", zap.Error(err))
+		logger.Log.Debug("error while FindByAlias. error in method SelectListImage", zap.Error(err))
+		return nil, err
+	}
+	products, err := pg.SelectListProduct(ctx, data.Id)
+	if err != nil {
+		logger.Log.Debug("error while FindByAlias. error in method SelectListProduct", zap.Error(err))
 		return nil, err
 	}
 	response := &catalog.Catalog{
@@ -160,6 +166,7 @@ func (pg *PGCatalogStore) FindByAlias(ctx *fiber.Ctx, alias string) (*catalog.Ca
 		IsDeleted: data.IsDeleted,
 		IsEnabled: data.IsEnabled,
 		Images:    images,
+		Products:  products,
 	}
 	return response, nil
 }
@@ -194,6 +201,11 @@ func (pg *PGCatalogStore) FindByUuid(ctx *fiber.Ctx, uuid uuid.UUID) (*catalog.C
 		logger.Log.Debug("error while FindByUuid. error in method SelectListImage", zap.Error(err))
 		return nil, err
 	}
+	products, err := pg.SelectListProduct(ctx, data.Id)
+	if err != nil {
+		logger.Log.Debug("error while FindByUuid. error in method SelectListProduct", zap.Error(err))
+		return nil, err
+	}
 	response := &catalog.Catalog{
 		Id:        data.Id,
 		Uuid:      data.Uuid,
@@ -204,6 +216,7 @@ func (pg *PGCatalogStore) FindByUuid(ctx *fiber.Ctx, uuid uuid.UUID) (*catalog.C
 		IsDeleted: data.IsDeleted,
 		IsEnabled: data.IsEnabled,
 		Images:    images,
+		Products:  products,
 	}
 	return response, nil
 }
@@ -267,6 +280,11 @@ func (pg *PGCatalogStore) SelectList(
 			logger.Log.Debug("error while SelectList. error in method SelectListImage", zap.Error(err))
 			return nil, err
 		}
+		products, err := pg.SelectListProduct(ctx, data.Id)
+		if err != nil {
+			logger.Log.Debug("error while SelectList. error in method SelectListProduct", zap.Error(err))
+			return nil, err
+		}
 		catalogResponse := &catalog.Catalog{
 			Id:        data.Id,
 			Uuid:      data.Uuid,
@@ -277,6 +295,7 @@ func (pg *PGCatalogStore) SelectList(
 			IsDeleted: data.IsDeleted,
 			IsEnabled: data.IsEnabled,
 			Images:    images,
+			Products:  products,
 		}
 		catalogList = append(catalogList, catalogResponse)
 	}
@@ -398,6 +417,84 @@ func (pg *PGCatalogStore) SelectListImage(cf *fiber.Ctx, catalogId int) ([]*cata
 			&data.UpdatedAt, &data.IsDeleted, &data.IsEnabled)
 		if err != nil {
 			logger.Log.Debug("error while SelectListImage. error in method Scan", zap.Error(err))
+			continue
+		}
+		list = append(list, &data)
+	}
+	return list, nil
+}
+
+func (pg *PGCatalogStore) SelectListProduct(ctx *fiber.Ctx, catalogId int) ([]*product.Product, error) {
+	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	sqlSelect := sqlBuilder.
+		Select("id", "catalog_id", "uuid", "alias", "name", "created_at", "updated_at", "is_deleted",
+			"is_enabled").
+		From("products").Where(sq.Eq{"catalog_id": catalogId}).Where(sq.Eq{"is_deleted": false})
+	productList := make([]*product.Product, 0)
+	query, args, err := sqlSelect.ToSql()
+	if err != nil {
+		logger.Log.Debug("error while SelectListProduct. error in method ToSql", zap.Error(err))
+		return nil, err
+	}
+	rows, err := pg.store.Db().Query(ctx.Context(), query, args...)
+	if err != nil {
+		logger.Log.Debug("error while SelectListProduct. error in method Query", zap.Error(err))
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		data := product.Product{}
+		err := rows.Scan(&data.Id, &data.CatalogId, &data.Uuid, &data.Alias, &data.Name, &data.CreatedAt,
+			&data.UpdatedAt, &data.IsDeleted, &data.IsEnabled)
+		if err != nil {
+			logger.Log.Debug("error while SelectListProduct. error in method Scan", zap.Error(err))
+			continue
+		}
+		images, err := pg.SelectListProductImage(ctx, data.Id)
+		if err != nil {
+			logger.Log.Debug("error while SelectListProduct. error in method SelectListImage", zap.Error(err))
+			return nil, err
+		}
+		productResponse := &product.Product{
+			Id:        data.Id,
+			CatalogId: data.CatalogId,
+			Uuid:      data.Uuid,
+			Alias:     data.Alias,
+			Name:      data.Name,
+			CreatedAt: data.CreatedAt,
+			UpdatedAt: data.UpdatedAt,
+			IsDeleted: data.IsDeleted,
+			IsEnabled: data.IsEnabled,
+			Images:    images,
+		}
+		productList = append(productList, productResponse)
+	}
+	return productList, nil
+}
+
+func (pg *PGCatalogStore) SelectListProductImage(cf *fiber.Ctx, productId int) ([]*product.ImageProduct, error) {
+	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	sqlSelect := sqlBuilder.Select("id", "product_id", "uuid", "name", "url", "size", "created_at",
+		"updated_at", "is_deleted", "is_enabled").
+		From("product_images").Where(sq.Eq{"product_id": productId}).Where(sq.Eq{"is_deleted": false})
+	list := make([]*product.ImageProduct, 0)
+	query, args, err := sqlSelect.ToSql()
+	if err != nil {
+		logger.Log.Debug("error while SelectListProductImage. error in method ToSql", zap.Error(err))
+		return nil, err
+	}
+	rows, err := pg.store.Db().Query(cf.Context(), query, args...)
+	if err != nil {
+		logger.Log.Debug("error while SelectListProductImage. error in method Query", zap.Error(err))
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		data := product.ImageProduct{}
+		err := rows.Scan(&data.Id, &data.ProductId, &data.Uuid, &data.Name, &data.Url, &data.Size, &data.CreatedAt,
+			&data.UpdatedAt, &data.IsDeleted, &data.IsEnabled)
+		if err != nil {
+			logger.Log.Debug("error while SelectListProductImage. error in method Scan", zap.Error(err))
 			continue
 		}
 		list = append(list, &data)

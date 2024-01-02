@@ -2,6 +2,7 @@ package catalog
 
 import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/pagination"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/product"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/searching"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/sorting"
 	"github.com/google/uuid"
@@ -9,15 +10,16 @@ import (
 )
 
 type Catalog struct {
-	Id        int             `json:"id"`
-	Uuid      uuid.UUID       `json:"uuid"`
-	Alias     string          `json:"alias"`
-	Name      string          `json:"name"`
-	CreatedAt time.Time       `json:"createdAt"`
-	UpdatedAt time.Time       `json:"updatedAt"`
-	IsDeleted bool            `json:"isDeleted"`
-	IsEnabled bool            `json:"isEnabled"`
-	Images    []*ImageCatalog `json:"images"`
+	Id        int                `json:"id"`
+	Uuid      uuid.UUID          `json:"uuid"`
+	Alias     string             `json:"alias"`
+	Name      string             `json:"name"`
+	CreatedAt time.Time          `json:"createdAt"`
+	UpdatedAt time.Time          `json:"updatedAt"`
+	IsDeleted bool               `json:"isDeleted"`
+	IsEnabled bool               `json:"isEnabled"`
+	Images    []*ImageCatalog    `json:"images"`
+	Products  []*product.Product `json:"products"`
 }
 
 type ImageCatalog struct {

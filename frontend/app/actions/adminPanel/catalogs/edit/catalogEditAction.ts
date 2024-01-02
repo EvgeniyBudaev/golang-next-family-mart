@@ -3,10 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { catalogEditFormSchema } from "@/app/actions/adminPanel/catalogs/edit/schemas";
 import { catalogEdit } from "@/app/api/adminPanel/catalogs/edit/domain";
+import { TCatalogEditParams } from "@/app/api/adminPanel/catalogs/edit";
 import { ERoutes } from "@/app/shared/enums";
 import { TCommonResponseError } from "@/app/shared/types/error";
 import { getResponseError, getErrorsResolver, createPath } from "@/app/shared/utils";
-import { TCatalogEditParams } from "@/app/api/adminPanel/catalogs/edit";
 
 export async function catalogEditAction(prevState: any, formData: FormData) {
   console.log("catalogEditAction", Object.fromEntries(formData.entries()));

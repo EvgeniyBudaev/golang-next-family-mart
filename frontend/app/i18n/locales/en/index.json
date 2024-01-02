@@ -71,6 +71,12 @@
         },
         "title": "List of catalogs"
       },
+      "productList": {
+        "table": {
+          "header": "List of products"
+        },
+        "title": "List of products"
+      },
       "title": "Admin panel",
       "attributeAdd": {
         "title": "Adding an attribute"
@@ -83,6 +89,12 @@
       },
       "catalogEdit": {
         "title": "Editing a catalog"
+      },
+      "productAdd": {
+        "title": "Adding a product"
+      },
+      "productEdit": {
+        "title": "Editing a product"
       }
     },
     "admin": {
@@ -98,6 +110,9 @@
             }
           }
         }
+      },
+      "productAdd": {
+        "select": "Select catalog"
       },
       "attributeEdit": {
         "addModal": "Adding a new value",

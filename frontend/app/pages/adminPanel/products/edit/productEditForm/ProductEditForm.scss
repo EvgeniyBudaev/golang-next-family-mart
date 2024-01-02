@@ -1,0 +1,25 @@
+@import "@/app/styles";
+
+.ProductEditForm {
+  &-Form {
+    max-width: 590px;
+    width: 100%;
+  }
+
+  &-FormFieldGroup {
+    margin-bottom: 30px;
+  }
+
+  &-FormControl {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 25px;
+    max-width: 590px;
+    width: 100%;
+  }
+
+  &-SubTitle {
+    margin-bottom: 8px;
+  }
+}

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, type FC } from "react";
+import { type FC } from "react";
 import { catalogDeleteImageAction } from "@/app/actions/adminPanel/catalogs/deleteImage/catalogDeleteImageAction";
 import { TCatalogImageListItem } from "@/app/api/adminPanel/catalogs/list/types";
 import { useTranslation } from "@/app/i18n/client";
@@ -18,13 +18,6 @@ type TProps = {
 export const ImageList: FC<TProps> = ({ catalogAlias, images }) => {
   const { proxyUrl } = useProxyUrl();
   const { t } = useTranslation("index");
-  const [isFormSubmitting, setFormSubmitting] = useState(false);
-
-  const handleSubmit = () => {
-    if (!isFormSubmitting) {
-      setFormSubmitting((prev) => !prev);
-    }
-  };
 
   return (
     <div className="ImageList">

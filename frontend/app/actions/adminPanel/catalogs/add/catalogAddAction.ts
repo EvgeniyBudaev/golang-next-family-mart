@@ -27,7 +27,7 @@ export async function catalogAddAction(prevState: any, formData: FormData) {
     const path = createPath({
       route: ERoutes.AdminCatalogAdd,
     });
-    // revalidatePath(path);
+    revalidatePath(path);
     return { data: response.data, error: undefined, errors: undefined, success: true };
   } catch (error) {
     const errorResponse = error as Response;

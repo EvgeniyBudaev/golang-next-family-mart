@@ -16,7 +16,6 @@ import {
   type TTableSortingProps,
 } from "@/app/uikit/components/table";
 import type { TTableRowActions } from "@/app/uikit/components/table/types";
-import "./CatalogListTable.scss";
 
 type TProps = {
   fieldsSortState: TTableSortingProps;
@@ -101,7 +100,7 @@ const TableComponent = forwardRef<HTMLDivElement, TProps>(
           sticky={true}
           theme={theme}
           totalItems={totalItems}
-          totalItemsTitle={t("pages.adminPanel.catalogList.table.header") ?? "Total attributes"}
+          totalItemsTitle={t("pages.adminPanel.catalogList.table.header") ?? "Total catalogs"}
         />
       </div>
     );

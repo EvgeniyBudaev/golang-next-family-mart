@@ -1,0 +1,29 @@
+@import "@/app/styles";
+
+.Form {
+  max-width: 590px;
+  width: 100%;
+
+  &-FieldGroup {
+    margin-bottom: 30px;
+  }
+
+  &-Control {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 25px;
+    max-width: 590px;
+    width: 100%;
+  }
+
+  &-SubTitle {
+    position: relative;
+    margin-bottom: 8px;
+
+    &__isRequired {
+      color: $color-red;
+      pointer-events: none;
+    }
+  }
+}

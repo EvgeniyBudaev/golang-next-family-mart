@@ -1,5 +1,5 @@
 export type TSelectOption = {
-  value: string;
+  value: string | number;
   label: string;
   prefixIcon?: JSX.Element;
 };

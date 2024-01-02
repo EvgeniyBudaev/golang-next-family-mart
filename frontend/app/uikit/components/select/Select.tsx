@@ -69,6 +69,7 @@ const SelectComponent: FC<TSelectProps> = ({
   styles,
   theme = ETheme.Light,
   value,
+  ...props
 }) => {
   const uuid = generateUUID();
 
@@ -94,6 +95,7 @@ const SelectComponent: FC<TSelectProps> = ({
       placeholder={placeholder}
       styles={!styles && theme ? selectStyles(theme) : styles}
       value={value}
+      {...props}
     />
   ) : null;
 };

@@ -33,6 +33,11 @@ type ImageCatalog struct {
 	IsEnabled bool      `json:"isEnabled"`
 }
 
+type DictCatalog struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
+}
+
 type ListCatalogResponse struct {
 	*pagination.Pagination
 	Content []*Catalog `json:"content"`

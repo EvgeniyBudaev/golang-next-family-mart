@@ -264,7 +264,7 @@ func (pg *PGCatalogStore) SelectList(
 		}
 		images, err := pg.SelectListImage(ctx, data.Id)
 		if err != nil {
-			logger.Log.Debug("error while FindByUuid. error in method SelectListImage", zap.Error(err))
+			logger.Log.Debug("error while SelectList. error in method SelectListImage", zap.Error(err))
 			return nil, err
 		}
 		catalogResponse := &catalog.Catalog{
@@ -403,4 +403,40 @@ func (pg *PGCatalogStore) SelectListImage(cf *fiber.Ctx, catalogId int) ([]*cata
 		list = append(list, &data)
 	}
 	return list, nil
+}
+
+func (pg *PGCatalogStore) SelectDictList(ctx *fiber.Ctx) ([]*catalog.DictCatalog, error) {
+	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	sqlSelect := sqlBuilder.
+		Select("id", "name").
+		From("catalogs").
+		Where(sq.Eq{"is_deleted": false})
+	// get dictCatalogList
+	dictCatalogList := make([]*catalog.DictCatalog, 0)
+	query, args, err := sqlSelect.ToSql()
+	if err != nil {
+		logger.Log.Debug("error while SelectDictList. error in method ToSql", zap.Error(err))
+		return nil, err
+	}
+	rows, err := pg.store.Db().Query(ctx.Context(), query, args...)
+	if err != nil {
+		logger.Log.Debug("error while SelectDictList. error in method Query", zap.Error(err))
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		data := catalog.Catalog{}
+		err := rows.Scan(&data.Id, &data.Name)
+		if err != nil {
+			logger.Log.Debug("error while SelectDictList. error in method Scan", zap.Error(err))
+			continue
+		}
+
+		catalogResponse := &catalog.DictCatalog{
+			Id:   data.Id,
+			Name: data.Name,
+		}
+		dictCatalogList = append(dictCatalogList, catalogResponse)
+	}
+	return dictCatalogList, nil
 }

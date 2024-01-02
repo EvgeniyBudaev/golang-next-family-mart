@@ -36,7 +36,7 @@ type ImageProduct struct {
 
 type ListProductResponse struct {
 	*pagination.Pagination
-	Content []*Product
+	Content []*Product `json:"content"`
 }
 
 type QueryParamsProductList struct {

@@ -23,7 +23,6 @@ export const ProductListItem = forwardRef<HTMLDivElement, TProps>(function Produ
 ) {
   const { proxyUrl } = useProxyUrl();
   const { t } = useTranslation("index");
-  console.log("product: ", product);
 
   return (
     <div

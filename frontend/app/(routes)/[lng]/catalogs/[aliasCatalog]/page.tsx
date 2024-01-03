@@ -1,8 +1,9 @@
+import { getProductList, TProductList } from "@/app/api/adminPanel/products/list";
 import { TSearchParams } from "@/app/api/common";
 import { useTranslation } from "@/app/i18n";
 import { CatalogPage } from "@/app/pages/catalogPage/CatalogPage";
 import { ErrorBoundary } from "@/app/shared/components/errorBoundary";
-import { getCatalogDetail, TCatalogDetail } from "@/app/api/adminPanel/catalogs/detail";
+import { DEFAULT_PAGE, DEFAULT_PAGE_LIMIT } from "@/app/shared/constants/pagination";
 
 type TLoader = {
   aliasCatalog: string;
@@ -11,11 +12,18 @@ type TLoader = {
 
 async function loader(params: TLoader) {
   const { aliasCatalog, searchParams } = params;
-  console.log("loader aliasCatalog: ", aliasCatalog);
+  const formattedParams = {
+    catalog: aliasCatalog,
+    limit: searchParams?.limit ? Number(searchParams.limit) : DEFAULT_PAGE_LIMIT,
+    page: searchParams?.page ? Number(searchParams.page) : DEFAULT_PAGE,
+    sort: searchParams.sort ?? "updatedAt_asc",
+    // search: "",
+  };
+
   try {
-    const catalogResponse = await getCatalogDetail({ alias: aliasCatalog });
-    const catalog = catalogResponse.data as TCatalogDetail;
-    return { catalog };
+    const productListResponse = await getProductList(formattedParams);
+    const productList = productListResponse.data as TProductList;
+    return { productList };
   } catch (error) {
     throw new Error("errorBoundary.common.unexpectedError");
   }
@@ -34,7 +42,7 @@ export default async function CatalogRoute(props: TProps) {
 
   try {
     const data = await loader({ aliasCatalog, searchParams });
-    return <CatalogPage catalog={data.catalog} />;
+    return <CatalogPage productList={data.productList} />;
   } catch (error) {
     return <ErrorBoundary i18n={{ lng, t }} message={t(error?.message)} />;
   }

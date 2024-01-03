@@ -25,7 +25,6 @@ export const catalogListItemSchema = z.object({
   isDeleted: z.boolean(),
   isEnabled: z.boolean(),
   images: catalogImageListItemSchema.array().nullish(),
-  products: productListItemSchema.array().nullish(),
 });
 
 export const catalogListParamsSchema = z.object({

@@ -24,10 +24,12 @@ export const productListItemSchema = z.object({
   updatedAt: z.string(),
   isDeleted: z.boolean(),
   isEnabled: z.boolean(),
+  catalogAlias: z.string(),
   images: productImageListItemSchema.array().nullish(),
 });
 
 export const productListParamsSchema = z.object({
+  catalog: z.string().optional(),
   limit: z.number(),
   page: z.number(),
   search: z.string().optional(),

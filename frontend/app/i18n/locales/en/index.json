@@ -119,6 +119,10 @@
         "editModal": "Editing a value"
       }
     },
+    "catalog": {
+      "from": "from",
+      "goods": "goods"
+    },
     "login": {
       "service": "Login to the authorization service",
       "title": "Entry",

@@ -8,7 +8,7 @@ import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/searching"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/sorting"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -18,10 +18,10 @@ import (
 )
 
 type PGAttributeStore struct {
-	store *postgres.Store
+	store *repository.Store
 }
 
-func NewDBAttributeStore(store *postgres.Store) *PGAttributeStore {
+func NewDBAttributeStore(store *repository.Store) *PGAttributeStore {
 	return &PGAttributeStore{
 		store: store,
 	}

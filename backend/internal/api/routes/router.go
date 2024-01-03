@@ -9,11 +9,11 @@ import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/config"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/identity"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/middlewares"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres"
-	attributeStore "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres/attribute"
-	catalogStore "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres/catalog"
-	productStore "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres/product"
-	selectableStore "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres/selectable"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository"
+	attributeStore "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/attribute"
+	catalogStore "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/catalog"
+	productStore "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/product"
+	selectableStore "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/selectable"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/useCase/attribute"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/useCase/catalog"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/useCase/product"
@@ -26,7 +26,7 @@ var (
 	prefix string = "/api/v1"
 )
 
-func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Store) {
+func InitPublicRoutes(app *fiber.App, config *config.Config, store *repository.Store) {
 	app.Static("/static", "./static")
 
 	grp := app.Group(prefix)
@@ -69,7 +69,7 @@ func InitPublicRoutes(app *fiber.App, config *config.Config, store *postgres.Sto
 	grp.Get("/selectable/uuid/:uuid", selectableHandler.GetSelectableByUuidHandler(useCaseGetSelectableByUuid))
 }
 
-func InitProtectedRoutes(app *fiber.App, config *config.Config, store *postgres.Store) {
+func InitProtectedRoutes(app *fiber.App, config *config.Config, store *repository.Store) {
 	// Private static
 	// app.Use("/static", middlewares.NewRequiresRealmRole("admin"), filesystem.New(filesystem.Config{
 	// 	Root: http.Dir("./static"),

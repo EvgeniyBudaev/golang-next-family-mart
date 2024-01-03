@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/config"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/identity"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/shared/enums"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
@@ -12,9 +12,9 @@ import (
 
 func InitFiberMiddlewares(app *fiber.App,
 	config *config.Config,
-	store *postgres.Store,
-	initPublicRoutes func(app *fiber.App, config *config.Config, store *postgres.Store),
-	initProtectedRoutes func(app *fiber.App, config *config.Config, store *postgres.Store)) {
+	store *repository.Store,
+	initPublicRoutes func(app *fiber.App, config *config.Config, store *repository.Store),
+	initProtectedRoutes func(app *fiber.App, config *config.Config, store *repository.Store)) {
 	app.Use(requestid.New())
 	app.Use(func(c *fiber.Ctx) error {
 		// get the request id that was added by requestid middleware

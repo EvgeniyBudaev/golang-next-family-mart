@@ -8,7 +8,7 @@ import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/selectable"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/sorting"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -18,10 +18,10 @@ import (
 )
 
 type PGSelectableStore struct {
-	store *postgres.Store
+	store *repository.Store
 }
 
-func NewDBSelectableStore(store *postgres.Store) *PGSelectableStore {
+func NewDBSelectableStore(store *repository.Store) *PGSelectableStore {
 	return &PGSelectableStore{
 		store: store,
 	}

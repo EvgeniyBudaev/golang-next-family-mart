@@ -2,13 +2,13 @@ package api
 
 import (
 	"context"
+	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository"
 	"net/http"
 
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/api/routes"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/config"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/middlewares"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/repository/storage/postgres"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/sirupsen/logrus"
@@ -18,7 +18,7 @@ import (
 type API struct {
 	config *config.Config
 	logger *logrus.Logger
-	store  *postgres.Store
+	store  *repository.Store
 }
 
 func NewAPI(config *config.Config) *API {
@@ -51,7 +51,7 @@ func (api *API) Start() error {
 	logger.Log.Info("Running server", zap.String("port", api.config.Port))
 
 	// Store
-	newStore := postgres.NewStore(api.config)
+	newStore := repository.NewStore(api.config)
 	if err := newStore.Open(); err != nil {
 		logger.Log.Debug("error while Start. Error in NewStore", zap.Error(err))
 		return err

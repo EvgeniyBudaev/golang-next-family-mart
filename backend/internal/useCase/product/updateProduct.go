@@ -86,13 +86,16 @@ func (uc *UpdateProductUseCase) UpdateProduct(ctx *fiber.Ctx, r UpdateProductReq
 		}
 	} else {
 		productRequest = &product.Product{
-			Uuid:      r.Uuid,
-			Alias:     strings.ToLower(r.Alias),
-			Name:      r.Name,
-			CreatedAt: productInDB.CreatedAt,
-			UpdatedAt: time.Now(),
-			IsDeleted: false,
-			IsEnabled: r.IsEnabled,
+			Id:           productInDB.Id,
+			CatalogId:    productInDB.CatalogId,
+			Uuid:         r.Uuid,
+			Alias:        strings.ToLower(r.Alias),
+			Name:         r.Name,
+			CreatedAt:    productInDB.CreatedAt,
+			UpdatedAt:    time.Now(),
+			IsDeleted:    false,
+			IsEnabled:    r.IsEnabled,
+			CatalogAlias: productInDB.CatalogAlias,
 		}
 	}
 	updatedProduct, err := uc.dataStore.Update(ctx, productRequest)

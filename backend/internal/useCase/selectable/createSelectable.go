@@ -10,7 +10,7 @@ import (
 )
 
 type CreateSelectableRequest struct {
-	AttributeId int    `json:"attribute_id"`
+	AttributeId int    `json:"attributeId"`
 	Value       string `json:"value"`
 }
 
@@ -27,12 +27,12 @@ func NewCreateSelectableUseCase(ds ISelectableStore) *CreateSelectableUseCase {
 func (uc *CreateSelectableUseCase) CreateSelectable(ctx *fiber.Ctx, r CreateSelectableRequest) (*selectable.Selectable, error) {
 	var request = &selectable.Selectable{
 		AttributeId: r.AttributeId,
-		CreatedAt:   time.Now(),
-		Deleted:     false,
-		Enabled:     true,
-		UpdatedAt:   time.Now(),
 		Uuid:        uuid.New(),
 		Value:       r.Value,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+		IsDeleted:   false,
+		IsEnabled:   true,
 	}
 	response, err := uc.dataStore.Create(ctx, request)
 	if err != nil {

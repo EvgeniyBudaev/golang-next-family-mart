@@ -9,7 +9,7 @@ import (
 type IProductStore interface {
 	AddImage(ctx *fiber.Ctx, c *product.ImageProduct) (*product.ImageProduct, error)
 	Create(ctx *fiber.Ctx, p *product.Product) (*product.Product, error)
-	Delete(ctx *fiber.Ctx, u uuid.UUID) (*product.Product, error)
+	Delete(ctx *fiber.Ctx, p *product.Product) (*product.Product, error)
 	DeleteImage(ctx *fiber.Ctx, u uuid.UUID) (*product.ImageProduct, error)
 	FindByAlias(ctx *fiber.Ctx, alias string) (*product.Product, error)
 	FindByUuid(ctx *fiber.Ctx, u uuid.UUID) (*product.Product, error)

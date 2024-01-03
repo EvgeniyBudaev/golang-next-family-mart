@@ -37,8 +37,8 @@ func (pg *PGSelectableStore) Create(cf *fiber.Ctx, s *selectable.Selectable) (*s
 	}
 	defer tx.Rollback(ctx)
 	sqlSelect := sqlBuilder.Insert("selectables").
-		Columns("attribute_id", "created_at", "deleted", "enabled", "updated_at", "uuid", "value").
-		Values(&s.AttributeId, &s.CreatedAt, &s.Deleted, &s.Enabled, &s.UpdatedAt, &s.Uuid, &s.Value).
+		Columns("attribute_id", "uuid", "value", "created_at", "updated_at", "is_deleted", "is_enabled").
+		Values(&s.AttributeId, &s.Uuid, &s.Value, &s.CreatedAt, &s.UpdatedAt, &s.IsDeleted, &s.IsEnabled).
 		Suffix("RETURNING id")
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
@@ -65,7 +65,8 @@ func (pg *PGSelectableStore) Delete(cf *fiber.Ctx, s *selectable.Selectable) (*s
 	}
 	defer tx.Rollback(ctx)
 	sqlSelect := sqlBuilder.Update("selectables").
-		Set("deleted", s.Deleted).
+		Set("updated_at", s.UpdatedAt).
+		Set("is_deleted", s.IsDeleted).
 		Where(sq.Eq{"uuid": s.Uuid})
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
@@ -91,10 +92,10 @@ func (pg *PGSelectableStore) Update(cf *fiber.Ctx, s *selectable.Selectable) (*s
 	}
 	defer tx.Rollback(ctx)
 	sqlSelect := sqlBuilder.Update("selectables").
-		Set("deleted", s.Deleted).
-		Set("enabled", s.Enabled).
-		Set("updated_at", s.UpdatedAt).
 		Set("value", s.Value).
+		Set("updated_at", s.UpdatedAt).
+		Set("is_deleted", s.IsDeleted).
+		Set("is_enabled", s.IsEnabled).
 		Where(sq.Eq{"uuid": s.Uuid})
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
@@ -112,8 +113,9 @@ func (pg *PGSelectableStore) Update(cf *fiber.Ctx, s *selectable.Selectable) (*s
 
 func (pg *PGSelectableStore) FindByUuid(ctx *fiber.Ctx, uuid uuid.UUID) (*selectable.Selectable, error) {
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	sqlSelect := sqlBuilder.Select("id", "attribute_id", "created_at", "deleted", "enabled", "updated_at",
-		"uuid", "value").From("selectables").Where(sq.Eq{"uuid": uuid})
+	sqlSelect := sqlBuilder.Select("id", "attribute_id", "uuid", "value", "created_at", "updated_at",
+		"is_deleted", "is_enabled").
+		From("selectables").Where(sq.Eq{"uuid": uuid})
 	data := selectable.Selectable{}
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
@@ -125,15 +127,15 @@ func (pg *PGSelectableStore) FindByUuid(ctx *fiber.Ctx, uuid uuid.UUID) (*select
 		logger.Log.Debug("error while FindByUuid. error in method Query", zap.Error(err))
 		return nil, err
 	}
-	err = row.Scan(&data.Id, &data.AttributeId, &data.CreatedAt, &data.Deleted,
-		&data.Enabled, &data.UpdatedAt, &data.Uuid, &data.Value)
+	err = row.Scan(&data.Id, &data.AttributeId, &data.Uuid, &data.Value, &data.CreatedAt, &data.UpdatedAt,
+		&data.IsDeleted, &data.IsEnabled)
 	if err != nil {
 		logger.Log.Debug("error while FindByUuid. error in method Scan", zap.Error(err))
 		msg := errors.Wrap(err, "attribute not found")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
-	if data.Deleted == true {
+	if data.IsDeleted == true {
 		msg := fmt.Errorf("attribute has already been deleted")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
@@ -146,10 +148,11 @@ func (pg *PGSelectableStore) SelectList(
 	qp *selectable.QueryParamsSelectableList,
 	attributeId int) (*selectable.ListSelectableResponse, error) {
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	sqlSelect := sqlBuilder.Select("id", "attribute_id", "created_at", "deleted", "enabled", "updated_at",
-		"uuid", "value").From("selectables").Where(sq.Eq{"deleted": false}).
+	sqlSelect := sqlBuilder.Select("id", "attribute_id", "uuid", "value", "created_at", "updated_at",
+		"is_deleted", "is_enabled").
+		From("selectables").Where(sq.Eq{"is_deleted": false}).
 		Where(sq.Eq{"attribute_id": attributeId})
-	countSelect := sqlBuilder.Select("COUNT(*)").From("selectables").Where(sq.Eq{"deleted": false}).
+	countSelect := sqlBuilder.Select("COUNT(*)").From("selectables").Where(sq.Eq{"is_deleted": false}).
 		Where(sq.Eq{"attribute_id": attributeId})
 	limit := qp.Limit
 	page := qp.Page
@@ -188,8 +191,8 @@ func (pg *PGSelectableStore) SelectList(
 	defer rows.Close()
 	for rows.Next() {
 		data := selectable.Selectable{}
-		err := rows.Scan(&data.Id, &data.AttributeId, &data.CreatedAt, &data.Deleted,
-			&data.Enabled, &data.UpdatedAt, &data.Uuid, &data.Value)
+		err := rows.Scan(&data.Id, &data.AttributeId, &data.Uuid, &data.Value, &data.UpdatedAt, &data.CreatedAt,
+			&data.IsDeleted, &data.IsEnabled)
 		if err != nil {
 			logger.Log.Debug("error while SelectList. error in method Scan", zap.Error(err))
 			continue

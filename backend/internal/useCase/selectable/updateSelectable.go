@@ -33,19 +33,20 @@ func (uc *UpdateSelectableUseCase) UpdateSelectable(ctx *fiber.Ctx, r UpdateSele
 		logger.Log.Debug("error while UpdateSelectable. error in method FindByUuid", zap.Error(err))
 		return nil, err
 	}
-	if selectableInDB.Deleted == true {
+	if selectableInDB.IsDeleted == true {
 		msg := errors.Wrap(err, "selectable has already been deleted")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
 	var request = &selectable.Selectable{
-		Id:        selectableInDB.Id,
-		CreatedAt: selectableInDB.CreatedAt,
-		Deleted:   selectableInDB.Deleted,
-		Enabled:   selectableInDB.Enabled,
-		UpdatedAt: time.Now(),
-		Uuid:      r.Uuid,
-		Value:     r.Value,
+		Id:          selectableInDB.Id,
+		AttributeId: selectableInDB.AttributeId,
+		Uuid:        r.Uuid,
+		Value:       r.Value,
+		CreatedAt:   selectableInDB.CreatedAt,
+		UpdatedAt:   time.Now(),
+		IsDeleted:   selectableInDB.IsDeleted,
+		IsEnabled:   selectableInDB.IsEnabled,
 	}
 	response, err := uc.dataStore.Update(ctx, request)
 	if err != nil {

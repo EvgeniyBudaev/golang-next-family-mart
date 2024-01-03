@@ -14,10 +14,10 @@ import (
 )
 
 type UpdateAttributeRequest struct {
+	Uuid  uuid.UUID `json:"uuid"`
 	Alias string    `json:"alias"`
 	Name  string    `json:"name"`
 	Type  string    `json:"type"`
-	Uuid  uuid.UUID `json:"uuid"`
 }
 
 type UpdateAttributeUseCase struct {
@@ -33,25 +33,26 @@ func NewUpdateAttributeUseCase(ds IAttributeStore) *UpdateAttributeUseCase {
 func (uc *UpdateAttributeUseCase) UpdateAttribute(ctx *fiber.Ctx, r UpdateAttributeRequest) (*attribute.Attribute, error) {
 	attributeInDB, err := uc.dataStore.FindByUuid(ctx, r.Uuid)
 	if err != nil {
-		logger.Log.Debug("error while UpdateCatalog. error in method FindByUuid", zap.Error(err))
+		logger.Log.Debug("error while UpdateAttribute. error in method FindByUuid", zap.Error(err))
 		return nil, err
 	}
-	if attributeInDB.Deleted == true {
+	if attributeInDB.IsDeleted == true {
 		msg := errors.Wrap(err, "attribute has already been deleted")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
 	var request = &attribute.Attribute{
-		Id:        attributeInDB.Id,
-		Alias:     strings.ToLower(r.Alias),
-		CreatedAt: attributeInDB.CreatedAt,
-		Deleted:   attributeInDB.Deleted,
-		Enabled:   attributeInDB.Enabled,
-		Filtered:  attributeInDB.Filtered,
-		Name:      r.Name,
-		Type:      strings.ToLower(r.Type),
-		UpdatedAt: time.Now(),
-		Uuid:      r.Uuid,
+		Id:         attributeInDB.Id,
+		CatalogId:  attributeInDB.CatalogId,
+		Uuid:       r.Uuid,
+		Alias:      strings.ToLower(r.Alias),
+		Name:       r.Name,
+		Type:       strings.ToLower(r.Type),
+		CreatedAt:  attributeInDB.CreatedAt,
+		UpdatedAt:  time.Now(),
+		IsDeleted:  attributeInDB.IsDeleted,
+		IsEnabled:  attributeInDB.IsEnabled,
+		IsFiltered: attributeInDB.IsFiltered,
 	}
 	response, err := uc.dataStore.Update(ctx, request)
 	if err != nil {

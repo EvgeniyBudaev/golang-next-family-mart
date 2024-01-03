@@ -32,26 +32,31 @@ func (uc *DeleteAttributeUseCase) DeleteAttribute(ctx *fiber.Ctx, r DeleteAttrib
 		logger.Log.Debug("error while DeleteCatalog. error in method FindByUuid", zap.Error(err))
 		return nil, err
 	}
-	if attributeInDB.Deleted == true {
+	if attributeInDB.IsDeleted == true {
 		msg := errors.Wrap(err, "attribute has already been deleted")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
 	var request = &attribute.Attribute{
-		Id:        attributeInDB.Id,
-		Alias:     attributeInDB.Alias,
-		CreatedAt: attributeInDB.CreatedAt,
-		Deleted:   true,
-		Enabled:   attributeInDB.Enabled,
-		Filtered:  attributeInDB.Filtered,
-		Name:      attributeInDB.Name,
-		Type:      attributeInDB.Type,
-		UpdatedAt: time.Now(),
-		Uuid:      r.Uuid,
+		Id:         attributeInDB.Id,
+		Uuid:       r.Uuid,
+		Alias:      attributeInDB.Alias,
+		Name:       attributeInDB.Name,
+		Type:       attributeInDB.Type,
+		CreatedAt:  attributeInDB.CreatedAt,
+		UpdatedAt:  time.Now(),
+		IsDeleted:  true,
+		IsEnabled:  attributeInDB.IsEnabled,
+		IsFiltered: attributeInDB.IsFiltered,
 	}
-	response, err := uc.dataStore.Update(ctx, request)
+	deletedAttribute, err := uc.dataStore.Delete(ctx, request)
 	if err != nil {
 		logger.Log.Debug("error while DeleteAttribute. error in method Delete", zap.Error(err))
+		return nil, err
+	}
+	response, err := uc.dataStore.FindByUuid(ctx, deletedAttribute.Uuid)
+	if err != nil {
+		logger.Log.Debug("error while DeleteAttribute. error in method FindByUuid", zap.Error(err))
 		return nil, err
 	}
 	return response, nil

@@ -9,6 +9,8 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"net/http"
+	"strings"
+	"time"
 )
 
 type DeleteProductRequest struct {
@@ -38,7 +40,19 @@ func (uc *DeleteProductUseCase) DeleteProduct(ctx *fiber.Ctx, r DeleteProductReq
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
-	response, err := uc.dataStore.Delete(ctx, r.Uuid)
+	request := &product.Product{
+		Id:           productInDB.Id,
+		CatalogId:    productInDB.CatalogId,
+		Uuid:         r.Uuid,
+		Alias:        strings.ToLower(productInDB.Alias),
+		Name:         productInDB.Name,
+		CreatedAt:    productInDB.CreatedAt,
+		UpdatedAt:    time.Now(),
+		IsDeleted:    false,
+		IsEnabled:    productInDB.IsEnabled,
+		CatalogAlias: productInDB.CatalogAlias,
+	}
+	response, err := uc.dataStore.Delete(ctx, request)
 	if err != nil {
 		logger.Log.Debug("error while DeleteProduct. error in method Delete", zap.Error(err))
 		return nil, err

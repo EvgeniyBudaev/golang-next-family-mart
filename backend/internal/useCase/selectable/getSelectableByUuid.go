@@ -1,11 +1,14 @@
 package selectable
 
 import (
+	"fmt"
+	errorDomain "github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/error"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/selectable"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
+	"net/http"
 )
 
 type GetSelectableByUuidUseCase struct {
@@ -28,6 +31,11 @@ func (uc *GetSelectableByUuidUseCase) GetSelectableByUuid(ctx *fiber.Ctx) (*sele
 	response, err := uc.dataStore.FindByUuid(ctx, paramsStr)
 	if err != nil {
 		logger.Log.Debug("error while GetSelectableByUuid. error in method FindByUuid", zap.Error(err))
+		return nil, err
+	}
+	if response.IsDeleted == true {
+		msg := fmt.Errorf("selectable has already been deleted")
+		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
 	return response, nil

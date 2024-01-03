@@ -10,13 +10,13 @@ import (
 
 type Selectable struct {
 	Id          int       `json:"id"`
-	AttributeId int       `json:"attribute_id"`
-	CreatedAt   time.Time `json:"created_at"`
-	Deleted     bool      `json:"deleted"`
-	Enabled     bool      `json:"enabled"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	AttributeId int       `json:"attributeId"`
 	Uuid        uuid.UUID `json:"uuid"`
 	Value       string    `json:"value"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
+	IsDeleted   bool      `json:"isDeleted"`
+	IsEnabled   bool      `json:"isEnabled"`
 }
 
 type RequestAttributeSelectable struct {
@@ -24,7 +24,7 @@ type RequestAttributeSelectable struct {
 }
 
 type RequestSelectable struct {
-	AttributeId int    `json:"attribute_id"`
+	AttributeId int    `json:"attributeId"`
 	Value       string `json:"value"`
 }
 

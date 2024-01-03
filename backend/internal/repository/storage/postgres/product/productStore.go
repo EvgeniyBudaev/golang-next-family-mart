@@ -52,15 +52,10 @@ func (pg *PGProductStore) Create(cf *fiber.Ctx, p *product.Product) (*product.Pr
 		return nil, err
 	}
 	tx.Commit(ctx)
-	newProduct, err := pg.FindByUuid(cf, p.Uuid)
-	if err != nil {
-		logger.Log.Debug("error while Create. error in method FindByUuid", zap.Error(err))
-		return nil, err
-	}
-	return newProduct, nil
+	return p, nil
 }
 
-func (pg *PGProductStore) Delete(cf *fiber.Ctx, u uuid.UUID) (*product.Product, error) {
+func (pg *PGProductStore) Delete(cf *fiber.Ctx, p *product.Product) (*product.Product, error) {
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	ctx := cf.Context()
 	tx, err := pg.store.Db().Begin(ctx)
@@ -70,8 +65,9 @@ func (pg *PGProductStore) Delete(cf *fiber.Ctx, u uuid.UUID) (*product.Product, 
 	}
 	defer tx.Rollback(ctx)
 	sqlSelect := sqlBuilder.Update("products").
+		Set("updated_at", p.UpdatedAt).
 		Set("is_deleted", true).
-		Where(sq.Eq{"uuid": u})
+		Where(sq.Eq{"uuid": p.Uuid})
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
 		logger.Log.Debug("error while Delete. error in method ToSql", zap.Error(err))
@@ -83,12 +79,7 @@ func (pg *PGProductStore) Delete(cf *fiber.Ctx, u uuid.UUID) (*product.Product, 
 		return nil, err
 	}
 	tx.Commit(ctx)
-	response, err := pg.FindByUuid(cf, u)
-	if err != nil {
-		logger.Log.Debug("error while Delete. error in method FindByUuid", zap.Error(err))
-		return nil, err
-	}
-	return response, nil
+	return p, nil
 }
 
 func (pg *PGProductStore) Update(cf *fiber.Ctx, c *product.Product) (*product.Product, error) {
@@ -101,10 +92,8 @@ func (pg *PGProductStore) Update(cf *fiber.Ctx, c *product.Product) (*product.Pr
 	}
 	defer tx.Rollback(ctx)
 	sqlSelect := sqlBuilder.Update("products").
-		Set("uuid", c.Uuid).
 		Set("alias", c.Alias).
 		Set("name", c.Name).
-		Set("created_at", c.CreatedAt).
 		Set("updated_at", c.UpdatedAt).
 		Set("is_deleted", c.IsDeleted).
 		Set("is_enabled", c.IsEnabled).

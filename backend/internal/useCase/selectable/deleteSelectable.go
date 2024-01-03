@@ -32,19 +32,20 @@ func (uc *DeleteSelectableUseCase) DeleteSelectable(ctx *fiber.Ctx, r DeleteSele
 		logger.Log.Debug("error while DeleteSelectable. error in method FindByUuid", zap.Error(err))
 		return nil, err
 	}
-	if selectableInDB.Deleted == true {
+	if selectableInDB.IsDeleted == true {
 		msg := errors.Wrap(err, "selectable has already been deleted")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
 	var request = &selectable.Selectable{
-		Id:        selectableInDB.Id,
-		CreatedAt: selectableInDB.CreatedAt,
-		Deleted:   true,
-		Enabled:   selectableInDB.Enabled,
-		UpdatedAt: time.Now(),
-		Uuid:      r.Uuid,
-		Value:     selectableInDB.Value,
+		Id:          selectableInDB.Id,
+		AttributeId: selectableInDB.AttributeId,
+		Uuid:        r.Uuid,
+		Value:       selectableInDB.Value,
+		CreatedAt:   selectableInDB.CreatedAt,
+		UpdatedAt:   time.Now(),
+		IsDeleted:   true,
+		IsEnabled:   selectableInDB.IsEnabled,
 	}
 	response, err := uc.dataStore.Delete(ctx, request)
 	if err != nil {

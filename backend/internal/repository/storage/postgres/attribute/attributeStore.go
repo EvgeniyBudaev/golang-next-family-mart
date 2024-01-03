@@ -37,9 +37,10 @@ func (pg *PGAttributeStore) Create(cf *fiber.Ctx, a *attribute.Attribute) (*attr
 	}
 	defer tx.Rollback(ctx)
 	sqlSelect := sqlBuilder.Insert("attributes").
-		Columns("alias", "created_at", "deleted", "enabled", "filtered", "name", "type", "updated_at", "uuid").
-		Values(&a.Alias, &a.CreatedAt, &a.Deleted, &a.Enabled, &a.Filtered, &a.Name, &a.Type,
-			&a.UpdatedAt, &a.Uuid).
+		Columns("catalog_id", "uuid", "alias", "name", "type", "created_at", "updated_at", "is_deleted",
+			"is_enabled", "is_filtered").
+		Values(&a.CatalogId, &a.Uuid, &a.Alias, &a.Name, &a.Type, &a.CreatedAt, &a.UpdatedAt, &a.IsDeleted,
+			&a.IsEnabled, &a.IsFiltered).
 		Suffix("RETURNING id")
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
@@ -66,7 +67,8 @@ func (pg *PGAttributeStore) Delete(cf *fiber.Ctx, a *attribute.Attribute) (*attr
 	}
 	defer tx.Rollback(ctx)
 	sqlSelect := sqlBuilder.Update("attributes").
-		Set("deleted", a.Deleted).
+		Set("updated_at", a.UpdatedAt).
+		Set("is_deleted", a.IsDeleted).
 		Where(sq.Eq{"uuid": a.Uuid})
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
@@ -93,14 +95,12 @@ func (pg *PGAttributeStore) Update(cf *fiber.Ctx, a *attribute.Attribute) (*attr
 	defer tx.Rollback(ctx)
 	sqlSelect := sqlBuilder.Update("attributes").
 		Set("alias", a.Alias).
-		Set("created_at", a.CreatedAt).
-		Set("deleted", a.Deleted).
-		Set("enabled", a.Enabled).
-		Set("filtered", a.Enabled).
 		Set("name", a.Name).
 		Set("type", a.Type).
 		Set("updated_at", a.UpdatedAt).
-		Set("uuid", a.Uuid).
+		Set("is_deleted", a.IsDeleted).
+		Set("is_enabled", a.IsEnabled).
+		Set("is_filtered", a.IsEnabled).
 		Where(sq.Eq{"uuid": a.Uuid})
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
@@ -118,7 +118,10 @@ func (pg *PGAttributeStore) Update(cf *fiber.Ctx, a *attribute.Attribute) (*attr
 
 func (pg *PGAttributeStore) FindByAlias(ctx *fiber.Ctx, a string) (*attribute.Attribute, error) {
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	sqlSelect := sqlBuilder.Select("*").From("attributes").Where(sq.Eq{"alias": a})
+	sqlSelect := sqlBuilder.
+		Select("id", "catalog_id", "uuid", "alias", "name", "type", "created_at", "updated_at",
+			"is_deleted", "is_enabled", "is_filtered").
+		From("attributes").Where(sq.Eq{"alias": a})
 	data := attribute.Attribute{}
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
@@ -130,15 +133,15 @@ func (pg *PGAttributeStore) FindByAlias(ctx *fiber.Ctx, a string) (*attribute.At
 		logger.Log.Debug("error while FindByAlias. error in method Query", zap.Error(err))
 		return nil, err
 	}
-	err = row.Scan(&data.Id, &data.Alias, &data.CreatedAt, &data.Deleted,
-		&data.Enabled, &data.Filtered, &data.Name, &data.Type, &data.UpdatedAt, &data.Uuid)
+	err = row.Scan(&data.Id, &data.CatalogId, &data.Uuid, &data.Alias, &data.Name, &data.Type, &data.CreatedAt,
+		&data.UpdatedAt, &data.IsDeleted, &data.IsEnabled, &data.IsFiltered)
 	if err != nil {
 		logger.Log.Debug("error while FindByAlias. error in method Scan", zap.Error(err))
 		msg := errors.Wrap(err, "attribute not found")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
-	if data.Deleted == true {
+	if data.IsDeleted == true {
 		msg := fmt.Errorf("attribute has already been deleted")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
@@ -148,7 +151,10 @@ func (pg *PGAttributeStore) FindByAlias(ctx *fiber.Ctx, a string) (*attribute.At
 
 func (pg *PGAttributeStore) FindByUuid(ctx *fiber.Ctx, uuid uuid.UUID) (*attribute.Attribute, error) {
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	sqlSelect := sqlBuilder.Select("*").From("attributes").Where(sq.Eq{"uuid": uuid})
+	sqlSelect := sqlBuilder.
+		Select("id", "catalog_id", "uuid", "alias", "name", "type", "created_at", "updated_at",
+			"is_deleted", "is_enabled", "is_filtered").
+		From("attributes").Where(sq.Eq{"uuid": uuid})
 	data := attribute.Attribute{}
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
@@ -160,15 +166,15 @@ func (pg *PGAttributeStore) FindByUuid(ctx *fiber.Ctx, uuid uuid.UUID) (*attribu
 		logger.Log.Debug("error while FindByUuid. error in method Query", zap.Error(err))
 		return nil, err
 	}
-	err = row.Scan(&data.Id, &data.Alias, &data.CreatedAt, &data.Deleted,
-		&data.Enabled, &data.Filtered, &data.Name, &data.Type, &data.UpdatedAt, &data.Uuid)
+	err = row.Scan(&data.Id, &data.CatalogId, &data.Uuid, &data.Alias, &data.Name, &data.Type, &data.CreatedAt,
+		&data.UpdatedAt, &data.IsDeleted, &data.IsEnabled, &data.IsFiltered)
 	if err != nil {
 		logger.Log.Debug("error while FindByUuid. error in method Scan", zap.Error(err))
 		msg := errors.Wrap(err, "attribute not found")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
 	}
-	if data.Deleted == true {
+	if data.IsDeleted == true {
 		msg := fmt.Errorf("attribute has already been deleted")
 		err = errorDomain.NewCustomError(msg, http.StatusNotFound)
 		return nil, err
@@ -179,8 +185,11 @@ func (pg *PGAttributeStore) FindByUuid(ctx *fiber.Ctx, uuid uuid.UUID) (*attribu
 func (pg *PGAttributeStore) SelectList(
 	ctx *fiber.Ctx, qp *attribute.QueryParamsAttributeList) (*attribute.ListAttributeResponse, error) {
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	sqlSelect := sqlBuilder.Select("*").From("attributes").Where(sq.Eq{"deleted": false})
-	countSelect := sqlBuilder.Select("COUNT(*)").From("attributes").Where(sq.Eq{"deleted": false})
+	sqlSelect := sqlBuilder.
+		Select("id", "catalog_id", "uuid", "alias", "name", "type", "created_at", "updated_at",
+			"is_deleted", "is_enabled", "is_filtered").
+		From("attributes").Where(sq.Eq{"is_deleted": false})
+	countSelect := sqlBuilder.Select("COUNT(*)").From("attributes").Where(sq.Eq{"is_deleted": false})
 	limit := qp.Limit
 	page := qp.Page
 	// search
@@ -218,8 +227,8 @@ func (pg *PGAttributeStore) SelectList(
 	defer rows.Close()
 	for rows.Next() {
 		data := attribute.Attribute{}
-		err := rows.Scan(&data.Id, &data.Alias, &data.CreatedAt, &data.Deleted,
-			&data.Enabled, &data.Filtered, &data.Name, &data.Type, &data.UpdatedAt, &data.Uuid)
+		err := rows.Scan(&data.Id, &data.CatalogId, &data.Uuid, &data.Alias, &data.Name, &data.Type, &data.CreatedAt,
+			&data.UpdatedAt, &data.IsDeleted, &data.IsEnabled, &data.IsFiltered)
 		if err != nil {
 			logger.Log.Debug("error while SelectList. error in method Scan", zap.Error(err))
 			continue

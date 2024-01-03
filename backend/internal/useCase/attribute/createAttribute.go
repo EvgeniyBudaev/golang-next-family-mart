@@ -2,7 +2,6 @@ package attribute
 
 import (
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/attribute"
-	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/entities/selectable"
 	"github.com/EvgeniyBudaev/golang-next-family-mart/backend/internal/logger"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -12,10 +11,10 @@ import (
 )
 
 type CreateAttributeRequest struct {
-	Alias      string                                   `json:"alias"`
-	Name       string                                   `json:"name"`
-	Selectable []*selectable.RequestAttributeSelectable `json:"selectable"`
-	Type       string                                   `json:"type"`
+	CatalogId int    `json:"catalogId"`
+	Alias     string `json:"alias"`
+	Name      string `json:"name"`
+	Type      string `json:"type"`
 }
 
 type CreateAttributeUseCase struct {
@@ -30,15 +29,16 @@ func NewCreateAttributeUseCase(ds IAttributeStore) *CreateAttributeUseCase {
 
 func (uc *CreateAttributeUseCase) CreateAttribute(ctx *fiber.Ctx, r CreateAttributeRequest) (*attribute.Attribute, error) {
 	var request = &attribute.Attribute{
-		Alias:     strings.ToLower(r.Alias),
-		CreatedAt: time.Now(),
-		Deleted:   false,
-		Enabled:   true,
-		Filtered:  true,
-		Name:      r.Name,
-		Type:      strings.ToLower(r.Type),
-		UpdatedAt: time.Now(),
-		Uuid:      uuid.New(),
+		CatalogId:  r.CatalogId,
+		Uuid:       uuid.New(),
+		Alias:      strings.ToLower(r.Alias),
+		Name:       r.Name,
+		Type:       strings.ToLower(r.Type),
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
+		IsDeleted:  false,
+		IsEnabled:  true,
+		IsFiltered: true,
 	}
 	response, err := uc.dataStore.Create(ctx, request)
 	if err != nil {

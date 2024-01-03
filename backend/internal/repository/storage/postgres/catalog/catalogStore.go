@@ -151,11 +151,6 @@ func (pg *PGCatalogStore) FindByAlias(ctx *fiber.Ctx, alias string) (*catalog.Ca
 		logger.Log.Debug("error while FindByAlias. error in method SelectListImage", zap.Error(err))
 		return nil, err
 	}
-	products, err := pg.SelectListProduct(ctx, data.Id)
-	if err != nil {
-		logger.Log.Debug("error while FindByAlias. error in method SelectListProduct", zap.Error(err))
-		return nil, err
-	}
 	response := &catalog.Catalog{
 		Id:        data.Id,
 		Uuid:      data.Uuid,
@@ -166,7 +161,6 @@ func (pg *PGCatalogStore) FindByAlias(ctx *fiber.Ctx, alias string) (*catalog.Ca
 		IsDeleted: data.IsDeleted,
 		IsEnabled: data.IsEnabled,
 		Images:    images,
-		Products:  products,
 	}
 	return response, nil
 }
@@ -201,11 +195,6 @@ func (pg *PGCatalogStore) FindByUuid(ctx *fiber.Ctx, uuid uuid.UUID) (*catalog.C
 		logger.Log.Debug("error while FindByUuid. error in method SelectListImage", zap.Error(err))
 		return nil, err
 	}
-	products, err := pg.SelectListProduct(ctx, data.Id)
-	if err != nil {
-		logger.Log.Debug("error while FindByUuid. error in method SelectListProduct", zap.Error(err))
-		return nil, err
-	}
 	response := &catalog.Catalog{
 		Id:        data.Id,
 		Uuid:      data.Uuid,
@@ -216,7 +205,6 @@ func (pg *PGCatalogStore) FindByUuid(ctx *fiber.Ctx, uuid uuid.UUID) (*catalog.C
 		IsDeleted: data.IsDeleted,
 		IsEnabled: data.IsEnabled,
 		Images:    images,
-		Products:  products,
 	}
 	return response, nil
 }
@@ -280,11 +268,6 @@ func (pg *PGCatalogStore) SelectList(
 			logger.Log.Debug("error while SelectList. error in method SelectListImage", zap.Error(err))
 			return nil, err
 		}
-		products, err := pg.SelectListProduct(ctx, data.Id)
-		if err != nil {
-			logger.Log.Debug("error while SelectList. error in method SelectListProduct", zap.Error(err))
-			return nil, err
-		}
 		catalogResponse := &catalog.Catalog{
 			Id:        data.Id,
 			Uuid:      data.Uuid,
@@ -295,7 +278,6 @@ func (pg *PGCatalogStore) SelectList(
 			IsDeleted: data.IsDeleted,
 			IsEnabled: data.IsEnabled,
 			Images:    images,
-			Products:  products,
 		}
 		catalogList = append(catalogList, catalogResponse)
 	}
@@ -508,7 +490,6 @@ func (pg *PGCatalogStore) SelectDictList(ctx *fiber.Ctx) ([]*catalog.DictCatalog
 		Select("id", "name").
 		From("catalogs").
 		Where(sq.Eq{"is_deleted": false})
-	// get dictCatalogList
 	dictCatalogList := make([]*catalog.DictCatalog, 0)
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
@@ -528,7 +509,6 @@ func (pg *PGCatalogStore) SelectDictList(ctx *fiber.Ctx) ([]*catalog.DictCatalog
 			logger.Log.Debug("error while SelectDictList. error in method Scan", zap.Error(err))
 			continue
 		}
-
 		catalogResponse := &catalog.DictCatalog{
 			Id:   data.Id,
 			Name: data.Name,

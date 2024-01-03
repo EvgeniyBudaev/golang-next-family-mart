@@ -52,7 +52,12 @@ func (pg *PGProductStore) Create(cf *fiber.Ctx, p *product.Product) (*product.Pr
 		return nil, err
 	}
 	tx.Commit(ctx)
-	return p, nil
+	newProduct, err := pg.FindByUuid(cf, p.Uuid)
+	if err != nil {
+		logger.Log.Debug("error while Create. error in method FindByUuid", zap.Error(err))
+		return nil, err
+	}
+	return newProduct, nil
 }
 
 func (pg *PGProductStore) Delete(cf *fiber.Ctx, u uuid.UUID) (*product.Product, error) {
@@ -121,10 +126,11 @@ func (pg *PGProductStore) Update(cf *fiber.Ctx, c *product.Product) (*product.Pr
 func (pg *PGProductStore) FindByAlias(ctx *fiber.Ctx, alias string) (*product.Product, error) {
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	sqlSelect := sqlBuilder.
-		Select("id", "catalog_id", "uuid", "alias", "name", "created_at", "updated_at", "is_deleted",
-			"is_enabled").
-		From("products").
-		Where(sq.Eq{"alias": alias})
+		Select("p.id", "p.catalog_id", "p.uuid", "p.alias", "p.name", "p.created_at", "p.updated_at",
+			"p.is_deleted", "p.is_enabled", "c.alias as catalog_alias").
+		From("products p").
+		Join("catalogs c ON c.id = p.catalog_id").
+		Where(sq.Eq{"p.alias": alias})
 	data := product.Product{}
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
@@ -137,7 +143,7 @@ func (pg *PGProductStore) FindByAlias(ctx *fiber.Ctx, alias string) (*product.Pr
 		return nil, err
 	}
 	err = row.Scan(&data.Id, &data.CatalogId, &data.Uuid, &data.Alias, &data.Name, &data.CreatedAt, &data.UpdatedAt,
-		&data.IsDeleted, &data.IsEnabled)
+		&data.IsDeleted, &data.IsEnabled, &data.CatalogAlias)
 	if err != nil {
 		logger.Log.Debug("error while FindByAlias. error in method Scan", zap.Error(err))
 		msg := errors.Wrap(err, "product not found")
@@ -150,16 +156,17 @@ func (pg *PGProductStore) FindByAlias(ctx *fiber.Ctx, alias string) (*product.Pr
 		return nil, err
 	}
 	response := &product.Product{
-		Id:        data.Id,
-		CatalogId: data.CatalogId,
-		Uuid:      data.Uuid,
-		Alias:     data.Alias,
-		Name:      data.Name,
-		CreatedAt: data.CreatedAt,
-		UpdatedAt: data.UpdatedAt,
-		IsDeleted: data.IsDeleted,
-		IsEnabled: data.IsEnabled,
-		Images:    images,
+		Id:           data.Id,
+		CatalogId:    data.CatalogId,
+		Uuid:         data.Uuid,
+		Alias:        data.Alias,
+		Name:         data.Name,
+		CreatedAt:    data.CreatedAt,
+		UpdatedAt:    data.UpdatedAt,
+		IsDeleted:    data.IsDeleted,
+		IsEnabled:    data.IsEnabled,
+		CatalogAlias: data.CatalogAlias,
+		Images:       images,
 	}
 	return response, nil
 }
@@ -167,10 +174,11 @@ func (pg *PGProductStore) FindByAlias(ctx *fiber.Ctx, alias string) (*product.Pr
 func (pg *PGProductStore) FindByUuid(ctx *fiber.Ctx, uuid uuid.UUID) (*product.Product, error) {
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	sqlSelect := sqlBuilder.
-		Select("id", "catalog_id", "uuid", "alias", "name", "created_at", "updated_at", "is_deleted",
-			"is_enabled").
-		From("products").
-		Where(sq.Eq{"uuid": uuid})
+		Select("p.id", "p.catalog_id", "p.uuid", "p.alias", "p.name", "p.created_at", "p.updated_at",
+			"p.is_deleted", "p.is_enabled", "c.alias as catalog_alias").
+		From("products p").
+		Join("catalogs c ON c.id = p.catalog_id").
+		Where(sq.Eq{"p.uuid": uuid})
 	data := product.Product{}
 	query, args, err := sqlSelect.ToSql()
 	if err != nil {
@@ -183,7 +191,7 @@ func (pg *PGProductStore) FindByUuid(ctx *fiber.Ctx, uuid uuid.UUID) (*product.P
 		return nil, err
 	}
 	err = row.Scan(&data.Id, &data.CatalogId, &data.Uuid, &data.Alias, &data.Name, &data.CreatedAt, &data.UpdatedAt,
-		&data.IsDeleted, &data.IsEnabled)
+		&data.IsDeleted, &data.IsEnabled, &data.CatalogAlias)
 	if err != nil {
 		logger.Log.Debug("error while FindByUuid. error in method Scan", zap.Error(err))
 		msg := errors.Wrap(err, "product not found")
@@ -196,16 +204,17 @@ func (pg *PGProductStore) FindByUuid(ctx *fiber.Ctx, uuid uuid.UUID) (*product.P
 		return nil, err
 	}
 	response := &product.Product{
-		Id:        data.Id,
-		CatalogId: data.CatalogId,
-		Uuid:      data.Uuid,
-		Alias:     data.Alias,
-		Name:      data.Name,
-		CreatedAt: data.CreatedAt,
-		UpdatedAt: data.UpdatedAt,
-		IsDeleted: data.IsDeleted,
-		IsEnabled: data.IsEnabled,
-		Images:    images,
+		Id:           data.Id,
+		CatalogId:    data.CatalogId,
+		Uuid:         data.Uuid,
+		Alias:        data.Alias,
+		Name:         data.Name,
+		CreatedAt:    data.CreatedAt,
+		UpdatedAt:    data.UpdatedAt,
+		IsDeleted:    data.IsDeleted,
+		IsEnabled:    data.IsEnabled,
+		CatalogAlias: data.CatalogAlias,
+		Images:       images,
 	}
 	return response, nil
 }
@@ -215,16 +224,21 @@ func (pg *PGProductStore) SelectList(
 	qp *product.QueryParamsProductList) (*product.ListProductResponse, error) {
 	sqlBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	sqlSelect := sqlBuilder.
-		Select("id", "catalog_id", "uuid", "alias", "name", "created_at", "updated_at", "is_deleted",
-			"is_enabled").
-		From("products").
-		Where(sq.Eq{"is_deleted": false})
-	countSelect := sqlBuilder.Select("COUNT(*)").From("products").Where(sq.Eq{"is_deleted": false})
+		Select("p.id", "p.catalog_id", "p.uuid", "p.alias", "p.name", "p.created_at", "p.updated_at",
+			"p.is_deleted", "p.is_enabled", "c.alias as catalog_alias").
+		From("products p").
+		Join("catalogs c ON c.id = p.catalog_id").
+		Where(sq.Eq{"p.is_deleted": false})
+	countSelect := sqlBuilder.Select("COUNT(*)").From("products p").
+		Join("catalogs c ON c.id = p.catalog_id").
+		Where(sq.Eq{"p.is_deleted": false})
 	limit := qp.Limit
 	page := qp.Page
 	// search
-	sqlSelect = searching.ApplySearch(sqlSelect, "name", qp.Search)
-	countSelect = searching.ApplySearch(countSelect, "name", qp.Search)
+	sqlSelect = searching.ApplySearch(sqlSelect, "c.alias", qp.Catalog)
+	countSelect = searching.ApplySearch(countSelect, "c.alias", qp.Catalog)
+	sqlSelect = searching.ApplySearch(sqlSelect, "p.name", qp.Search)
+	countSelect = searching.ApplySearch(countSelect, "p.name", qp.Search)
 	// get totalItems
 	totalItems, err := pagination.GetTotalItems(ctx, pg.store.Db(), countSelect)
 	if err != nil {
@@ -260,7 +274,7 @@ func (pg *PGProductStore) SelectList(
 	for rows.Next() {
 		data := product.Product{}
 		err := rows.Scan(&data.Id, &data.CatalogId, &data.Uuid, &data.Alias, &data.Name, &data.CreatedAt,
-			&data.UpdatedAt, &data.IsDeleted, &data.IsEnabled)
+			&data.UpdatedAt, &data.IsDeleted, &data.IsEnabled, &data.CatalogAlias)
 		if err != nil {
 			logger.Log.Debug("error while SelectList. error in method Scan", zap.Error(err))
 			continue
@@ -271,16 +285,17 @@ func (pg *PGProductStore) SelectList(
 			return nil, err
 		}
 		productResponse := &product.Product{
-			Id:        data.Id,
-			CatalogId: data.CatalogId,
-			Uuid:      data.Uuid,
-			Alias:     data.Alias,
-			Name:      data.Name,
-			CreatedAt: data.CreatedAt,
-			UpdatedAt: data.UpdatedAt,
-			IsDeleted: data.IsDeleted,
-			IsEnabled: data.IsEnabled,
-			Images:    images,
+			Id:           data.Id,
+			CatalogId:    data.CatalogId,
+			Uuid:         data.Uuid,
+			Alias:        data.Alias,
+			Name:         data.Name,
+			CreatedAt:    data.CreatedAt,
+			UpdatedAt:    data.UpdatedAt,
+			IsDeleted:    data.IsDeleted,
+			IsEnabled:    data.IsEnabled,
+			CatalogAlias: data.CatalogAlias,
+			Images:       images,
 		}
 		productList = append(productList, productResponse)
 	}

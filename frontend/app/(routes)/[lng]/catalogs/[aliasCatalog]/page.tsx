@@ -1,3 +1,4 @@
+import { getCatalogDetail, TCatalogDetail } from "@/app/api/adminPanel/catalogs/detail";
 import { getProductList, TProductList } from "@/app/api/adminPanel/products/list";
 import { TSearchParams } from "@/app/api/common";
 import { useTranslation } from "@/app/i18n";
@@ -21,9 +22,13 @@ async function loader(params: TLoader) {
   };
 
   try {
-    const productListResponse = await getProductList(formattedParams);
+    const [catalogDetailResponse, productListResponse] = await Promise.all([
+      getCatalogDetail({ alias: aliasCatalog }),
+      getProductList(formattedParams),
+    ]);
+    const catalogDetail = catalogDetailResponse.data as TCatalogDetail;
     const productList = productListResponse.data as TProductList;
-    return { productList };
+    return { catalogDetail, productList };
   } catch (error) {
     throw new Error("errorBoundary.common.unexpectedError");
   }
@@ -42,7 +47,7 @@ export default async function CatalogRoute(props: TProps) {
 
   try {
     const data = await loader({ aliasCatalog, searchParams });
-    return <CatalogPage productList={data.productList} />;
+    return <CatalogPage catalogDetail={data.catalogDetail} productList={data.productList} />;
   } catch (error) {
     return <ErrorBoundary i18n={{ lng, t }} message={t(error?.message)} />;
   }

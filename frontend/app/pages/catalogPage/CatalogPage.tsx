@@ -6,6 +6,7 @@ import isNil from "lodash/isNil";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type FC } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { TCatalogDetail } from "@/app/api/adminPanel/catalogs/detail";
 import type { TProductList, TProductListItem } from "@/app/api/adminPanel/products/list/types";
 import { useTranslation } from "@/app/i18n/client";
 import { ProductList } from "@/app/pages/catalogPage/productList";
@@ -20,6 +21,7 @@ type TProductRange = {
 };
 
 type TProps = {
+  catalogDetail: TCatalogDetail;
   productList: TProductList;
 };
 
@@ -48,6 +50,7 @@ export const CatalogPage: FC<TProps> = (props) => {
   const lastLoadedPage = useRef(page);
   const scrollIntoPage = useRef(page === 1 ? undefined : page);
 
+  const [catalog, setCatalog] = useState(props.catalogDetail);
   const [products, setProducts] = useState(props.productList ?? []);
   const [pages, setPages] = useState(
     new Array(page - 1).fill(undefined).concat([props.productList.content]),
@@ -64,6 +67,7 @@ export const CatalogPage: FC<TProps> = (props) => {
   );
 
   useEffect(() => {
+    setCatalog(props.catalogDetail);
     setProducts(props.productList);
     setPages((productList) => {
       const copy = [...productList];

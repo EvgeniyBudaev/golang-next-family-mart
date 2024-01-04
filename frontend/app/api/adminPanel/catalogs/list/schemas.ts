@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { paginationSchema } from "@/app/api/pagination/schemas";
 import { productListItemSchema } from "@/app/api/adminPanel/products/list/schemas";
+import { attributeListItemSchema } from "@/app/api/adminPanel/attributes/list/schemas";
 
 export const catalogImageListItemSchema = z.object({
   id: z.number(),
@@ -25,6 +26,7 @@ export const catalogListItemSchema = z.object({
   isDeleted: z.boolean(),
   isEnabled: z.boolean(),
   images: catalogImageListItemSchema.array().nullish(),
+  attributes: attributeListItemSchema.array().nullish(),
 });
 
 export const catalogListParamsSchema = z.object({

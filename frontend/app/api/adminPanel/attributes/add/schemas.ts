@@ -1,8 +1,5 @@
 import { z } from "zod";
-import {
-  attributeListItemSchema,
-  attributeListSchema,
-} from "@/app/api/adminPanel/attributes/list/schemas";
+import { attributeListItemSchema } from "@/app/api/adminPanel/attributes/list/schemas";
 
 export const attributeAddParamsSchema = z.object({
   alias: z.string(),

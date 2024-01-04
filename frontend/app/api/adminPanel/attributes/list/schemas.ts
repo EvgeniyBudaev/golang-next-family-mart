@@ -3,15 +3,16 @@ import { paginationSchema } from "@/app/api/pagination/schemas";
 
 export const attributeListItemSchema = z.object({
   id: z.number(),
+  catalogId: z.number(),
+  uuid: z.string(),
   alias: z.string(),
-  created_at: z.string(),
-  deleted: z.boolean(),
-  enabled: z.boolean(),
-  filtered: z.boolean(),
   name: z.string(),
   type: z.string(),
-  updated_at: z.string(),
-  uuid: z.string(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  isDeleted: z.boolean(),
+  isEnabled: z.boolean(),
+  isFiltered: z.boolean(),
 });
 
 export const attributeListParamsSchema = z.object({
